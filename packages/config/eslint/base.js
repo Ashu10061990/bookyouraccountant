@@ -16,6 +16,17 @@ export default tseslint.config(
     rules: {
       // --- Spec §8: a caught error is handled, rethrown, or logged. Never swallowed.
       "no-empty": ["error", { allowEmptyCatch: false }],
+      // `no-empty` deliberately treats a comment-only block as non-empty, so it
+      // misses the commonest swallow of all: `catch { /* ignore */ }`. Comments
+      // are not AST body nodes, so this selector catches what `no-empty` cannot.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "CatchClause > BlockStatement[body.length=0]",
+          message:
+            "Empty catch block. Handle the error, rethrow it, or log it explicitly (logger.warn).",
+        },
+      ],
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
 
@@ -43,10 +54,11 @@ export default tseslint.config(
     },
   },
   {
-    // Plain JS config files (eslint.config.js, tailwind.config.js,
-    // postcss.config.js) belong to no tsconfig, so `projectService` cannot
-    // resolve them and type-aware rules must be switched off for them.
-    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+    // Config files belong to no tsconfig, so `projectService` cannot resolve
+    // them and type-aware rules must be off for them. Scoped deliberately: a
+    // bare `**/*.js` glob would silently exempt real code from the type-aware
+    // rules too.
+    files: ["**/*.config.{js,cjs,mjs}", "**/eslint.config.js", "packages/config/**/*.js"],
     ...tseslint.configs.disableTypeChecked,
   },
   { ignores: ["dist/**", ".next/**", "coverage/**", "node_modules/**"] },
