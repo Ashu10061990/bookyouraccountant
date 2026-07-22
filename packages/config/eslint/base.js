@@ -42,5 +42,12 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-assertion": "off",
     },
   },
+  {
+    // Plain JS config files (eslint.config.js, tailwind.config.js,
+    // postcss.config.js) belong to no tsconfig, so `projectService` cannot
+    // resolve them and type-aware rules must be switched off for them.
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+    ...tseslint.configs.disableTypeChecked,
+  },
   { ignores: ["dist/**", ".next/**", "coverage/**", "node_modules/**"] },
 );
