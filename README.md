@@ -4,14 +4,14 @@ Marketplace connecting Indian MSMEs with verified accountants.
 
 ## Layout
 
-| Path | What |
-|---|---|
-| `apps/api` | Fastify service — MongoDB Atlas |
-| `apps/app` | Vite SPA — the authenticated product; also the Capacitor source |
-| `apps/web` | Next.js — public marketing site (SEO) |
-| `packages/shared` | Zod schemas, domain constants — the API/client contract |
-| `packages/ui` | Design system |
-| `packages/config` | eslint / tsconfig / tailwind presets |
+| Path              | What                                                            |
+| ----------------- | --------------------------------------------------------------- |
+| `apps/api`        | Fastify service — MongoDB Atlas                                 |
+| `apps/app`        | Vite SPA — the authenticated product; also the Capacitor source |
+| `apps/web`        | Next.js — public marketing site (SEO)                           |
+| `packages/shared` | Zod schemas, domain constants — the API/client contract         |
+| `packages/ui`     | Design system                                                   |
+| `packages/config` | eslint / tsconfig / tailwind presets                            |
 
 ## Getting started
 

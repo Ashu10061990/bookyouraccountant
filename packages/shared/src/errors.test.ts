@@ -30,9 +30,9 @@ describe("isApiErrorBody", () => {
   });
 
   it("rejects an unknown code", () => {
-    expect(
-      isApiErrorBody({ error: { code: "MADE_UP", message: "x", requestId: "r" } }),
-    ).toBe(false);
+    expect(isApiErrorBody({ error: { code: "MADE_UP", message: "x", requestId: "r" } })).toBe(
+      false,
+    );
   });
 
   it("rejects a missing requestId", () => {

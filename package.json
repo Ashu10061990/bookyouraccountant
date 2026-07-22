@@ -2,7 +2,9 @@
   "name": "bookyouraccountant",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "packageManager": "pnpm@9.12.2",
   "scripts": {
     "build": "turbo run build",
