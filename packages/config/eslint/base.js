@@ -58,7 +58,7 @@ export default tseslint.config(
     // them and type-aware rules must be off for them. Scoped deliberately: a
     // bare `**/*.js` glob would silently exempt real code from the type-aware
     // rules too.
-    files: ["**/*.config.{js,cjs,mjs}", "**/eslint.config.js", "packages/config/**/*.js"],
+    files: ["**/*.config.{js,cjs,mjs,ts}", "**/eslint.config.js", "packages/config/**/*.js"],
     ...tseslint.configs.disableTypeChecked,
   },
   { ignores: ["dist/**", ".next/**", "coverage/**", "node_modules/**"] },

@@ -6,7 +6,11 @@
  * crossing a boundary — API, database, UI — is an integer.
  */
 
-/** An integer number of paise. Use `assertPaise` to validate at boundaries. */
+/**
+ * An integer number of paise. This is a plain alias, NOT a branded type — the
+ * compiler will not stop a rupee value being passed where paise is expected.
+ * Validate at every boundary with `assertPaise`.
+ */
 export type Paise = number;
 
 /** Throws unless `value` is a safe integer. */
@@ -49,9 +53,9 @@ const INR_FORMATTER = new Intl.NumberFormat("en-IN", {
 /** Formats paise as Indian currency, e.g. `₹1,23,456.78`. */
 export function formatINR(paise: Paise): string {
   assertPaise(paise);
-  // Intl emits a narrow no-break space after the symbol in some runtimes;
-  // normalise so output is stable across Node versions and browsers.
-  return INR_FORMATTER.format(paise / 100).replace(/ | /g, "");
+  // Intl emits U+00A0 or U+202F between symbol and digits on some ICU builds
+  // and none on others; strip both so output is stable across runtimes.
+  return INR_FORMATTER.format(paise / 100).replace(/[\u00A0\u202F]/g, "");
 }
 
 /** Sums paise amounts. Returns 0 for an empty list. */
