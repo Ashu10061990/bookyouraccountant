@@ -1,0 +1,26 @@
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+
+# Env — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Capacitor native projects are generated from config
+apps/mobile/android/
+apps/mobile/ios/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
