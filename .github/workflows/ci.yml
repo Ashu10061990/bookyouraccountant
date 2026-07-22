@@ -12,10 +12,15 @@ concurrency:
 env:
   NODE_VERSION: "22"
 
+# Least privilege by default: no job needs to write to the repo.
+permissions:
+  contents: read
+
 jobs:
   verify:
     name: Typecheck, lint, test, build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -49,6 +54,7 @@ jobs:
   security:
     name: Secret scan and dependency audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
