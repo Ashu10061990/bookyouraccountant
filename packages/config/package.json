@@ -1,0 +1,21 @@
+{
+  "name": "@bya/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint/base": "./eslint/base.js",
+    "./eslint/react": "./eslint/react.js",
+    "./typescript/base.json": "./typescript/base.json",
+    "./typescript/react.json": "./typescript/react.json",
+    "./tailwind/preset": "./tailwind/preset.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.18.1"
+  }
+}
