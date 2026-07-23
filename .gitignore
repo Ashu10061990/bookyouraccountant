@@ -6,6 +6,10 @@ out/
 coverage/
 .turbo/
 
+# Next.js generated files (create-next-app default convention)
+next-env.d.ts
+*.tsbuildinfo
+
 # Env — never commit secrets
 .env
 .env.*

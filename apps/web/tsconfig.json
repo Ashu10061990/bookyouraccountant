@@ -1,0 +1,20 @@
+{
+  "extends": "@bya/config/typescript/react.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "incremental": true,
+    "jsx": "preserve"
+  },
+  "include": ["src/**/*", "next-env.d.ts", ".next/types/**/*.ts"]
+}
