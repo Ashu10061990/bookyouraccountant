@@ -1,0 +1,2375 @@
+{
+  "quotes": [
+    {
+      "name": "bookkeeping-monthly-uptodate-low",
+      "answers": {
+        "serviceIds": ["bookkeeping"],
+        "frequency": "monthly",
+        "txBand": "low",
+        "backlog": "0",
+        "invoiceFiling": "filed",
+        "bankAccounts": "one",
+        "entityType": "prop",
+        "expTier": "standard",
+        "mode": "online",
+        "bizNature": "service"
+      },
+      "quote": {
+        "days": 3,
+        "rate": 1200,
+        "baseRate": 1200,
+        "discountPct": 0,
+        "total": 3600,
+        "cycleDays": 3,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 3,
+        "monthlyTotal": 3600
+      }
+    },
+    {
+      "name": "bookkeeping-onetime-6plus-high-loose",
+      "answers": {
+        "serviceIds": ["bookkeeping"],
+        "frequency": "onetime",
+        "txBand": "high",
+        "backlog": "6plus",
+        "invoiceFiling": "loose",
+        "bankAccounts": "many",
+        "entityType": "company",
+        "expTier": "expert",
+        "mode": "visit",
+        "bizNature": "manufacturing",
+        "arapScope": ["ar", "ap"]
+      },
+      "quote": {
+        "days": 26,
+        "rate": 1600,
+        "baseRate": 1980,
+        "discountPct": 0.2,
+        "total": 41600,
+        "cycleDays": 9.5,
+        "setupDays": 25,
+        "catchupDays": 23,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      }
+    },
+    {
+      "name": "gst-monthly-mid",
+      "answers": {
+        "serviceIds": ["gst"],
+        "frequency": "monthly",
+        "gstReturns": ["gstr1", "gstr3b"],
+        "gstInvoices": "mid",
+        "backlog": "2",
+        "mode": "online",
+        "expTier": "senior",
+        "bizNature": "trading"
+      },
+      "quote": {
+        "days": 6.5,
+        "rate": 2050,
+        "baseRate": 2160,
+        "discountPct": 0.05,
+        "total": 13325,
+        "cycleDays": 3.5,
+        "setupDays": 3,
+        "catchupDays": 3,
+        "monthlyDays": 3.5,
+        "monthlyTotal": 7175
+      }
+    },
+    {
+      "name": "bookkeeping+gst-monthly",
+      "answers": {
+        "serviceIds": ["bookkeeping", "gst"],
+        "frequency": "monthly",
+        "txBand": "mid",
+        "backlog": "3",
+        "gstReturns": ["gstr1", "gstr3b", "einvoice"],
+        "gstInvoices": "high",
+        "invoiceFiling": "partly",
+        "bankAccounts": "few",
+        "entityType": "partnership",
+        "expTier": "standard",
+        "mode": "online",
+        "bizNature": "trading"
+      },
+      "quote": {
+        "days": 23,
+        "rate": 1450,
+        "baseRate": 1800,
+        "discountPct": 0.2,
+        "total": 33350,
+        "cycleDays": 9,
+        "setupDays": 14,
+        "catchupDays": 13,
+        "monthlyDays": 9,
+        "monthlyTotal": 13050
+      }
+    },
+    {
+      "name": "tax-tds-monthly",
+      "answers": {
+        "serviceIds": ["tax"],
+        "frequency": "monthly",
+        "taxScope": ["tds"],
+        "taxVolume": "mid",
+        "backlog": "0",
+        "mode": "online",
+        "expTier": "standard",
+        "bizNature": "service"
+      },
+      "quote": {
+        "days": 1,
+        "rate": 1800,
+        "baseRate": 1800,
+        "discountPct": 0,
+        "total": 1800,
+        "cycleDays": 1,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 1,
+        "monthlyTotal": 1800
+      }
+    },
+    {
+      "name": "tax-full-onetime",
+      "answers": {
+        "serviceIds": ["tax"],
+        "frequency": "onetime",
+        "taxScope": ["tds", "itr", "advance"],
+        "taxVolume": "high",
+        "mode": "online",
+        "expTier": "expert",
+        "bizNature": "service"
+      },
+      "quote": {
+        "days": 4.5,
+        "rate": 2500,
+        "baseRate": 2520,
+        "discountPct": 0,
+        "total": 11250,
+        "cycleDays": 4.5,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      }
+    },
+    {
+      "name": "payroll-high",
+      "answers": {
+        "serviceIds": ["payroll"],
+        "frequency": "monthly",
+        "payEmployees": "high",
+        "backlog": "0",
+        "mode": "online",
+        "expTier": "senior",
+        "bizNature": "service"
+      },
+      "quote": {
+        "days": 2,
+        "rate": 1450,
+        "baseRate": 1440,
+        "discountPct": 0,
+        "total": 2900,
+        "cycleDays": 2,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 2,
+        "monthlyTotal": 2900
+      }
+    },
+    {
+      "name": "all-seven-onetime",
+      "answers": {
+        "serviceIds": ["bookkeeping", "gst", "tax", "payroll", "statements", "advisory", "audit"],
+        "frequency": "onetime",
+        "txBand": "high",
+        "backlog": "6plus",
+        "gstReturns": ["gstr1", "gstr3b", "gstr9"],
+        "gstInvoices": "high",
+        "taxScope": ["tds", "itr"],
+        "taxVolume": "high",
+        "payEmployees": "high",
+        "invoiceFiling": "loose",
+        "bankAccounts": "many",
+        "entityType": "company",
+        "expTier": "expert",
+        "mode": "visit",
+        "bizNature": "manufacturing",
+        "arapScope": ["ar", "ap"]
+      },
+      "quote": {
+        "days": 26,
+        "rate": 4150,
+        "baseRate": 5200,
+        "discountPct": 0.2,
+        "total": 107900,
+        "cycleDays": 23.5,
+        "setupDays": 52.5,
+        "catchupDays": 50.5,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      }
+    },
+    {
+      "name": "statements-only-onetime",
+      "answers": {
+        "serviceIds": ["statements"],
+        "frequency": "onetime",
+        "mode": "online",
+        "expTier": "standard",
+        "bizNature": "service"
+      },
+      "quote": {
+        "days": 3,
+        "rate": 3500,
+        "baseRate": 3500,
+        "discountPct": 0,
+        "total": 10500,
+        "cycleDays": 3,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      }
+    },
+    {
+      "name": "advisory-monthly",
+      "answers": {
+        "serviceIds": ["advisory"],
+        "frequency": "monthly",
+        "mode": "online",
+        "expTier": "senior",
+        "bizNature": "trading"
+      },
+      "quote": {
+        "days": 1.5,
+        "rate": 4200,
+        "baseRate": 4200,
+        "discountPct": 0,
+        "total": 6300,
+        "cycleDays": 1.5,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 1.5,
+        "monthlyTotal": 6300
+      }
+    },
+    {
+      "name": "empty-services",
+      "answers": {
+        "serviceIds": []
+      },
+      "quote": null
+    }
+  ],
+  "coupons": [
+    {
+      "name": "bookkeeping-monthly-uptodate-low/coupon",
+      "quote": {
+        "days": 3,
+        "rate": 1200,
+        "baseRate": 1200,
+        "discountPct": 0,
+        "total": 3600,
+        "cycleDays": 3,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 3,
+        "monthlyTotal": 3600
+      },
+      "applyCoupon": true,
+      "result": {
+        "payable": 2400,
+        "couponValue": 1200
+      }
+    },
+    {
+      "name": "bookkeeping-monthly-uptodate-low/no-coupon",
+      "quote": {
+        "days": 3,
+        "rate": 1200,
+        "baseRate": 1200,
+        "discountPct": 0,
+        "total": 3600,
+        "cycleDays": 3,
+        "setupDays": 0,
+        "catchupDays": 0,
+        "monthlyDays": 3,
+        "monthlyTotal": 3600
+      },
+      "applyCoupon": false,
+      "result": {
+        "payable": 3600,
+        "couponValue": 0
+      }
+    },
+    {
+      "name": "bookkeeping-onetime-6plus-high-loose/coupon",
+      "quote": {
+        "days": 26,
+        "rate": 1600,
+        "baseRate": 1980,
+        "discountPct": 0.2,
+        "total": 41600,
+        "cycleDays": 9.5,
+        "setupDays": 25,
+        "catchupDays": 23,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      },
+      "applyCoupon": true,
+      "result": {
+        "payable": 40000,
+        "couponValue": 1600
+      }
+    },
+    {
+      "name": "bookkeeping-onetime-6plus-high-loose/no-coupon",
+      "quote": {
+        "days": 26,
+        "rate": 1600,
+        "baseRate": 1980,
+        "discountPct": 0.2,
+        "total": 41600,
+        "cycleDays": 9.5,
+        "setupDays": 25,
+        "catchupDays": 23,
+        "monthlyDays": null,
+        "monthlyTotal": null
+      },
+      "applyCoupon": false,
+      "result": {
+        "payable": 41600,
+        "couponValue": 0
+      }
+    },
+    {
+      "name": "gst-monthly-mid/coupon",
+      "quote": {
+        "days": 6.5,
+        "rate": 2050,
+        "baseRate": 2160,
+        "discountPct": 0.05,
+        "total": 13325,
+        "cycleDays": 3.5,
+        "setupDays": 3,
+        "catchupDays": 3,
+        "monthlyDays": 3.5,
+        "monthlyTotal": 7175
+      },
+      "applyCoupon": true,
+      "result": {
+        "payable": 11275,
+        "couponValue": 2050
+      }
+    },
+    {
+      "name": "gst-monthly-mid/no-coupon",
+      "quote": {
+        "days": 6.5,
+        "rate": 2050,
+        "baseRate": 2160,
+        "discountPct": 0.05,
+        "total": 13325,
+        "cycleDays": 3.5,
+        "setupDays": 3,
+        "catchupDays": 3,
+        "monthlyDays": 3.5,
+        "monthlyTotal": 7175
+      },
+      "applyCoupon": false,
+      "result": {
+        "payable": 13325,
+        "couponValue": 0
+      }
+    },
+    {
+      "name": "bookkeeping+gst-monthly/coupon",
+      "quote": {
+        "days": 23,
+        "rate": 1450,
+        "baseRate": 1800,
+        "discountPct": 0.2,
+        "total": 33350,
+        "cycleDays": 9,
+        "setupDays": 14,
+        "catchupDays": 13,
+        "monthlyDays": 9,
+        "monthlyTotal": 13050
+      },
+      "applyCoupon": true,
+      "result": {
+        "payable": 31900,
+        "couponValue": 1450
+      }
+    },
+    {
+      "name": "bookkeeping+gst-monthly/no-coupon",
+      "quote": {
+        "days": 23,
+        "rate": 1450,
+        "baseRate": 1800,
+        "discountPct": 0.2,
+        "total": 33350,
+        "cycleDays": 9,
+        "setupDays": 14,
+        "catchupDays": 13,
+        "monthlyDays": 9,
+        "monthlyTotal": 13050
+      },
+      "applyCoupon": false,
+      "result": {
+        "payable": 33350,
+        "couponValue": 0
+      }
+    }
+  ],
+  "sops": [
+    {
+      "name": "bookkeeping-trading",
+      "serviceIds": ["bookkeeping"],
+      "bizNature": "trading",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "trading",
+          "label": "Stock register up to date",
+          "doTxt": "Post every purchase into stock (with GRN where used) and every sale out of stock, item-wise.",
+          "dont": null,
+          "reconcile": "Purchases ↔ goods inward ↔ stock register",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "trading",
+          "label": "Physical stock verification",
+          "doTxt": "Match book stock with physical count for key items; record shortages/excess with reasons.",
+          "dont": null,
+          "reconcile": "Stock register ↔ physical count sheet, signed by the client",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "trading",
+          "label": "Stock valuation — consistent method",
+          "doTxt": "Value closing stock at cost or NRV, lower of the two; keep FIFO/weighted-average consistent.",
+          "dont": "Do not change the valuation method between months to manage profit.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "trading",
+          "label": "Goods movement vs e-way bills",
+          "doTxt": "Check sales and stock transfers against e-way bills raised.",
+          "dont": null,
+          "reconcile": "Stock out ↔ sales invoices ↔ e-way bill portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "trading",
+          "label": "Purchase returns & debit notes",
+          "doTxt": "Record returns, rate differences and scheme credits with proper debit/credit notes.",
+          "dont": "Do not adjust returns directly in purchase entries without a document.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "trading",
+          "label": "Product-wise margin summary",
+          "doTxt": "Prepare a simple item/category-wise gross margin view for the MIS — owners decide from this.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t22",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t23",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t24",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t25",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t26",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t27",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "bookkeeping-manufacturing",
+      "serviceIds": ["bookkeeping"],
+      "bizNature": "manufacturing",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "manufacturing",
+          "label": "Raw material consumption",
+          "doTxt": "Match material issued to production with production records; investigate abnormal consumption.",
+          "dont": null,
+          "reconcile": "Stores issue register ↔ production report",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "manufacturing",
+          "label": "Stores & GRN entries",
+          "doTxt": "Post goods received via GRN; match GRN with supplier bills before booking purchases.",
+          "dont": null,
+          "reconcile": "GRN ↔ supplier invoice ↔ purchase entry",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "manufacturing",
+          "label": "WIP & finished goods valuation",
+          "doTxt": "Value WIP and finished goods with material + labour + overheads on a consistent basis.",
+          "dont": "Do not value finished goods at selling price.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "manufacturing",
+          "label": "Wastage, scrap & by-products",
+          "doTxt": "Record normal/abnormal wastage; account scrap sales with GST.",
+          "dont": null,
+          "reconcile": "Scrap sales in books ↔ weighbridge/gate records and invoices",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "manufacturing",
+          "label": "Job work tracking",
+          "doTxt": "Track material sent to and received from job workers with delivery challans; monitor return timelines.",
+          "dont": null,
+          "reconcile": "Job work challans ↔ material register (ITC-04 discipline)",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "manufacturing",
+          "label": "Repairs vs capitalisation on plant & machinery",
+          "doTxt": "Judge each major spend: repair (expense) or improvement (capitalise); document the basis.",
+          "dont": "Do not expense machinery overhauls that extend life or capacity.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "manufacturing",
+          "label": "Power, fuel & production overheads mapping",
+          "doTxt": "Map power/fuel and factory overheads to production cost, separate from office expenses.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t22",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t23",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t24",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t25",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t26",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t27",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t28",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "bookkeeping-service",
+      "serviceIds": ["bookkeeping"],
+      "bizNature": "service",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "service",
+          "label": "Unbilled revenue / work-in-progress",
+          "doTxt": "List work completed but not yet invoiced; book unbilled revenue for the month.",
+          "dont": null,
+          "reconcile": "Work/timesheet records ↔ invoices raised",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "service",
+          "label": "Advances received & GST on advances",
+          "doTxt": "Track client advances; apply GST on advances where applicable for services.",
+          "dont": "Do not sit on advances unadjusted — knock them off against invoices promptly.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "service",
+          "label": "TDS deducted by clients",
+          "doTxt": "Track TDS deducted on your client's receipts; ensure it reflects for credit.",
+          "dont": null,
+          "reconcile": "TDS receivable ledger ↔ 26AS / AIS",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "service",
+          "label": "Client / project-wise profitability",
+          "doTxt": "Map revenue and direct costs client-wise or project-wise for the MIS.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "service",
+          "label": "Reimbursable expenses billed",
+          "doTxt": "Check out-of-pocket expenses incurred for clients are billed with proper support.",
+          "dont": "Do not mix reimbursables into your own expense ledgers.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "service",
+          "label": "Contract / PO vs billing milestones",
+          "doTxt": "Match invoicing against contract terms and milestones; flag unbilled milestones.",
+          "dont": null,
+          "reconcile": "Invoices raised ↔ contract / purchase order terms",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t22",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t23",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t24",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t25",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t26",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t27",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "gst-only",
+      "serviceIds": ["gst"],
+      "bizNature": "service",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "gst",
+          "label": "Match sales in books with GSTR-1 and e-invoice portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "gst",
+          "label": "Match GSTR-2B with purchase register before claiming ITC",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "gst",
+          "label": "Get client approval on the portal before filing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "gst",
+          "label": "File GSTR-1 / 3B and save ARN on the portal",
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "bookkeeping+gst+tax",
+      "serviceIds": ["bookkeeping", "gst", "tax"],
+      "bizNature": "trading",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "trading",
+          "label": "Stock register up to date",
+          "doTxt": "Post every purchase into stock (with GRN where used) and every sale out of stock, item-wise.",
+          "dont": null,
+          "reconcile": "Purchases ↔ goods inward ↔ stock register",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "trading",
+          "label": "Physical stock verification",
+          "doTxt": "Match book stock with physical count for key items; record shortages/excess with reasons.",
+          "dont": null,
+          "reconcile": "Stock register ↔ physical count sheet, signed by the client",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "trading",
+          "label": "Stock valuation — consistent method",
+          "doTxt": "Value closing stock at cost or NRV, lower of the two; keep FIFO/weighted-average consistent.",
+          "dont": "Do not change the valuation method between months to manage profit.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "trading",
+          "label": "Goods movement vs e-way bills",
+          "doTxt": "Check sales and stock transfers against e-way bills raised.",
+          "dont": null,
+          "reconcile": "Stock out ↔ sales invoices ↔ e-way bill portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "trading",
+          "label": "Purchase returns & debit notes",
+          "doTxt": "Record returns, rate differences and scheme credits with proper debit/credit notes.",
+          "dont": "Do not adjust returns directly in purchase entries without a document.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "trading",
+          "label": "Product-wise margin summary",
+          "doTxt": "Prepare a simple item/category-wise gross margin view for the MIS — owners decide from this.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t22",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t23",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t24",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t25",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t26",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t27",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t28",
+          "group": "gst",
+          "label": "Match sales in books with GSTR-1 and e-invoice portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t29",
+          "group": "gst",
+          "label": "Match GSTR-2B with purchase register before claiming ITC",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t30",
+          "group": "gst",
+          "label": "Get client approval on the portal before filing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t31",
+          "group": "gst",
+          "label": "File GSTR-1 / 3B and save ARN on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t32",
+          "group": "tax",
+          "label": "Compute TDS section-wise with current rates and limits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t33",
+          "group": "tax",
+          "label": "Cross-check with 26AS / AIS / TRACES and paid challans",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t34",
+          "group": "tax",
+          "label": "Get client approval on the portal before filing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t35",
+          "group": "tax",
+          "label": "File the return and save the acknowledgement",
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "all-services",
+      "serviceIds": ["bookkeeping", "gst", "tax", "payroll", "statements", "advisory", "audit"],
+      "bizNature": "manufacturing",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "manufacturing",
+          "label": "Raw material consumption",
+          "doTxt": "Match material issued to production with production records; investigate abnormal consumption.",
+          "dont": null,
+          "reconcile": "Stores issue register ↔ production report",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "manufacturing",
+          "label": "Stores & GRN entries",
+          "doTxt": "Post goods received via GRN; match GRN with supplier bills before booking purchases.",
+          "dont": null,
+          "reconcile": "GRN ↔ supplier invoice ↔ purchase entry",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "manufacturing",
+          "label": "WIP & finished goods valuation",
+          "doTxt": "Value WIP and finished goods with material + labour + overheads on a consistent basis.",
+          "dont": "Do not value finished goods at selling price.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "manufacturing",
+          "label": "Wastage, scrap & by-products",
+          "doTxt": "Record normal/abnormal wastage; account scrap sales with GST.",
+          "dont": null,
+          "reconcile": "Scrap sales in books ↔ weighbridge/gate records and invoices",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "manufacturing",
+          "label": "Job work tracking",
+          "doTxt": "Track material sent to and received from job workers with delivery challans; monitor return timelines.",
+          "dont": null,
+          "reconcile": "Job work challans ↔ material register (ITC-04 discipline)",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "manufacturing",
+          "label": "Repairs vs capitalisation on plant & machinery",
+          "doTxt": "Judge each major spend: repair (expense) or improvement (capitalise); document the basis.",
+          "dont": "Do not expense machinery overhauls that extend life or capacity.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "manufacturing",
+          "label": "Power, fuel & production overheads mapping",
+          "doTxt": "Map power/fuel and factory overheads to production cost, separate from office expenses.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t22",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t23",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t24",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t25",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t26",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t27",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t28",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t29",
+          "group": "gst",
+          "label": "Match sales in books with GSTR-1 and e-invoice portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t30",
+          "group": "gst",
+          "label": "Match GSTR-2B with purchase register before claiming ITC",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t31",
+          "group": "gst",
+          "label": "Get client approval on the portal before filing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t32",
+          "group": "gst",
+          "label": "File GSTR-1 / 3B and save ARN on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t33",
+          "group": "tax",
+          "label": "Compute TDS section-wise with current rates and limits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t34",
+          "group": "tax",
+          "label": "Cross-check with 26AS / AIS / TRACES and paid challans",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t35",
+          "group": "tax",
+          "label": "Get client approval on the portal before filing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t36",
+          "group": "tax",
+          "label": "File the return and save the acknowledgement",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t37",
+          "group": "payroll",
+          "label": "Verify EPF / ESI applicability and wage definitions",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t38",
+          "group": "payroll",
+          "label": "Match payroll with EPFO / ESIC portal and bank payments",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t39",
+          "group": "payroll",
+          "label": "Process salary register and statutory deductions",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t40",
+          "group": "payroll",
+          "label": "File EPF / ESI within due dates; save challans",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t41",
+          "group": "statements",
+          "label": "Verify trial balance ties to ledgers; no negative cash",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t42",
+          "group": "statements",
+          "label": "Confirm debtors / creditors with party statements",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t43",
+          "group": "statements",
+          "label": "Prepare Schedule III financial statements",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t44",
+          "group": "statements",
+          "label": "Walk the client through the statements in plain language",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t45",
+          "group": "advisory",
+          "label": "Prepare rolling cash-flow view — inflows vs outflows ahead",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t46",
+          "group": "advisory",
+          "label": "Flag receivables ageing and upcoming large outflows",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t47",
+          "group": "advisory",
+          "label": "List due dates for the next 45 days with amounts",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t48",
+          "group": "advisory",
+          "label": "Give the owner 3 clear actions in writing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t49",
+          "group": "audit",
+          "label": "Prepare audit-ready working papers and schedules",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t50",
+          "group": "audit",
+          "label": "Reconcile books with filed returns (GST, TDS)",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t51",
+          "group": "audit",
+          "label": "Resolve audit queries with documents, in writing",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t52",
+          "group": "audit",
+          "label": "Archive all workings to the portal workspace",
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    },
+    {
+      "name": "unknown-service-fallback",
+      "serviceIds": ["mystery"],
+      "bizNature": "service",
+      "tasks": [
+        {
+          "id": "t0",
+          "group": "start",
+          "label": "Confirm access the right way",
+          "doTxt": "Get a separate user ID on Tally/Zoho. Note what access was given, by whom, on what date.",
+          "dont": "Never take passwords on WhatsApp or personal chat.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t1",
+          "group": "start",
+          "label": "Day-1 health check before any entry",
+          "doTxt": "Check opening balances against the last closed year. List pending months of bank reco and unfiled returns.",
+          "dont": "Do not start entries before this check — old errors will look like yours.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t2",
+          "group": "start",
+          "label": "Collect and file source documents",
+          "doTxt": "Get purchase invoices, sales invoices, bank statements and expense bills, month-wise.",
+          "dont": null,
+          "reconcile": "Documents received ↔ the papers list the client confirmed on the portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t3",
+          "group": "entries",
+          "label": "Post purchases",
+          "doTxt": "Enter every purchase from the vendor bill — correct ledger, correct GST treatment.",
+          "dont": "No entry without a bill. Never dump items into 'Miscellaneous'.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t4",
+          "group": "entries",
+          "label": "Post sales with invoice serial control",
+          "doTxt": "Enter sales serial-wise from the invoice register. Flag missing or duplicate invoice numbers to the client.",
+          "dont": null,
+          "reconcile": "Sales in books ↔ e-invoice portal / GSTR-1 filings, and bank credits",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t5",
+          "group": "entries",
+          "label": "Post expenses & payments",
+          "doTxt": "Book expenses with supporting bills. Move personal spends to drawings/capital.",
+          "dont": "Do not guess a ledger — park unclear items in a numbered query list and ask in one batch.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t6",
+          "group": "entries",
+          "label": "Record cash transactions",
+          "doTxt": "Update the cash book date-wise. Verify cash never goes negative on any date.",
+          "dont": null,
+          "reconcile": "Cash book ↔ physical cash count, same day",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t7",
+          "group": "entries",
+          "label": "Month-end adjustment entries",
+          "doTxt": "Book prepaid expenses, outstanding expenses, accrued income and depreciation for the month.",
+          "dont": "Do not leave adjustments for year-end — monthly books must stand on their own.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t8",
+          "group": "reco",
+          "label": "Bank reconciliation — every account, every month",
+          "doTxt": "Match every bank line. Prepare BRS with each difference explained in writing.",
+          "dont": "Do not carry unexplained differences forward.",
+          "reconcile": "Bank book ↔ bank statement — no gap months",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t9",
+          "group": "reco",
+          "label": "Debtors (receivables) reconciliation",
+          "doTxt": "Match customer ledgers. Prepare ageing; list disputed and very old balances.",
+          "dont": null,
+          "reconcile": "Debtor ledger ↔ customer's statement or written confirmation",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t10",
+          "group": "reco",
+          "label": "Creditors (payables) reconciliation",
+          "doTxt": "Match supplier ledgers and hold-backs. Note debit notes and rate differences.",
+          "dont": null,
+          "reconcile": "Creditor ledger ↔ supplier statement; purchases ↔ GSTR-2B if GST-registered",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t11",
+          "group": "reco",
+          "label": "Loans, EMI & interest",
+          "doTxt": "Match every loan balance. Split EMI into interest and principal correctly.",
+          "dont": null,
+          "reconcile": "Loan ledger ↔ lender statement / sanction letter",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t12",
+          "group": "reco",
+          "label": "Statutory dues ledgers",
+          "doTxt": "Verify GST payable, TDS payable, PF/ESI payable balances against what was actually deposited.",
+          "dont": null,
+          "reconcile": "Dues ledgers ↔ paid challans and portal balances",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t13",
+          "group": "reco",
+          "label": "Related-party & inter-branch balances",
+          "doTxt": "Match balances with sister concerns, directors and branches; document the nature of each balance.",
+          "dont": "Do not net off related-party balances without written confirmation from both sides.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t14",
+          "group": "review",
+          "label": "Ledger scrutiny",
+          "doTxt": "Scan each ledger for wrong postings, duplicates and round-off differences.",
+          "dont": "Do not leave suspense — bring it to zero or explain every item in writing.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t15",
+          "group": "review",
+          "label": "Fixed asset register & depreciation",
+          "doTxt": "Update the FA register for additions/deletions; check depreciation rates and put-to-use dates.",
+          "dont": "Do not expense capital items — repairs vs capitalisation must be judged item by item.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t16",
+          "group": "review",
+          "label": "Tax ledgers match filed returns",
+          "doTxt": "Ensure GST and TDS ledgers in books agree with what was actually filed and paid.",
+          "dont": null,
+          "reconcile": "TDS ledger ↔ 26AS and challans; GST ledgers ↔ GST portal",
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t17",
+          "group": "review",
+          "label": "Revenue & expense cut-off",
+          "doTxt": "Check the last few invoices/bills of the month and the first few of the next — right period, right month.",
+          "dont": "Do not book next month's invoices this month to inflate sales.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t18",
+          "group": "review",
+          "label": "Trial balance & the five key numbers",
+          "doTxt": "Tally the trial balance. Re-check sales, profit, cash, receivables and payables against last month and know why each moved.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t19",
+          "group": "close",
+          "label": "Self-check with the checklist before the client sees anything",
+          "doTxt": "Run this list top to bottom. Fix what you find now, silently and completely.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t20",
+          "group": "close",
+          "label": "Update dashboard & upload plain-language MIS",
+          "doTxt": "Update revenue, expenses, cash, receivables ageing and coming due dates.",
+          "dont": "Do not leave unverified numbers on the dashboard — a wrong number is worse than none.",
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        },
+        {
+          "id": "t21",
+          "group": "close",
+          "label": "Client walkthrough & sign-off on the portal",
+          "doTxt": "Explain in rupees and decisions, not ledgers. Get the visit summary accepted with open items listed.",
+          "dont": null,
+          "reconcile": null,
+          "done": false,
+          "doneAt": null
+        }
+      ]
+    }
+  ]
+}
