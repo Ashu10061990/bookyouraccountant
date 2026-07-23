@@ -29,6 +29,18 @@ beforeEach(async () => {
   ]);
 });
 
+describe("GET /health", () => {
+  // The other half of the pair in app.test.ts: with a live connection it must
+  // report 200. Both cases are pinned, so the route cannot drift into always
+  // returning one of them.
+  it("reports 200 when the database is connected", async () => {
+    const res = await app.inject({ method: "GET", url: "/health" });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ status: "ok", database: "connected" });
+  });
+});
+
 describe("GET /v1/services", () => {
   // Legacy rule: `allow read: if true` — the marketing site lists services to
   // signed-out visitors.

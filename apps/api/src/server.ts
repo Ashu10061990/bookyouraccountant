@@ -1,4 +1,5 @@
 import { buildApp } from "./app.js";
+import { assertIndexes, connectDb, disconnectDb } from "./platform/db.js";
 import { loadEnv } from "./platform/env.js";
 
 /**
@@ -13,6 +14,24 @@ const SHUTDOWN_TIMEOUT_MS = 10_000;
 
 const env = loadEnv();
 const app = await buildApp({ env });
+
+// Connect BEFORE listening, and let a failure stop the boot.
+//
+// Omitting this was a real defect: the process started, /health reported ok,
+// and every database-backed endpoint failed with "Operation `x.find()`
+// buffering timed out after 10000ms" — Mongoose queues operations against a
+// connection that never arrives instead of failing fast. The whole test suite
+// stayed green because tests open their own connection through the test
+// harness, so nothing asserted that the *server* connects. Found by booting
+// the built artifact, which is the only thing that could have found it.
+try {
+  await connectDb(env.MONGODB_URI);
+  await assertIndexes();
+  app.log.info("database connected, indexes asserted");
+} catch (error) {
+  app.log.error({ err: error }, "failed to connect to the database");
+  process.exit(1);
+}
 
 let shuttingDown = false;
 
@@ -35,6 +54,7 @@ async function shutdown(signal: NodeJS.Signals): Promise<void> {
     // Matters as soon as payment webhooks exist: dropping one mid-flight means
     // Razorpay records a delivery we never processed.
     await app.close();
+    await disconnectDb();
     app.log.info("shutdown complete");
     process.exit(0);
   } catch (error) {

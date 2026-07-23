@@ -59,6 +59,15 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # A green test suite once coexisted with an API that could not serve a
+      # single database-backed request: server.ts was missing its connectDb()
+      # call, and every test opened its own connection through the test
+      # harness. Only booting the built artifact and calling it found that.
+      # This runs dist/server.js against a real mongod — no Atlas credentials
+      # needed, using the binary mongodb-memory-server already caches.
+      - name: Smoke test the built artifact
+        run: bash apps/api/scripts/smoke.sh
+
   security:
     name: Secret scan and dependency audit
     runs-on: ubuntu-latest

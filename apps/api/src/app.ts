@@ -4,6 +4,7 @@ import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
+import { isConnected } from "./platform/db.js";
 import { type Env, loadEnv } from "./platform/env.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { buildLoggerOptions } from "./platform/logger.js";
@@ -70,7 +71,23 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     userLookup: findAuthUser,
   };
 
-  app.get("/health", () => ({ status: "ok" }));
+  /**
+   * Liveness and readiness in one.
+   *
+   * This deliberately reports the database, and returns 503 when it is not
+   * connected. The previous version returned `{ status: "ok" }` unconditionally
+   * — so a server that had never opened a database connection looked perfectly
+   * healthy to a load balancer, which would then route real traffic to it. It
+   * was a check that could not fail, which is the same as no check.
+   */
+  app.get("/health", (_request, reply) => {
+    const connected = isConnected();
+
+    return reply.status(connected ? 200 : 503).send({
+      status: connected ? "ok" : "degraded",
+      database: connected ? "connected" : "disconnected",
+    });
+  });
 
   registerServiceRoutes(app, auth);
   registerUserRoutes(app, auth);
