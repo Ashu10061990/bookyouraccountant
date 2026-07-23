@@ -135,6 +135,12 @@ The API is real: authenticated, database-backed, 11 endpoints across 4 domains.
 | `apps/app`        | Vite SPA shell — also the future Capacitor bundle             | —     |
 | `apps/web`        | Next.js marketing shell — metadata, robots, sitemap           | —     |
 
+Every package emits `dist/`. A package that ships TypeScript source pushes its
+build problem onto every consumer — see the `@bya/ui` row below.
+
+`apps/web` dev uses **Turbopack** (`next dev --turbopack`). Webpack's dev
+runtime fails on this machine; detail in `OPEN-ITEMS.md`.
+
 233 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 
 ### What Phase 3 delivered
@@ -262,23 +268,30 @@ implementation. They share one shape: **a green gate hiding a broken artifact.**
 **When something passes, ask what it would look like if it were broken.** If the answer is
 "the same", the check is worthless.
 
-### Phase 3 found four more of the same shape
+### Phase 3 found six more of the same shape
 
 None was caught by review. Each was caught by deliberately breaking something,
-or by running the real artifact.
+by running the real artifact, or by opening the page.
 
-| Defect                                                                                                                                                               | Lesson                                                                                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **`server.ts` never called `connectDb()`** — the process booted, `/health` said ok, and every DB endpoint timed out. 232 tests green, API completely non-functional. | **Boot the artifact.** `pnpm build` passing is not evidence that anything works.          |
-| `/health` returned `{status:"ok"}` unconditionally, so a database-less server looked healthy to a load balancer                                                      | A check that cannot fail is the same as no check. It now 503s when disconnected.          |
-| The index test passed with `assertIndexes()` replaced by a no-op — Mongoose's `autoIndex` was silently building the index                                            | Prove the mechanism under test is the one doing the work. `autoIndex` is now off.         |
-| The service-layer role guard was shadowed by the schema guard, so route tests stayed green with it deleted                                                           | Defence in depth is only depth if **each layer is verified separately**.                  |
-| Denial 7 fetched `/leads/me` and checked it got its own lead — a handler honouring `?uid=` still passed                                                              | Asserting "I got mine" is not asserting "I could not get theirs". **Attempt the attack.** |
+| Defect                                                                                                                                                                           | Lesson                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **`server.ts` never called `connectDb()`** — the process booted, `/health` said ok, and every DB endpoint timed out. 232 tests green, API completely non-functional.             | **Boot the artifact.** `pnpm build` passing is not evidence that anything works.                                                        |
+| `/health` returned `{status:"ok"}` unconditionally, so a database-less server looked healthy to a load balancer                                                                  | A check that cannot fail is the same as no check. It now 503s when disconnected.                                                        |
+| **The marketing site crashed in the browser** with `Cannot read properties of undefined (reading 'call')` while `next build` passed and CI was green — nobody had ever opened it | **Open the page.** A build that compiles is not a page that renders.                                                                    |
+| `@bya/ui` shipped raw TypeScript with NodeNext `.js` specifiers pointing at `.tsx`, so every consumer needed bundler-specific resolution magic — and Turbopack ignores it        | **The same defect as Phase 1's `@bya/shared`.** A package that ships source pushes its build problem onto every consumer. Emit `dist/`. |
+| The index test passed with `assertIndexes()` replaced by a no-op — Mongoose's `autoIndex` was silently building the index                                                        | Prove the mechanism under test is the one doing the work. `autoIndex` is now off.                                                       |
+| The service-layer role guard was shadowed by the schema guard, so route tests stayed green with it deleted                                                                       | Defence in depth is only depth if **each layer is verified separately**.                                                                |
+| Denial 7 fetched `/leads/me` and checked it got its own lead — a handler honouring `?uid=` still passed                                                                          | Asserting "I got mine" is not asserting "I could not get theirs". **Attempt the attack.**                                               |
 
-The first one is the one to remember. A full green pipeline — 232 tests, lint,
-typecheck, build — coexisted with an API that could not serve a single
-database-backed request. Nothing short of starting it and calling it would have
-found that.
+Two to remember. A full green pipeline — 232 tests, lint, typecheck, build —
+coexisted with an API that could not serve a single database-backed request,
+and separately with a marketing page that threw on load. Nothing short of
+starting each one and looking at it would have found either.
+
+The `@bya/ui` entry is the more uncomfortable one: it is the _same_ defect as
+Phase 1's `@bya/shared`, in the sibling package, left unfixed because nothing
+exercised it. When a lesson gets recorded, check whether it applies anywhere
+else before closing it out.
 
 `bash apps/api/scripts/verify-guards.sh` is the tool. It breaks each guard,
 confirms the test fails, and restores the file. Re-run it whenever a guard

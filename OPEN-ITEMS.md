@@ -80,6 +80,24 @@ exactly this reason — the mutation had silently not applied. Run
 `pnpm --filter @bya/shared build` after touching shared, or use `pnpm test`
 from the root, which builds first.
 
+**`next dev` with webpack is broken on this machine.**
+It renders `Cannot read properties of undefined (reading 'call')` before any
+app code runs. The identical source is fine under `next start` and under
+`next dev --turbopack`, so it is not our code — but it was **not root-caused**,
+only isolated and routed around. `apps/web`'s dev script now passes
+`--turbopack`, which is Next 15's recommended dev bundler and boots in 0.7s
+rather than 11.1s. `next build` still uses webpack and is unaffected.
+
+Worth revisiting when Next is upgraded — the error overlay flagged 15.5.21 as
+outdated, and this may simply be a fixed bug.
+
+**Every workspace package must emit `dist/`.**
+`@bya/ui` shipped raw TypeScript until Phase 3, which forced `apps/web` to
+carry `transpilePackages` plus `experimental.extensionAlias` — a webpack-only
+workaround that Turbopack ignores. This was the same defect as Phase 1's
+`@bya/shared`, left in the sibling package because nothing exercised it. If a
+new package is added, it emits JavaScript.
+
 **Tests now live inside each package's tsconfig.**
 They used to be excluded, which forced ESLint's `projectService` to fall back
 to an `allowDefaultProject` allowlist of exact paths — no wildcards, two
