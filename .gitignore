@@ -28,3 +28,6 @@ apps/mobile/ios/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Local development database (apps/api/scripts/local-db.sh)
+.mongodb-data/
