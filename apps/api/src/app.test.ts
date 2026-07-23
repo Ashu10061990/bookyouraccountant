@@ -5,11 +5,12 @@ import { isApiErrorBody } from "@bya/shared";
 import { buildApp } from "./app.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { notFound } from "./platform/errors.js";
+import { testEnv } from "./test/env.js";
 
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  app = await buildApp({ logger: false });
+  app = await buildApp({ logger: false, env: testEnv() });
   // Test-only routes exercising both error paths.
   app.get("/__boom", () => {
     throw notFound("Assignment not found");

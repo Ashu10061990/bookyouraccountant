@@ -56,6 +56,9 @@ importers:
       mongoose:
         specifier: ^9.8.0
         version: 9.8.0
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
       zod:
         specifier: ^4.4.3
         version: 4.4.3
