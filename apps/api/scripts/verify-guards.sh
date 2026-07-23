@@ -18,10 +18,20 @@ run_mutation() {
 
   eval "$mutation"
 
+  # apps/api imports @bya/shared from dist/, not src/. Without this rebuild a
+  # mutation to shared source has no effect at all and the run reports a false
+  # pass — which is exactly what happened the first time this script was used.
+  case "$file" in
+    packages/shared/*) pnpm --filter @bya/shared build >/dev/null 2>&1 ;;
+  esac
+
   local out
   out=$(pnpm --filter @bya/api test "$test_filter" -t "$test_name" 2>&1)
 
   git checkout -- "$file"
+  case "$file" in
+    packages/shared/*) pnpm --filter @bya/shared build >/dev/null 2>&1 ;;
+  esac
 
   if echo "$out" | grep -qE "Tests +[0-9]+ failed|FAIL "; then
     echo "  [OK]   $id  $desc"
@@ -90,5 +100,21 @@ run_mutation "D1/D3" "users: allow admin as a self-assignable role (both layers)
   "packages/shared/src/schemas/user.ts" "denials" "rejects role: admin at creation" \
   "sed -i '' 's/export const SELF_ASSIGNABLE_ROLES = \[\"business\", \"accountant\"\] as const;/export const SELF_ASSIGNABLE_ROLES = [\"business\", \"accountant\", \"admin\"] as const;/' packages/shared/src/schemas/user.ts"
 
+# The service-layer half of the role guard is shadowed by the schema at the
+# route level, so it needs its own direct-call test to be provable.
+run_mutation "D1/D3b" "users: remove the service-layer assertSelfAssignable" \
+  "apps/api/src/modules/users/users.service.ts" "users.service" "refuses to create an admin" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/users/users.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('function assertSelfAssignable(role: string | undefined): void {',
+            'function assertSelfAssignable(role: string | undefined): void { return;');
+fs.writeFileSync(p,s);
+\""
+
 echo
-echo "=== $PASS guards proven load-bearing, $FAIL decorative ==="
+if [ "$FAIL" -eq 0 ]; then
+  echo "=== all $PASS guards proven load-bearing ==="
+else
+  echo "=== $PASS guards proven load-bearing, $FAIL DECORATIVE — fix them ==="
+fi
+exit "$FAIL"
