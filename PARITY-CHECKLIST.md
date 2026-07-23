@@ -7,7 +7,12 @@
 > row needs both a **status** and a **decision**, with who decided and when.
 >
 > Decisions: `PORT` (rebuild as-is) · `REBUILD` (same capability, new design) ·
-> `DROP` (deliberately not carried forward — say why) · `DEFER` (later phase — say which)
+> `DEFER` (later phase — say which) · `KEEP-UNDECIDED` (carried forward, fate deferred to
+> the pruning scan)
+>
+> **`DROP` is deliberately not an option yet.** Policy is keep-everything-prune-later:
+> nothing is removed until a dedicated end-to-end dead-code scan runs _after_ parity is
+> reached. If you think something should go, record `KEEP-UNDECIDED` and your reasoning.
 
 ## How to use
 
@@ -101,9 +106,22 @@ at the repo root, or macOS `._` metadata.
 | Mobile-responsiveness pass (6 files, `clamp()` padding + grid overflow fixes) | ☐       |       |
 | `keiri-mobile.css` — universal mobile patch for the Keiri static site         | ☐       |       |
 
-## Still unconfirmed (not code, unrelated to the zips)
+## Standalone tools — retained, fate undetermined
 
-Three standalone HTML tools at the legacy repo root — `Payment_Extractor_Tool.html`,
-`Payment_Register_Tool.html`, `Receivables_Mapper.html` (~900 KB each, self-contained).
-They look like working internal utilities rather than mockups. Confirm with the user
-whether they are in active use, and if so whether they belong in the rebuild.
+Three self-contained HTML utilities at the legacy repo root, ~900 KB each. They read like
+working internal tools rather than mockups. The user is not currently sure whether they are
+in use, so per the retention policy they are **kept** and the decision deferred to the
+pruning scan.
+
+| Tool                          | Status           | Decision | Who / when |
+| ----------------------------- | ---------------- | -------- | ---------- |
+| `Payment_Extractor_Tool.html` | ☐ KEEP-UNDECIDED |          |            |
+| `Payment_Register_Tool.html`  | ☐ KEEP-UNDECIDED |          |            |
+| `Receivables_Mapper.html`     | ☐ KEEP-UNDECIDED |          |            |
+
+## Retention policy
+
+Nothing is deleted during the rebuild. Dead code, unreachable modules, the zip archives and
+the tools above are all carried forward. Removal happens in **one dedicated end-to-end scan
+after parity is reached** — with full context, and evidence per item. Deleting is cheap and
+reversible then; noticing something you already deleted is not.

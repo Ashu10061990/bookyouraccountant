@@ -53,6 +53,31 @@ a recorded _restore / rebuild / drop_ decision. None may be silently skipped.
 - Payout statutory rates: platform fee, GST, TDS ₹5L threshold, GST TCS
 - 36 states + 466 Indian cities; marketing copy; 12-entry chatbot knowledge base
 
+### Retention policy — keep everything, prune later (decided by the user)
+
+**Nothing is deleted during the rebuild.** Every file, module, component and dataset in
+the legacy system is carried forward, including things that look dead, unreachable or
+superseded. Dead-code removal happens in **one dedicated end-to-end scan after parity is
+reached**, not opportunistically along the way.
+
+This applies to:
+
+- The ~60 zip archives — **keep them.** (An earlier note in this file suggested deleting
+  them once git held the history. That is superseded by this policy.)
+- The 14 unreachable/dead items in inventory §20.
+- The 3 standalone HTML tools at the legacy root — `Payment_Extractor_Tool.html`,
+  `Payment_Register_Tool.html`, `Receivables_Mapper.html`. Status undetermined; keep.
+- Anything else you are tempted to call obsolete.
+
+**Consequence for the parity checklist:** `DROP` is not an available decision yet. Until
+the pruning scan, the decisions are `PORT`, `REBUILD`, `DEFER`, or `KEEP-UNDECIDED`. If
+something genuinely should not be carried forward, record `KEEP-UNDECIDED` with your
+reasoning and let the pruning pass adjudicate it with full context.
+
+Rationale: deleting is cheap and reversible later; noticing something you already deleted
+is not. The whole point of the inventory is that this system has features invisible at
+runtime — exactly the ones a mid-flight cleanup would remove by mistake.
+
 ### The gate
 
 **Before any phase is called complete**, walk the inventory section by section and produce
