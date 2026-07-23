@@ -64,6 +64,18 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   registerErrorHandler(app);
 
+  // Collected from Fastify's own route table rather than hand-listed, so the
+  // index at `/` cannot drift out of date as routes are added or renamed.
+  // Registered before any route, since onRoute only fires for later ones.
+  const routes: { method: string; url: string }[] = [];
+  app.addHook("onRoute", (route) => {
+    const methods = Array.isArray(route.method) ? route.method : [route.method];
+    for (const method of methods) {
+      // HEAD is auto-generated alongside every GET; listing both is noise.
+      if (method !== "HEAD") routes.push({ method, url: route.url });
+    }
+  });
+
   // Firebase stays the identity provider (spec §2): only data moves to Atlas.
   // The role, however, always comes from Mongo — see platform/auth.ts.
   const auth: AuthDeps = options.auth ?? {
@@ -93,6 +105,21 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   registerUserRoutes(app, auth);
   registerLeadRoutes(app, auth);
   registerConfigRoutes(app, auth);
+
+  /**
+   * A self-describing index, so hitting the root of the API tells you what it
+   * serves instead of a bare 404.
+   *
+   * Public, like `/health`. It lists paths, not data — and every one of those
+   * paths carries its own guard, so naming them grants nothing. Registered
+   * last, so `routes` is fully populated by the time this closure runs.
+   */
+  app.get("/", () => ({
+    name: "BookYourAccountant API",
+    endpoints: [...routes].sort(
+      (a, b) => a.url.localeCompare(b.url) || a.method.localeCompare(b.method),
+    ),
+  }));
 
   return app;
 }

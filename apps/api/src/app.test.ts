@@ -41,6 +41,48 @@ describe("GET /health", () => {
   });
 });
 
+describe("GET /", () => {
+  it("describes the API instead of returning a bare 404", async () => {
+    const res = await app.inject({ method: "GET", url: "/" });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json<{ name: string }>().name).toBe("BookYourAccountant API");
+  });
+
+  // Built from Fastify's route table, not a hand-written list, so a new route
+  // appears here automatically and a renamed one cannot leave a stale entry
+  // behind. The alternative — a literal array — is wrong the first time someone
+  // adds an endpoint and forgets.
+  it("lists every registered route, derived from the router itself", async () => {
+    const res = await app.inject({ method: "GET", url: "/" });
+    const { endpoints } = res.json<{ endpoints: { method: string; url: string }[] }>();
+
+    const urls = endpoints.map((e) => e.url);
+    for (const expected of [
+      "/health",
+      "/v1/services",
+      "/v1/users",
+      "/v1/users/me",
+      "/v1/leads",
+      "/v1/leads/me",
+      "/v1/config/:name",
+    ]) {
+      expect(urls, `missing ${expected}`).toContain(expected);
+    }
+
+    // The test-only routes this file registers after buildApp() prove the
+    // collection is live rather than a snapshot taken at build time.
+    expect(urls).toContain("/__boom");
+  });
+
+  it("omits the HEAD entries Fastify generates alongside every GET", async () => {
+    const res = await app.inject({ method: "GET", url: "/" });
+    const { endpoints } = res.json<{ endpoints: { method: string }[] }>();
+
+    expect(endpoints.some((e) => e.method === "HEAD")).toBe(false);
+  });
+});
+
 describe("error handler", () => {
   it("maps an AppError to its status and code", async () => {
     const res = await app.inject({ method: "GET", url: "/__boom" });
