@@ -45,7 +45,7 @@
 | §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |         |
 | §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3 |
 | §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |         |
-| §19 | Reference data tables to preserve                | ◐ 4 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3 |
+| §19 | Reference data tables to preserve                | ◐ 8 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3 |
 | §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |         |
 | §22 | Keiri Tech marketing site                        | ☐ not started           | separate session, user's call          | User, 2026-07-23   |         |
 
@@ -113,13 +113,13 @@ post-parity pruning scan.
 | Asset                                                  | §   | Ported? | Where it now lives                                 |
 | ------------------------------------------------------ | --- | ------- | -------------------------------------------------- |
 | 293-question exam bank, 11 topics                      | §19 | ☐       |                                                    |
-| 28-point bookkeeping SOP (Do/Don't/Reconcile)          | §19 | ☐       |                                                    |
-| 19 business-type SOP checks (trading/mfg/service)      | §19 | ☐       |                                                    |
-| Per-service SOPs (6 services × 4 tasks)                | §19 | ☐       |                                                    |
+| 28-point bookkeeping SOP (Do/Don't/Reconcile)          | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
+| 19 business-type SOP checks (trading/mfg/service)      | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
+| Per-service SOPs (6 services × 4 tasks)                | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
 | 23-obligation compliance calendar (IT Act 2025)        | §19 | ☐       | storage only — `config/complianceOverrides`        |
 | parseTemplate.js — spreadsheet → dashboard engine      | §19 | ☐       |                                                    |
-| Pricing dials (slabs, synergy, catch-up, discounts)    | §19 | ☐       |                                                    |
-| Payout statutory rates (fee, GST, TDS ₹5L, TCS)        | §19 | ☑       | `packages/shared/src/reference/payout-rates.ts`    |
+| Pricing dials (slabs, synergy, catch-up, discounts)    | §19 | ☑       | `packages/shared/src/domain/pricing*.ts`           |
+| Payout statutory rates (fee, GST, TDS ₹5L, TCS)        | §19 | ☑       | `reference/payout-rates.ts` + `domain/payout.ts`   |
 | India 36 states + **161** cities (not 466 — see below) | §19 | ☑       | `packages/shared/src/reference/india.ts`           |
 | Marketing copy (benefits, FAQs, tiers, testimonials)   | §19 | ☐       |                                                    |
 | Keiri chatbot knowledge base (12 entries)              | §19 | ☐       |                                                    |
