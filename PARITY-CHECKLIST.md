@@ -85,10 +85,25 @@ see them. Each needs an explicit decision **before** the phase that would have c
 | Keiri chatbot knowledge base (12 entries)            | §19 | ☐       |                    |
 | Software catalogues (11 accounting + 11 compliance)  | §19 | ☐       |                    |
 
-## Unverified
+## Archives — analysed, closed
 
-`FEATURE-INVENTORY.md` §21: ~60 zip archives in the legacy folder were catalogued by
-filename, not extracted and diffed. One — `bookyouraccountant-source-updated.zip` — was
-found to contain a finished mobile-responsiveness pass that never shipped. **If a feature
-you remember building is not in the inventory, check the zips before concluding it never
-existed.**
+All 60 zip archives in the legacy folder were extracted and every source file compared by
+content hash against both live trees. **Only the newest archive**,
+`bookyouraccountant-source-updated.zip`, contains anything not already in the live tree: an
+unshipped mobile-responsiveness pass across 6 files, plus `keiri-mobile.css` for the static
+site. Everything else is an older version of a file that moved forward, a file that lives
+at the repo root, or macOS `._` metadata.
+
+**Nothing else needs extracting.** Detail in `FEATURE-INVENTORY.md` §21.
+
+| Carry-forward item                                                            | Ported? | Where |
+| ----------------------------------------------------------------------------- | ------- | ----- |
+| Mobile-responsiveness pass (6 files, `clamp()` padding + grid overflow fixes) | ☐       |       |
+| `keiri-mobile.css` — universal mobile patch for the Keiri static site         | ☐       |       |
+
+## Still unconfirmed (not code, unrelated to the zips)
+
+Three standalone HTML tools at the legacy repo root — `Payment_Extractor_Tool.html`,
+`Payment_Register_Tool.html`, `Receivables_Mapper.html` (~900 KB each, self-contained).
+They look like working internal utilities rather than mockups. Confirm with the user
+whether they are in active use, and if so whether they belong in the rebuild.

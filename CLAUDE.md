@@ -238,6 +238,9 @@ From spec §18. Not technical calls; the user must decide:
 - **Two unshipped patches** sit in the legacy folder: a mobile-responsiveness pass in
   `bookyouraccountant-source-updated.zip` and `keiri-mobile.css`. Finished work, never
   applied. Carry them into the rebuild rather than redoing them.
+- **The ~60 zip archives are fully analysed — do not re-extract them.** Every source file
+  was hash-compared against the live trees; only the newest archive holds anything not
+  already present (the mobile pass above). See `FEATURE-INVENTORY.md` §21.
 
 ---
 
