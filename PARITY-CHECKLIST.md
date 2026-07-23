@@ -42,7 +42,7 @@
 | §13 | Notifications                                    | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
 | §14 | Keiri chatbot                                    | ☐ not started           |                                        |                    |          |
 | §15 | Admin console                                    | ◐ partial — 3 endpoints | REBUILD                                | Claude, 2026-07-23 | Phase 3  |
-| §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |          |
+| §16 | Public marketing site (in-app)                   | ◐ 5 pages built         | REBUILD (Next.js SSR)                  | Claude, 2026-07-24 | Phase 4  |
 | §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3  |
 | §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |          |
 | §19 | Reference data tables to preserve                | ◐ 10 of 12 ported       | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3  |
