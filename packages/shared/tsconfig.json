@@ -1,4 +1,5 @@
 {
   "extends": "@bya/config/typescript/base.json",
-  "include": ["src/**/*", "vitest.config.ts"]
+  "compilerOptions": { "outDir": "dist", "rootDir": "src" },
+  "include": ["src/**/*"]
 }
