@@ -17,3 +17,5 @@ export * from "./domain/payout.js";
 export * from "./domain/coupon.js";
 export * from "./schemas/exam.js";
 export * from "./domain/compliance.js";
+export * from "./reference/marketing.js";
+export * from "./reference/chatbot-kb.js";
