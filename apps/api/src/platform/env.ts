@@ -39,6 +39,17 @@ const envSchema = z.object({
 
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
 
+  /**
+   * Global requests per minute per IP. Spec §6.6 sets 100 as the baseline and
+   * also calls for tiered limits (OTP 5/hour/phone, login 10/15min/IP, payment
+   * 20/hour/user) — those arrive with the endpoints that need them.
+   *
+   * Configurable rather than hardcoded so tests and load probes can raise it
+   * without disabling rate limiting, which would leave the regression guard
+   * asserting headers that no longer mean anything.
+   */
+  RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(100),
+
   // Optional: the Firebase Admin SDK infers the project from Application
   // Default Credentials when running on Google infrastructure. Required only
   // when running outside it, which the auth layer reports on its own.

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
+import type { Cipher } from "../platform/crypto.js";
 import type { AuthDeps } from "../platform/auth.js";
 import { findAuthUser } from "../modules/users/users.repository.js";
 import { fakeVerifier, tokenFor } from "./auth-fake.js";
@@ -34,7 +35,10 @@ export const UIDS = {
  * is deliberate: the stale-claim and role-escalation guards are only
  * meaningful if the role genuinely comes from the database.
  */
-export async function buildTestApp(overrides: Partial<AuthDeps> = {}): Promise<FastifyInstance> {
+export async function buildTestApp(
+  overrides: Partial<AuthDeps> = {},
+  cipher?: Cipher,
+): Promise<FastifyInstance> {
   const auth: AuthDeps = {
     verifier: fakeVerifier({
       [TOKENS.business]: tokenFor(UIDS.business),
@@ -49,7 +53,14 @@ export async function buildTestApp(overrides: Partial<AuthDeps> = {}): Promise<F
     ...overrides,
   };
 
-  const app = await buildApp({ logger: false, env: testEnv(), auth });
+  const app = await buildApp({
+    logger: false,
+    env: testEnv(),
+    auth,
+    // Omitted by default, so a test that touches KYC without asking for a
+    // cipher gets the loud 503 a misconfigured server would give.
+    ...(cipher === undefined ? {} : { cipher }),
+  });
   await app.ready();
   return app;
 }

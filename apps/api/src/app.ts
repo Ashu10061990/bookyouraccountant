@@ -2,12 +2,17 @@ import { randomUUID } from "node:crypto";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
+import { ERROR_CODES } from "@bya/shared";
 import Fastify, { type FastifyInstance } from "fastify";
 import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
+import { type Cipher, createCipher } from "./platform/crypto.js";
+import { localKms } from "./platform/kms.js";
+import { AppError } from "./platform/errors.js";
 import { isConnected } from "./platform/db.js";
 import { type Env, loadEnv } from "./platform/env.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { buildLoggerOptions } from "./platform/logger.js";
+import { registerAccountantRoutes } from "./modules/accountants/accountants.routes.js";
 import { registerConfigRoutes } from "./modules/config/config.routes.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
@@ -28,6 +33,28 @@ export interface BuildAppOptions {
    * defaults are the real Firebase verifier and the real users repository.
    */
   auth?: AuthDeps;
+  /**
+   * Injected in tests. In production it is built from KMS_MASTER_KEY, and is
+   * deliberately unavailable when that is unset — see `unavailableCipher`.
+   */
+  cipher?: Cipher;
+}
+
+/**
+ * The cipher used when no KMS master key is configured.
+ *
+ * Every operation fails with a clear 503. The alternative — storing PAN and
+ * bank details unencrypted when a key happens to be missing — is the one
+ * behaviour that must not exist, because it fails silently and looks fine: the
+ * request succeeds, the data lands, and nobody learns it is in plaintext until
+ * someone reads the collection.
+ */
+function unavailableCipher(): Cipher {
+  const unavailable = (): never => {
+    throw new AppError(503, ERROR_CODES.INTERNAL, "KYC storage is not configured on this server.");
+  };
+
+  return { seal: () => Promise.resolve(unavailable()), open: () => Promise.resolve(unavailable()) };
 }
 
 /**
@@ -60,7 +87,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     origin: env.ALLOWED_ORIGINS,
     credentials: true,
   });
-  await app.register(rateLimit, { max: 100, timeWindow: "1 minute" });
+  await app.register(rateLimit, { max: env.RATE_LIMIT_MAX, timeWindow: "1 minute" });
 
   registerErrorHandler(app);
 
@@ -101,7 +128,14 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     });
   });
 
+  const cipher =
+    options.cipher ??
+    (env.KMS_MASTER_KEY === undefined
+      ? unavailableCipher()
+      : createCipher(localKms(Buffer.from(env.KMS_MASTER_KEY, "base64"))));
+
   registerServiceRoutes(app, auth);
+  registerAccountantRoutes(app, auth, cipher);
   registerUserRoutes(app, auth);
   registerLeadRoutes(app, auth);
   registerConfigRoutes(app, auth);

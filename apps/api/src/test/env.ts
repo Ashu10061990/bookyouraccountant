@@ -15,6 +15,10 @@ export function testEnv(overrides: Partial<Env> = {}): Env {
     MONGODB_URI: "mongodb://127.0.0.1:27017/bya-test",
     ALLOWED_ORIGINS: ["http://localhost:5173"],
     LOG_LEVEL: "silent",
+    // High, not disabled: rate limiting stays attached so the Phase 1
+    // regression guard still asserts x-ratelimit-* headers on a real instance,
+    // while a test file making hundreds of requests does not trip it.
+    RATE_LIMIT_MAX: 100_000,
     ...overrides,
   };
 }
