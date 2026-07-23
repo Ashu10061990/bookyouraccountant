@@ -61,5 +61,7 @@ export default tseslint.config(
     files: ["**/*.config.{js,cjs,mjs,ts}", "**/eslint.config.js", "packages/config/**/*.js"],
     ...tseslint.configs.disableTypeChecked,
   },
-  { ignores: ["dist/**", ".next/**", "coverage/**", "node_modules/**"] },
+  // Globs must be **-prefixed: a bare `dist/**` matches only a top-level dist/,
+  // leaving apps/*/dist and packages/*/dist to be linted as if they were source.
+  { ignores: ["**/dist/**", "**/.next/**", "**/coverage/**", "**/node_modules/**"] },
 );
