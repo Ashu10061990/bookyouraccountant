@@ -356,8 +356,9 @@ This file loads automatically. To pick up work with no prior conversation:
 2. `OPEN-ITEMS.md` — known gaps, ordered by when they hurt.
 3. `PARITY-CHECKLIST.md` — the gate every phase must pass.
 4. `FIRESTORE-RULES-PARITY.md` — which of the two lines of defence have been rebuilt.
-5. `../BYA& Keiri/FEATURE-INVENTORY.md` — what the legacy system does. The parity contract.
-6. `../docs/specs/2026-07-23-garp-architecture-design.md` §17 for phasing, §18 for the
+5. `COVERAGE.md` — the blunt what's-built-vs-deferred map, incl. the 18-function tally.
+6. `../BYA& Keiri/FEATURE-INVENTORY.md` — what the legacy system does. The parity contract.
+7. `../docs/specs/2026-07-23-garp-architecture-design.md` §17 for phasing, §18 for the
    product questions blocking Phase 5. Phase 3's amendment to §17 is in
    `../docs/specs/2026-07-23-bya-phase3-api-auth-data.md` §1.2.
 
