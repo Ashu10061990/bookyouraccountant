@@ -1,4 +1,5 @@
 import { CONFIG_DOCS, CONFIG_SCHEMAS, PAYOUT_RATES, type ConfigDoc } from "@bya/shared";
+import type { ClientSession } from "mongoose";
 import { badRequest, notFound } from "../../platform/errors.js";
 import * as repository from "./config.repository.js";
 import type { ConfigView } from "./config.repository.js";
@@ -60,6 +61,7 @@ export async function setConfig(
   name: ConfigDoc,
   body: unknown,
   updatedBy: string,
+  session?: ClientSession,
 ): Promise<ConfigView> {
   const schema = CONFIG_SCHEMAS[name];
   const result = schema.safeParse(body);
@@ -72,5 +74,5 @@ export async function setConfig(
     throw badRequest(`Invalid ${name} configuration — ${details}`);
   }
 
-  return repository.upsert(name, result.data, updatedBy);
+  return repository.upsert(name, result.data, updatedBy, session);
 }

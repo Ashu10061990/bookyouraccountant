@@ -1,4 +1,4 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { connectDb, disconnectDb } from "../platform/db.js";
 
@@ -9,11 +9,25 @@ import { connectDb, disconnectDb } from "../platform/db.js";
  * A mocked repository would let a test pass while the actual query, index or
  * unique constraint was wrong. Those are exactly the failures that only show up
  * with concurrent production traffic, so they are the ones worth catching here.
+ *
+ * ## Why a replica set rather than a standalone
+ *
+ * MongoDB only supports multi-document transactions on a replica set. Spec §6.7
+ * requires the audit entry to be written **in the same transaction as the
+ * action it records** — otherwise a crash between the two leaves either an
+ * unrecorded admin override or an audit entry for something that never
+ * happened, and for statutory records both are unacceptable.
+ *
+ * A standalone server would make every transactional test fail with
+ * "Transaction numbers are only allowed on a replica set member or mongos",
+ * which is a confusing way to discover an architectural requirement. Atlas is
+ * always a replica set, so this also makes the test topology match production.
+ * The cost is a slower start — seconds, once per test file.
  */
-let server: MongoMemoryServer | undefined;
+let server: MongoMemoryReplSet | undefined;
 
 export async function startTestMongo(): Promise<string> {
-  server = await MongoMemoryServer.create();
+  server = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   const uri = server.getUri();
   await connectDb(uri, { serverSelectionTimeoutMS: 30_000 });
   return uri;

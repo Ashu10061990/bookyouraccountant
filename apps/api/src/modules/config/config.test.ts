@@ -6,6 +6,7 @@ import { UserModel } from "../users/users.schema.js";
 import { TOKENS, UIDS, as, buildTestApp } from "../../test/app.js";
 import { clearTestMongo, startTestMongo, stopTestMongo } from "../../test/mongo.js";
 import { ConfigModel } from "./config.schema.js";
+import { findBySubject } from "../audit/audit.service.js";
 
 let app: FastifyInstance;
 
@@ -196,6 +197,49 @@ describe("PUT /v1/config/:name", () => {
     expect(res.json()).toMatchObject({
       config: { value: { extensions: [{ match: "GSTR-3B" }] } },
     });
+  });
+
+  // §6.7 covers "every admin override". Changing platformFees changes what
+  // every accountant is paid, so it is the clearest example in this phase.
+  it("writes an audit entry naming the admin who changed the rates", async () => {
+    await app.inject({
+      method: "PUT",
+      url: "/v1/config/platformFees",
+      headers: as(TOKENS.admin),
+      payload: VALID_FEES,
+    });
+
+    const [entry] = await findBySubject("config", "platformFees");
+    expect(entry).toMatchObject({
+      action: "config.update",
+      actorUid: UIDS.admin,
+      actorRole: "admin",
+    });
+  });
+
+  // The transactional half. A rejected write must leave no audit entry
+  // claiming it happened — an audit log with phantom entries is worse than
+  // none, because it is trusted.
+  it("writes no audit entry when the write is rejected", async () => {
+    await app.inject({
+      method: "PUT",
+      url: "/v1/config/platformFees",
+      headers: as(TOKENS.admin),
+      payload: { ...VALID_FEES, takeRate: 12 },
+    });
+
+    expect(await findBySubject("config", "platformFees")).toHaveLength(0);
+  });
+
+  it("writes no audit entry when a non-admin is denied", async () => {
+    await app.inject({
+      method: "PUT",
+      url: "/v1/config/platformFees",
+      headers: as(TOKENS.business),
+      payload: VALID_FEES,
+    });
+
+    expect(await findBySubject("config", "platformFees")).toHaveLength(0);
   });
 
   it("overwrites rather than duplicating on a second write", async () => {

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { type AuthDeps, contextOf, requireAuth, requireRole } from "../../platform/auth.js";
+import { AUDIT_ACTIONS, withAudit } from "../audit/audit.service.js";
 import * as service from "./config.service.js";
 
 /**
@@ -27,11 +28,23 @@ export function registerConfigRoutes(app: FastifyInstance, deps: AuthDeps): void
     { preHandler: [requireAuth(deps), requireRole("admin")] },
     async (request) => {
       const name = service.assertConfigDoc(request.params.name);
+      const actor = contextOf(request);
 
-      // The admin's uid is recorded on the document — a minimal stand-in for
-      // the append-only audit log in §6.7, which is deferred but which this
-      // endpoint will eventually write to.
-      const config = await service.setConfig(name, request.body, contextOf(request).uid);
+      // Changing platformFees changes what every accountant is paid, so it is
+      // exactly the kind of admin override §6.7 requires an immutable record
+      // of. The entry commits in the same transaction as the write.
+      const config = await withAudit(
+        {
+          action: AUDIT_ACTIONS.CONFIG_UPDATE,
+          actor,
+          subjectType: "config",
+          subjectId: name,
+        },
+        async (session) => ({
+          result: await service.setConfig(name, request.body, actor.uid, session),
+          subjectId: name,
+        }),
+      );
 
       return { config };
     },

@@ -1,4 +1,5 @@
 import type { ConfigDoc } from "@bya/shared";
+import type { ClientSession } from "mongoose";
 import { ConfigModel, type ConfigDocument } from "./config.schema.js";
 
 /** Data access for config. The only file in this module importing Mongoose. */
@@ -28,11 +29,12 @@ export async function upsert(
   name: ConfigDoc,
   value: unknown,
   updatedBy: string,
+  session?: ClientSession,
 ): Promise<ConfigView> {
   const updated = await ConfigModel.findOneAndUpdate(
     { name },
     { $set: { value, updatedBy }, $setOnInsert: { name } },
-    { new: true, upsert: true },
+    { new: true, upsert: true, ...(session === undefined ? {} : { session }) },
   )
     .lean<ConfigDocument>()
     .exec();
