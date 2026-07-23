@@ -55,6 +55,14 @@ export async function createProfile(
   ctx: RequestContext,
   input: CreateAccountantInput,
   rawBody: unknown,
+  /**
+   * A server-confirmed exam pass, if this accountant has one. Resolved by the
+   * route from the exams module. The legacy flow takes the exam *before*
+   * registering, so this is the primary path by which a profile becomes
+   * verified — never from client input, which `assertNoServerOwnedFields`
+   * refuses.
+   */
+  examPass?: { score: number; total: number } | null,
 ): Promise<AccountantDocument> {
   // Checked against the RAW body, not the parsed input: the schema strips
   // unknown keys, so by the time it is parsed an attempt is invisible. An
@@ -65,7 +73,29 @@ export async function createProfile(
     throw conflict("You already have an accountant profile.");
   }
 
-  return repository.insert({ firebaseUid: ctx.uid, ...input });
+  const created = await repository.insert({ firebaseUid: ctx.uid, ...input });
+
+  // Born unverified, then verified only if the server already recorded a pass.
+  // A separate step, so the insert keeps forcing verified:false against any
+  // client attempt, and the verification is audited.
+  if (examPass) {
+    await withAudit(
+      {
+        action: AUDIT_ACTIONS.ACCOUNTANT_VERIFY,
+        actor: ctx,
+        subjectType: "accountant",
+        subjectId: ctx.uid,
+        metadata: { via: "exam", ...examPass },
+      },
+      async (session) => {
+        await repository.markVerifiedByExam(ctx.uid, examPass.score, examPass.total, session);
+        return { result: undefined, subjectId: ctx.uid };
+      },
+    );
+    return (await repository.findByUid(ctx.uid)) ?? created;
+  }
+
+  return created;
 }
 
 export async function updateOwnProfile(

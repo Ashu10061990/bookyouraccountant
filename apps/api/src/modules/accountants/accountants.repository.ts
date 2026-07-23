@@ -127,6 +127,35 @@ export async function setKyc(
 }
 
 /**
+ * Marks an accountant verified as a result of passing the exam.
+ *
+ * The verification path that is NOT an admin action — the server confirmed the
+ * pass itself. `verified: false` precondition means a re-pass after
+ * verification is a no-op. No upsert: if the accountant has no profile yet
+ * (the legacy flow takes the exam before registering), this simply does
+ * nothing, and `createProfile` sets `verified` when the profile is created.
+ * Returns whether it changed anything.
+ */
+export async function markVerifiedByExam(
+  firebaseUid: string,
+  examScore: number,
+  examTotal: number,
+  session?: ClientSession,
+): Promise<boolean> {
+  const updated = await AccountantModel.findOneAndUpdate(
+    { firebaseUid, verified: false },
+    {
+      $set: { verified: true, verifiedAt: new Date(), verifiedBy: "exam", examScore, examTotal },
+    },
+    { ...(session === undefined ? {} : { session }) },
+  )
+    .lean()
+    .exec();
+
+  return updated !== null;
+}
+
+/**
  * Marks an accountant verified.
  *
  * The `verified: false` precondition is in the query, not in a prior read —

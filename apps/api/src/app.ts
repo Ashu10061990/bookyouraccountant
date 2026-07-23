@@ -13,8 +13,13 @@ import { type Env, loadEnv } from "./platform/env.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { buildLoggerOptions } from "./platform/logger.js";
 import { registerAccountantRoutes } from "./modules/accountants/accountants.routes.js";
+import { markVerifiedByExam } from "./modules/accountants/accountants.repository.js";
 import { registerBusinessRoutes } from "./modules/businesses/businesses.routes.js";
 import { registerConfigRoutes } from "./modules/config/config.routes.js";
+import { AUDIT_ACTIONS, record as recordAudit } from "./modules/audit/audit.service.js";
+import { registerExamRoutes } from "./modules/exams/exams.routes.js";
+import { type OnExamPass } from "./modules/exams/exams.service.js";
+import { latestPass as examLatestPass } from "./modules/exams/exams.repository.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
 import { registerUserRoutes } from "./modules/users/users.routes.js";
@@ -39,6 +44,10 @@ export interface BuildAppOptions {
    * deliberately unavailable when that is unset — see `unavailableCipher`.
    */
   cipher?: Cipher;
+  /** Randomness for the exam draw. Defaults to `Math.random`; seeded in tests. */
+  examRng?: () => number;
+  /** Current-time source for the exam throttle. Defaults to `new Date()`. */
+  now?: () => Date;
 }
 
 /**
@@ -135,12 +144,39 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       ? unavailableCipher()
       : createCipher(localKms(Buffer.from(env.KMS_MASTER_KEY, "base64"))));
 
+  // Exam ⇄ accountants cross-wiring, done at the composition root so neither
+  // module depends on the other:
+  //  - passing the exam marks an existing accountant profile verified, audited,
+  //    inside the submit transaction;
+  //  - a profile created after passing is born verified, reading the pass from
+  //    the server's own attempt record.
+  const onExamPass: OnExamPass = async (uid, score, total, session) => {
+    const changed = await markVerifiedByExam(uid, score, total, session);
+    if (changed) {
+      await recordAudit(
+        {
+          action: AUDIT_ACTIONS.ACCOUNTANT_VERIFY,
+          actor: { uid, role: "accountant" },
+          subjectType: "accountant",
+          subjectId: uid,
+          metadata: { via: "exam", score, total },
+        },
+        session,
+      );
+    }
+  };
+
   registerServiceRoutes(app, auth);
-  registerAccountantRoutes(app, auth, cipher);
+  registerAccountantRoutes(app, auth, cipher, examLatestPass);
   registerBusinessRoutes(app, auth, cipher);
   registerUserRoutes(app, auth);
   registerLeadRoutes(app, auth);
   registerConfigRoutes(app, auth);
+  registerExamRoutes(app, auth, {
+    rng: options.examRng ?? Math.random,
+    now: options.now ?? (() => new Date()),
+    onPass: onExamPass,
+  });
 
   /**
    * A self-describing index, so hitting the root of the API tells you what it

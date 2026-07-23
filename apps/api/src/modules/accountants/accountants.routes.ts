@@ -21,10 +21,15 @@ import { publicView, viewFor } from "./accountants.serializers.js";
  * bank details to the wrong audience" (§6.5) true of the routing layer too, not
  * only of the serialisers in isolation.
  */
+/** Resolves an accountant's server-confirmed exam pass. Injected from the
+ * exams module so accountants does not depend on it directly. */
+export type LatestExamPass = (uid: string) => Promise<{ score: number; total: number } | null>;
+
 export function registerAccountantRoutes(
   app: FastifyInstance,
   deps: AuthDeps,
   cipher: Cipher,
+  latestExamPass?: LatestExamPass,
 ): void {
   /**
    * The public marketplace listing.
@@ -84,7 +89,11 @@ export function registerAccountantRoutes(
       // Identity from the token; the body cannot name a different accountant.
       const input = parseBody(createAccountantSchema, request.body);
       const ctx = { uid: tokenUidOf(request), role: "accountant" as const, blocked: false };
-      const created = await service.createProfile(ctx, input, request.body);
+
+      // A profile created after passing the exam is born verified — the pass is
+      // read from the server's own record, never from the request.
+      const examPass = latestExamPass === undefined ? null : await latestExamPass(ctx.uid);
+      const created = await service.createProfile(ctx, input, request.body, examPass);
 
       return reply.status(201).send({ accountant: viewFor(created, ctx) });
     },

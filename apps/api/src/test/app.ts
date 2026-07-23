@@ -38,6 +38,7 @@ export const UIDS = {
 export async function buildTestApp(
   overrides: Partial<AuthDeps> = {},
   cipher?: Cipher,
+  exam?: { examRng?: () => number; now?: () => Date },
 ): Promise<FastifyInstance> {
   const auth: AuthDeps = {
     verifier: fakeVerifier({
@@ -60,6 +61,8 @@ export async function buildTestApp(
     // Omitted by default, so a test that touches KYC without asking for a
     // cipher gets the loud 503 a misconfigured server would give.
     ...(cipher === undefined ? {} : { cipher }),
+    ...(exam?.examRng === undefined ? {} : { examRng: exam.examRng }),
+    ...(exam?.now === undefined ? {} : { now: exam.now }),
   });
   await app.ready();
   return app;
