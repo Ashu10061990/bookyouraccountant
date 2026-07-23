@@ -108,8 +108,23 @@ export default tseslint.config(
     // them and type-aware rules must be off for them. Scoped deliberately: a
     // bare `**/*.js` glob would silently exempt real code from the type-aware
     // rules too.
-    files: ["**/*.config.{js,cjs,mjs,ts}", "**/eslint.config.js", "packages/config/**/*.js"],
+    files: [
+      "**/*.config.{js,cjs,mjs,ts}",
+      "**/eslint.config.js",
+      "packages/config/**/*.js",
+      // Build-time tooling: plain Node scripts that belong to no package's TS
+      // program (they read the frozen legacy source, which is outside the
+      // repo). Scoped to scripts/ so this cannot exempt real source.
+      "**/scripts/**/*.{js,mjs,cjs}",
+    ],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    // A CLI tool's normal output IS console.log. Kept separate from the block
+    // above so the exemption is visible on its own terms rather than riding
+    // along with the type-checking one.
+    files: ["**/scripts/**/*.{js,mjs,cjs}"],
+    rules: { "no-console": "off" },
   },
   // Globs must be **-prefixed: a bare `dist/**` matches only a top-level dist/,
   // leaving apps/*/dist and packages/*/dist to be linted as if they were source.

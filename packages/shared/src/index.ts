@@ -4,3 +4,7 @@ export * from "./schemas/config.js";
 export * from "./schemas/lead.js";
 export * from "./schemas/service.js";
 export * from "./schemas/user.js";
+export * from "./reference/india.js";
+export * from "./reference/payout-rates.js";
+export * from "./reference/profile-options.js";
+export * from "./reference/services.js";
