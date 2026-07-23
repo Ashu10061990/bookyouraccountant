@@ -36,7 +36,7 @@
 | §7  | Assignment engine (the core product)             | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
 | §8  | Booking engine (legacy, parallel to assignments) | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
 | §9  | Financial dashboard (MIS)                        | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
-| §10 | Compliance calendar                              | ◐ partial — storage     | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3  |
+| §10 | Compliance calendar                              | ◐ data + storage        | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3  |
 | §11 | Qualifying exam engine                           | ◐ engine + bank built   | REBUILD (server-side scoring)          | Claude, 2026-07-24 | Phase 3+ |
 | §12 | Payments & payouts                               | ◐ rates ported only     | DEFER → Phase 6 (constants PORTed)     | Claude, 2026-07-23 | Phase 3  |
 | §13 | Notifications                                    | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
@@ -45,7 +45,7 @@
 | §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |          |
 | §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3  |
 | §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |          |
-| §19 | Reference data tables to preserve                | ◐ 9 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3  |
+| §19 | Reference data tables to preserve                | ◐ 10 of 12 ported       | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3  |
 | §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |          |
 | §22 | Keiri Tech marketing site                        | ☐ not started           | separate session, user's call          | User, 2026-07-23   |          |
 
@@ -65,9 +65,10 @@
 - **§11 Qualifying exam.** The 293-question bank (server-only), the pure
   draw/score engine and the getExam/submitExam routes with throttling and
   verify-on-pass all exist. The candidate-facing exam _screen_ is Phase 5.
-- **§10 Compliance.** `config/complianceOverrides` can now be read and written,
-  which is the backend for `ComplianceOverridesEditor` (§20 dead code). The
-  23-obligation calendar itself is not yet ported.
+- **§10 Compliance.** The 23-obligation calendar is ported
+  (`domain/compliance.ts`, golden-verified) and `config/complianceOverrides`
+  is read/writable — the backend for `ComplianceOverridesEditor` (§20 dead
+  code). Only the calendar _screen_ remains, a Phase 5 UI task.
 - **§12 Payments.** Only the statutory rate constants, and only as data. No
   payout logic, no Razorpay, no ledger.
 - **§15 Admin.** Admin-only writes for services and config, plus the lead list.
@@ -119,7 +120,7 @@ post-parity pruning scan.
 | 28-point bookkeeping SOP (Do/Don't/Reconcile)          | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
 | 19 business-type SOP checks (trading/mfg/service)      | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
 | Per-service SOPs (6 services × 4 tasks)                | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
-| 23-obligation compliance calendar (IT Act 2025)        | §19 | ☐       | storage only — `config/complianceOverrides`             |
+| 23-obligation compliance calendar (IT Act 2025)        | §19 | ☑       | `packages/shared/src/domain/compliance.ts`              |
 | parseTemplate.js — spreadsheet → dashboard engine      | §19 | ☐       |                                                         |
 | Pricing dials (slabs, synergy, catch-up, discounts)    | §19 | ☑       | `packages/shared/src/domain/pricing*.ts`                |
 | Payout statutory rates (fee, GST, TDS ₹5L, TCS)        | §19 | ☑       | `reference/payout-rates.ts` + `domain/payout.ts`        |

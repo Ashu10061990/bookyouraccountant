@@ -141,7 +141,7 @@ build problem onto every consumer — see the `@bya/ui` row below.
 `apps/web` dev uses **Turbopack** (`next dev --turbopack`). Webpack's dev
 runtime fails on this machine; detail in `OPEN-ITEMS.md`.
 
-473 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
+508 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 
 ### What Phase 3 delivered
 
@@ -164,7 +164,7 @@ first-day-free coupon now live in `packages/shared/src/domain/`, each proven
 byte-for-byte against golden vectors captured from the frozen legacy.
 
 **Deferred, recorded, not dropped:** the assignment _lifecycle_ and wizard (§7,
-UI blocked on §18 Q1), payments/Razorpay wiring (§12), and the compliance calendar data (§10).
+UI blocked on §18 Q1), payments/Razorpay wiring (§12), the compliance calendar screen (§10 UI).
 See `OPEN-ITEMS.md`.
 
 ### Phases ahead
@@ -210,7 +210,7 @@ gating). **A Node API deletes the second layer.**
 
 ```bash
 pnpm dev          # all three apps
-pnpm test         # 473 tests
+pnpm test         # 508 tests
 pnpm lint
 pnpm lint:root    # repo-root files — turbo's graph does NOT cover them
 pnpm typecheck
@@ -361,7 +361,7 @@ This file loads automatically. To pick up work with no prior conversation:
    product questions blocking Phase 5. Phase 3's amendment to §17 is in
    `../docs/specs/2026-07-23-bya-phase3-api-auth-data.md` §1.2.
 
-Then: `pnpm install && pnpm test` (expect 473 passing) to confirm the workspace is healthy.
+Then: `pnpm install && pnpm test` (expect 508 passing) to confirm the workspace is healthy.
 
 **Next actions, in the order they unblock things:**
 
