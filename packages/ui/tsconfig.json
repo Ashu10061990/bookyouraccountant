@@ -1,4 +1,8 @@
 {
   "extends": "@bya/config/typescript/react.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  },
   "include": ["src/**/*", "vitest.config.ts", "vitest.setup.ts"]
 }
