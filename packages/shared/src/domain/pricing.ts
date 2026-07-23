@@ -3,7 +3,7 @@ import {
   BACKLOGS,
   BANK_ACCOUNTS,
   BIZ_NATURES,
-  ENTITY_TYPES,
+  ASSIGNMENT_ENTITY_TYPES,
   EXPERIENCE_TIERS,
   GST_INVOICES,
   GST_RETURNS,
@@ -187,7 +187,7 @@ export function computeQuote(answers: QuoteAnswers): Quote | null {
 
   // Biggest scope at full effort; the rest share context (synergy).
   parts.sort((a, b) => b.d - a.d);
-  const entityExtra = pick<number>(ENTITY_TYPES, answers.entityType, "extraDays") ?? 0;
+  const entityExtra = pick<number>(ASSIGNMENT_ENTITY_TYPES, answers.entityType, "extraDays") ?? 0;
   const arapExtra = (answers.arapScope ?? []).reduce(
     (t, id) => t + (pick<number>(ARAP_SCOPE, id, "extraDays") ?? 0),
     0,

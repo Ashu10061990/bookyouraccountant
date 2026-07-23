@@ -10,3 +10,8 @@ export * from "./reference/profile-options.js";
 export * from "./reference/services.js";
 export * from "./schemas/accountant.js";
 export * from "./schemas/business.js";
+export * from "./domain/pricing-options.js";
+export * from "./domain/pricing.js";
+export * from "./domain/sop.js";
+export * from "./domain/payout.js";
+export * from "./domain/coupon.js";

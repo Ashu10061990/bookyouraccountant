@@ -1,0 +1,167 @@
+[
+  {
+    "name": "zero-gross-coupon",
+    "grossRupees": 0,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": false,
+    "legacy": {
+      "gross": 0,
+      "fee": 0,
+      "gstOnFee": 0,
+      "tds": 0,
+      "gstTcs": 0,
+      "net": 0,
+      "fyGrossAfter": 0
+    }
+  },
+  {
+    "name": "small-below-minfee",
+    "grossRupees": 1000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": false,
+    "legacy": {
+      "gross": 1000,
+      "fee": 200,
+      "gstOnFee": 36,
+      "tds": 0,
+      "gstTcs": 0,
+      "net": 764,
+      "fyGrossAfter": 1000
+    }
+  },
+  {
+    "name": "fee-rounds-down",
+    "grossRupees": 8342,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": false,
+    "legacy": {
+      "gross": 8342,
+      "fee": 1001,
+      "gstOnFee": 180,
+      "tds": 0,
+      "gstTcs": 0,
+      "net": 7161,
+      "fyGrossAfter": 8342
+    }
+  },
+  {
+    "name": "fee-rounds-up",
+    "grossRupees": 8346,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 8346,
+      "fee": 1002,
+      "gstOnFee": 180,
+      "tds": 0,
+      "gstTcs": 42,
+      "net": 7122,
+      "fyGrossAfter": 8346
+    }
+  },
+  {
+    "name": "mid-registered",
+    "grossRupees": 10000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 10000,
+      "fee": 1200,
+      "gstOnFee": 216,
+      "tds": 0,
+      "gstTcs": 50,
+      "net": 8534,
+      "fyGrossAfter": 10000
+    }
+  },
+  {
+    "name": "mid-unregistered",
+    "grossRupees": 10000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": false,
+    "legacy": {
+      "gross": 10000,
+      "fee": 1200,
+      "gstOnFee": 216,
+      "tds": 0,
+      "gstTcs": 0,
+      "net": 8584,
+      "fyGrossAfter": 10000
+    }
+  },
+  {
+    "name": "below-tds-threshold",
+    "grossRupees": 400000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 400000,
+      "fee": 48000,
+      "gstOnFee": 8640,
+      "tds": 0,
+      "gstTcs": 2000,
+      "net": 341360,
+      "fyGrossAfter": 400000
+    }
+  },
+  {
+    "name": "crossing-tds-threshold",
+    "grossRupees": 200000,
+    "priorFyGrossRupees": 400000,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 200000,
+      "fee": 24000,
+      "gstOnFee": 4320,
+      "tds": 100,
+      "gstTcs": 1000,
+      "net": 170580,
+      "fyGrossAfter": 600000
+    }
+  },
+  {
+    "name": "fully-above-threshold",
+    "grossRupees": 100000,
+    "priorFyGrossRupees": 600000,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 100000,
+      "fee": 12000,
+      "gstOnFee": 2160,
+      "tds": 100,
+      "gstTcs": 500,
+      "net": 85240,
+      "fyGrossAfter": 700000
+    }
+  },
+  {
+    "name": "large-registered",
+    "grossRupees": 550000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 550000,
+      "fee": 66000,
+      "gstOnFee": 11880,
+      "tds": 50,
+      "gstTcs": 2750,
+      "net": 469320,
+      "fyGrossAfter": 550000
+    }
+  },
+  {
+    "name": "straddle-exact-threshold",
+    "grossRupees": 500000,
+    "priorFyGrossRupees": 0,
+    "isGstRegistered": true,
+    "legacy": {
+      "gross": 500000,
+      "fee": 60000,
+      "gstOnFee": 10800,
+      "tds": 0,
+      "gstTcs": 2500,
+      "net": 426700,
+      "fyGrossAfter": 500000
+    }
+  }
+]

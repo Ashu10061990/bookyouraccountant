@@ -66,7 +66,11 @@ export const BANK_ACCOUNTS = [
   { id: "many", label: "4 or more accounts / cards", extraDays: 1 },
 ] as const;
 
-export const ENTITY_TYPES = [
+// Named ASSIGNMENT_ENTITY_TYPES, not ENTITY_TYPES: the business schema exports
+// its own ENTITY_TYPES (nine legal registration types). This is the pricing
+// questionnaire's three-way entity dial — a different concept the legacy kept
+// in a separate module, disambiguated here now they share one package.
+export const ASSIGNMENT_ENTITY_TYPES = [
   { id: "prop", label: "Proprietorship / Individual", extraDays: 0 },
   { id: "partnership", label: "Partnership firm", extraDays: 0 },
   { id: "company", label: "LLP / Private Limited", extraDays: 0.5 },
