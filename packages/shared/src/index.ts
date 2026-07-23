@@ -9,3 +9,4 @@ export * from "./reference/payout-rates.js";
 export * from "./reference/profile-options.js";
 export * from "./reference/services.js";
 export * from "./schemas/accountant.js";
+export * from "./schemas/business.js";

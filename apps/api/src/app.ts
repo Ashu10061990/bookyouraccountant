@@ -13,6 +13,7 @@ import { type Env, loadEnv } from "./platform/env.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { buildLoggerOptions } from "./platform/logger.js";
 import { registerAccountantRoutes } from "./modules/accountants/accountants.routes.js";
+import { registerBusinessRoutes } from "./modules/businesses/businesses.routes.js";
 import { registerConfigRoutes } from "./modules/config/config.routes.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
@@ -136,6 +137,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   registerServiceRoutes(app, auth);
   registerAccountantRoutes(app, auth, cipher);
+  registerBusinessRoutes(app, auth, cipher);
   registerUserRoutes(app, auth);
   registerLeadRoutes(app, auth);
   registerConfigRoutes(app, auth);
