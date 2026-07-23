@@ -51,7 +51,8 @@ a recorded _restore / rebuild / drop_ decision. None may be silently skipped.
 - **`parseTemplate.js`** — the whole GARP spreadsheet → dashboard engine (567 lines)
 - Pricing dials: service slabs, synergy factor, catch-up curve, discount tiers
 - Payout statutory rates: platform fee, GST, TDS ₹5L threshold, GST TCS
-- 36 states + 466 Indian cities; marketing copy; 12-entry chatbot knowledge base
+- 36 states + **161** Indian cities (the inventory says 466 — it is wrong, see
+  `PARITY-CHECKLIST.md`); marketing copy; 12-entry chatbot knowledge base
 
 ### Retention policy — keep everything, prune later (decided by the user)
 
@@ -104,7 +105,7 @@ GARP-Associates/
 ├── BYA& Keiri/         legacy source — FROZEN, read-only reference + parity target
 ├── docs/               specs and plans (local only, not version controlled)
 ├── bookyouraccountant/ ← you are here
-└── keiritech/          not created yet
+└── keiritech/          own repo — exists on disk; handled in its own session
 ```
 
 ### The legacy folder is frozen
@@ -120,31 +121,44 @@ call and has been raised.
 
 ---
 
-## Current state — Phase 1 complete
+## Current state — Phase 3 complete (API layer)
 
-Scaffolding only. **No features yet, and nothing is clickable.** The SPA has one route and
-a button with no handler; the API has one endpoint (`/health`).
+The API is real: authenticated, database-backed, 11 endpoints across 4 domains.
+**No UI yet** — the SPA is still the Phase 1 shell.
 
-| Package           | What                                                | Tests |
-| ----------------- | --------------------------------------------------- | ----- |
-| `packages/config` | eslint / tsconfig / tailwind presets                | —     |
-| `packages/shared` | integer-paise money, stable API error codes         | 28    |
-| `packages/ui`     | brand tokens, Tailwind preset, `Button`             | 7     |
-| `apps/api`        | Fastify + typed error handler + rate limiting       | 15    |
-| `apps/app`        | Vite SPA shell — also the future Capacitor bundle   | —     |
-| `apps/web`        | Next.js marketing shell — metadata, robots, sitemap | —     |
+| Package           | What                                                          | Tests |
+| ----------------- | ------------------------------------------------------------- | ----- |
+| `packages/config` | eslint / tsconfig / tailwind presets                          | —     |
+| `packages/shared` | money, error codes, Zod schemas, §19 reference data           | 64    |
+| `packages/ui`     | brand tokens, Tailwind preset, `Button`                       | 7     |
+| `apps/api`        | Fastify + Mongoose + Firebase Auth + 4 modules + denial suite | 162   |
+| `apps/app`        | Vite SPA shell — also the future Capacitor bundle             | —     |
+| `apps/web`        | Next.js marketing shell — metadata, robots, sitemap           | —     |
 
-CI green. 23 commits. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
+233 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
+
+### What Phase 3 delivered
+
+- **`platform/`** — Zod-validated env, Mongoose with fail-loud index assertion, the
+  `TokenVerifier` port, pino redaction, stable 4xx codes, SIGTERM draining.
+- **Four modules** — `services`, `users`, `leads`, `config`, each
+  `routes → service → repository → schema`.
+- **The security layer** — 29 denial tests in `apps/api/src/security/denials.test.ts`,
+  every guard mutation-verified. See `FIRESTORE-RULES-PARITY.md`.
+- **§19 reference data** — 4 of 12 assets ported verbatim into `packages/shared`.
+
+**Deferred, recorded, not dropped:** audit log (§6.7), KYC encryption (§6.5),
+`accountants`/`businesses`, payments, assignments. See `OPEN-ITEMS.md`.
 
 ### Phases ahead
 
-| Phase | Delivers                                                     |
-| ----- | ------------------------------------------------------------ |
-| 3     | API + MongoDB Atlas + Firebase Auth + first domain endpoints |
-| 4     | Marketing pages + ~40 programmatic compliance SEO pages      |
-| 5     | The product UI — **blocked** on the §18 product questions    |
-| 6     | Domain-by-domain migration of live data to Atlas             |
-| 7     | Capacitor → App Store / Play Store                           |
+| Phase | Delivers                                                  |
+| ----- | --------------------------------------------------------- |
+| 3+    | `accountants` + `businesses` + KYC encryption + audit log |
+| 4     | Marketing pages + ~40 programmatic compliance SEO pages   |
+| 5     | The product UI — **blocked** on the §18 product questions |
+| 6     | Domain-by-domain migration of live data to Atlas          |
+| 7     | Capacitor → App Store / Play Store                        |
 
 ---
 
@@ -179,8 +193,9 @@ gating). **A Node API deletes the second layer.**
 
 ```bash
 pnpm dev          # all three apps
-pnpm test         # 50 tests
+pnpm test         # 233 tests
 pnpm lint
+pnpm lint:root    # repo-root files — turbo's graph does NOT cover them
 pnpm typecheck
 pnpm build
 ```
@@ -188,6 +203,23 @@ pnpm build
 Ports: API `8080`, SPA `5173`, Web `3000`.
 
 Single package: `pnpm --filter @bya/api dev`
+
+```bash
+pnpm --filter @bya/api seed              # idempotent reference data
+bash apps/api/scripts/verify-guards.sh   # prove the security guards can fail
+bash apps/api/scripts/smoke.sh           # boot the BUILT artifact against a real mongod
+```
+
+Run `smoke.sh` before calling anything done. It boots `dist/server.js` against a
+real `mongod` (the binary `mongodb-memory-server` already caches — no Atlas
+needed), seeds it, and checks health, the public catalogue, the 401s, the 404,
+rate-limit headers, seed idempotency and a clean SIGTERM drain. A green
+`pnpm test` once coexisted with an API that could not serve a single
+database-backed request.
+
+`apps/api` needs a `.env` — copy `.env.example`. `MONGODB_URI` has no default,
+deliberately: a fallback pointing at a real cluster writes to the wrong database
+and surfaces only as data corruption.
 
 ---
 
@@ -229,6 +261,29 @@ implementation. They share one shape: **a green gate hiding a broken artifact.**
 
 **When something passes, ask what it would look like if it were broken.** If the answer is
 "the same", the check is worthless.
+
+### Phase 3 found four more of the same shape
+
+None was caught by review. Each was caught by deliberately breaking something,
+or by running the real artifact.
+
+| Defect                                                                                                                                                               | Lesson                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **`server.ts` never called `connectDb()`** — the process booted, `/health` said ok, and every DB endpoint timed out. 232 tests green, API completely non-functional. | **Boot the artifact.** `pnpm build` passing is not evidence that anything works.          |
+| `/health` returned `{status:"ok"}` unconditionally, so a database-less server looked healthy to a load balancer                                                      | A check that cannot fail is the same as no check. It now 503s when disconnected.          |
+| The index test passed with `assertIndexes()` replaced by a no-op — Mongoose's `autoIndex` was silently building the index                                            | Prove the mechanism under test is the one doing the work. `autoIndex` is now off.         |
+| The service-layer role guard was shadowed by the schema guard, so route tests stayed green with it deleted                                                           | Defence in depth is only depth if **each layer is verified separately**.                  |
+| Denial 7 fetched `/leads/me` and checked it got its own lead — a handler honouring `?uid=` still passed                                                              | Asserting "I got mine" is not asserting "I could not get theirs". **Attempt the attack.** |
+
+The first one is the one to remember. A full green pipeline — 232 tests, lint,
+typecheck, build — coexisted with an API that could not serve a single
+database-backed request. Nothing short of starting it and calling it would have
+found that.
+
+`bash apps/api/scripts/verify-guards.sh` is the tool. It breaks each guard,
+confirms the test fails, and restores the file. Re-run it whenever a guard
+changes — and note it does not rebuild `@bya/shared`, whose `dist/` is what the
+API actually imports.
 
 ---
 
@@ -274,21 +329,28 @@ From spec §18. Not technical calls; the user must decide:
 This file loads automatically. To pick up work with no prior conversation:
 
 1. Read this file top to bottom — the prime directive and retention policy first.
-2. `OPEN-ITEMS.md` — known gaps, none blocking, ordered by when they hurt.
+2. `OPEN-ITEMS.md` — known gaps, ordered by when they hurt.
 3. `PARITY-CHECKLIST.md` — the gate every phase must pass.
-4. `../BYA& Keiri/FEATURE-INVENTORY.md` — what the legacy system does. The parity contract.
-5. `../docs/specs/2026-07-23-garp-architecture-design.md` §17 for phasing, §18 for the
-   product questions blocking Phase 5.
+4. `FIRESTORE-RULES-PARITY.md` — which of the two lines of defence have been rebuilt.
+5. `../BYA& Keiri/FEATURE-INVENTORY.md` — what the legacy system does. The parity contract.
+6. `../docs/specs/2026-07-23-garp-architecture-design.md` §17 for phasing, §18 for the
+   product questions blocking Phase 5. Phase 3's amendment to §17 is in
+   `../docs/specs/2026-07-23-bya-phase3-api-auth-data.md` §1.2.
 
-Then: `pnpm install && pnpm test` (expect 50 passing) to confirm the workspace is healthy.
+Then: `pnpm install && pnpm test` (expect 233 passing) to confirm the workspace is healthy.
 
 **Next actions, in the order they unblock things:**
 
 - Settle spec §18 — especially **bookings vs assignments**, which decides whether the MIS
   dashboard can exist at all. Blocks Phase 5.
-- Phase 3: API + MongoDB Atlas + Firebase Auth + first domain endpoints.
-- Keiritech repo — not created yet. Smaller, no auth, no database; ships something publicly
-  visible fastest.
+- Point the API at a real Atlas cluster. Everything is tested against
+  `mongodb-memory-server`; nothing has touched Atlas or verified a real Firebase token.
+  First item in `OPEN-ITEMS.md`.
+- Phase 3 follow-up: `accountants` + `businesses`, which need KYC envelope encryption
+  (§6.5) and the audit log (§6.7) first.
+- Keiritech — the folder exists on disk with its own plan at
+  `../docs/plans/2026-07-23-keiritech-rebuild.md`. Handled in a separate session by the
+  user's decision, 2026-07-23.
 
 ## Reference
 

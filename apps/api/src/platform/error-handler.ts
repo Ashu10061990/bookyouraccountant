@@ -1,6 +1,53 @@
-import { ERROR_CODES } from "@bya/shared";
+import { ERROR_CODES, type ErrorCode } from "@bya/shared";
 import type { FastifyError, FastifyInstance } from "fastify";
 import { AppError } from "./errors.js";
+
+/**
+ * Maps an HTTP status to this project's stable error code.
+ *
+ * Needed because Fastify plugins (auth, rate limit, body parsing, schema
+ * validation) throw errors that are not `AppError` but do carry a meaningful
+ * status. Collapsing all of those to `BAD_REQUEST` — as this handler used to —
+ * breaks the contract that clients branch on `code`, never on status: a client
+ * could not distinguish "you are not signed in", which needs a login redirect,
+ * from "your request was malformed", which must never trigger one.
+ */
+export function statusToCode(status: number): ErrorCode {
+  switch (status) {
+    case 401:
+      return ERROR_CODES.UNAUTHENTICATED;
+    case 403:
+      return ERROR_CODES.FORBIDDEN;
+    case 404:
+      return ERROR_CODES.NOT_FOUND;
+    case 409:
+      return ERROR_CODES.CONFLICT;
+    case 429:
+      return ERROR_CODES.RATE_LIMITED;
+    default:
+      return status >= 400 && status < 500 ? ERROR_CODES.BAD_REQUEST : ERROR_CODES.INTERNAL;
+  }
+}
+
+/** User-facing message per status. Never the plugin's own message. */
+function messageForStatus(status: number): string {
+  switch (status) {
+    case 401:
+      return "Sign in to continue.";
+    case 403:
+      return "You do not have access to this.";
+    case 404:
+      return "Not found.";
+    case 409:
+      return "That conflicts with the current state.";
+    case 429:
+      return "Too many requests. Please slow down.";
+    default:
+      return status >= 400 && status < 500
+        ? "Request could not be processed."
+        : "Something went wrong.";
+  }
+}
 
 /**
  * The single error handler. Services throw; routes never catch.
@@ -13,23 +60,17 @@ export function registerErrorHandler(app: FastifyInstance): void {
     // Fastify plugins (rate limit, body parsing, validation) throw errors that
     // are not AppError but DO carry a meaningful 4xx statusCode. Collapsing
     // those to 500 would tell a rate-limited client "server broke" instead of
-    // "slow down". Map the status; never forward the plugin's message, which
-    // can echo request content.
+    // "slow down". Map the status to its stable code; never forward the
+    // plugin's message, which can echo request content.
     const status = typeof error.statusCode === "number" ? error.statusCode : 500;
-    let appError: AppError;
-    if (error instanceof AppError) {
-      appError = error;
-    } else if (status === 429) {
-      appError = new AppError(
-        429,
-        ERROR_CODES.RATE_LIMITED,
-        "Too many requests. Please slow down.",
-      );
-    } else if (status >= 400 && status < 500) {
-      appError = new AppError(status, ERROR_CODES.BAD_REQUEST, "Request could not be processed.");
-    } else {
-      appError = new AppError(500, ERROR_CODES.INTERNAL, "Something went wrong.");
-    }
+    const appError =
+      error instanceof AppError
+        ? error
+        : new AppError(
+            status >= 400 && status < 600 ? status : 500,
+            statusToCode(status),
+            messageForStatus(status),
+          );
 
     const level = appError.status >= 500 ? "error" : "warn";
     request.log[level](

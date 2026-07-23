@@ -34,31 +34,19 @@ export default tseslint.config(
     languageOptions: {
       globals: { ...globals.node },
       parserOptions: {
-        // `*.test.ts` files are excluded from `packages/shared` and
-        // `apps/api`'s tsconfig.json (so compiled tests never ship in
-        // `dist/`), which means the project service can't find a tsconfig
-        // project containing them. `allowDefaultProject` lets it fall back to
-        // an ad-hoc single-file program for exactly those files, so they keep
-        // getting type-aware linting instead of erroring out. Listed as exact
-        // paths (no wildcards) so this can never accidentally swallow a test
-        // file in a package — like packages/ui — whose tsconfig does NOT
-        // exclude tests and where the file is correctly found by the real
-        // project service already. Both the package-relative form (lint run
-        // from inside the package, e.g. `apps/api`'s own `pnpm lint`) and the
-        // repo-root-relative form (`eslint .` from the repo root) are listed,
-        // since ESLint matches this glob against whichever path is current.
-        projectService: {
-          allowDefaultProject: [
-            "src/money.test.ts",
-            "src/errors.test.ts",
-            "src/app.test.ts",
-            "src/platform/errors.test.ts",
-            "packages/shared/src/money.test.ts",
-            "packages/shared/src/errors.test.ts",
-            "apps/api/src/app.test.ts",
-            "apps/api/src/platform/errors.test.ts",
-          ],
-        },
+        // Every package's tsconfig.json now `include`s its test files, so the
+        // project service finds them and type-aware linting just works. Build
+        // output stays test-free via a separate `tsconfig.build.json` that the
+        // `build` script points at.
+        //
+        // This replaces an `allowDefaultProject` allowlist of exact test paths.
+        // That option takes no wildcards, so every new test file needed two
+        // hand-written entries (package-relative and repo-root-relative) and
+        // was otherwise one omission away from a lint crash. Worse, listing a
+        // file that IS in a project is itself an error — so the list could not
+        // simply be over-broad "just in case". Including tests in the project
+        // removes the list and the failure mode together.
+        projectService: true,
       },
     },
     plugins: { import: importPlugin },
@@ -120,8 +108,23 @@ export default tseslint.config(
     // them and type-aware rules must be off for them. Scoped deliberately: a
     // bare `**/*.js` glob would silently exempt real code from the type-aware
     // rules too.
-    files: ["**/*.config.{js,cjs,mjs,ts}", "**/eslint.config.js", "packages/config/**/*.js"],
+    files: [
+      "**/*.config.{js,cjs,mjs,ts}",
+      "**/eslint.config.js",
+      "packages/config/**/*.js",
+      // Build-time tooling: plain Node scripts that belong to no package's TS
+      // program (they read the frozen legacy source, which is outside the
+      // repo). Scoped to scripts/ so this cannot exempt real source.
+      "**/scripts/**/*.{js,mjs,cjs}",
+    ],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    // A CLI tool's normal output IS console.log. Kept separate from the block
+    // above so the exemption is visible on its own terms rather than riding
+    // along with the type-checking one.
+    files: ["**/scripts/**/*.{js,mjs,cjs}"],
+    rules: { "no-console": "off" },
   },
   // Globs must be **-prefixed: a bare `dist/**` matches only a top-level dist/,
   // leaving apps/*/dist and packages/*/dist to be linted as if they were source.

@@ -5,11 +5,12 @@ import { isApiErrorBody } from "@bya/shared";
 import { buildApp } from "./app.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { notFound } from "./platform/errors.js";
+import { testEnv } from "./test/env.js";
 
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  app = await buildApp({ logger: false });
+  app = await buildApp({ logger: false, env: testEnv() });
   // Test-only routes exercising both error paths.
   app.get("/__boom", () => {
     throw notFound("Assignment not found");
@@ -25,10 +26,18 @@ afterAll(async () => {
 });
 
 describe("GET /health", () => {
-  it("returns 200 and a status body", async () => {
+  // This file starts no database, so the honest answer is "degraded".
+  //
+  // The route used to return `{ status: "ok" }` unconditionally, which meant a
+  // server that had never opened a database connection looked healthy to a load
+  // balancer — and the load balancer would route real traffic to it. That is
+  // exactly what happened: `server.ts` was missing its `connectDb()` call, the
+  // whole suite stayed green, and only booting the built artifact revealed it.
+  it("reports 503 when the database is not connected", async () => {
     const res = await app.inject({ method: "GET", url: "/health" });
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: "ok" });
+
+    expect(res.statusCode).toBe(503);
+    expect(res.json()).toEqual({ status: "degraded", database: "disconnected" });
   });
 });
 

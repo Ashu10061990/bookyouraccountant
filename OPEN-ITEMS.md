@@ -1,72 +1,113 @@
 # Open technical items
 
-Known gaps in the Phase 1 foundation. **None are blockers** — the final whole-branch review
-judged the foundation sound to build Phase 3 on. Each was found by review, consciously
-deferred, and recorded here rather than fixed mid-flight.
+Known gaps, ordered by when they start to hurt. Each was found by review or by
+building on top of the thing, consciously deferred, and recorded here rather
+than fixed mid-flight.
 
-Ordered by when they start to hurt.
+**Closed in Phase 3:** CI never linted repo-root files · non-`AppError` 4xx all
+reported `BAD_REQUEST` · no graceful shutdown · no env validation or
+`.env.example` · no pino `redact` baseline. Detail at the bottom.
 
 ---
 
-## Before Phase 3 opens
+## Before Phase 3 ships to an environment
 
-**CI never lints or typechecks repo-root files.**
-`pnpm lint` / `typecheck` / `test` are `turbo run …`, and turbo's task graph only walks the
-six workspaces under `apps/*` and `packages/*`. Nothing at the repo root is covered.
-Root files are gated only by lint-staged, which does not run in CI and is bypassable.
-_Failure:_ a `scripts/reconcile-payouts.ts` at the root is never checked by CI while the
-pipeline reports green.
+**The API has never connected to a real _Atlas_ cluster.**
+The built artifact has been booted against a real local `mongod` — seeded,
+served `/v1/services`, returned the right 401s and 404s, and drained cleanly on
+SIGTERM. What that does **not** cover: `mongodb+srv` DNS-seedlist resolution,
+TLS, IP allowlist or VPC peering, and whether `assertIndexes()` completes inside
+the boot timeout against a populated collection.
+_First action when a connection string exists:_ set `MONGODB_URI`, run
+`pnpm --filter @bya/api seed`, then `pnpm --filter @bya/api start` and curl
+`/health` — it now reports database state and returns 503 when disconnected.
+Spec §6.8 requires the `ap-south-1` (Mumbai) region.
 
-**Non-`AppError` 4xx responses all report `code: "BAD_REQUEST"`.**
-`apps/api/src/platform/error-handler.ts` special-cases only 429 and route-404. A
-plugin-thrown 401/403/409 keeps its HTTP status but carries the wrong stable code — and
-the API contract tells clients to branch on `code`, not status.
-_Failure:_ a client cannot distinguish "not signed in" from "malformed request".
+**Firebase Admin has never verified a real token.**
+`firebaseVerifier` is written and typed but exercised by nothing — every test
+uses the fake. The Firebase SDK is only imported inside `verify()`, so a
+credential or initialisation problem surfaces on the first authenticated
+request, not at boot.
+_Failure:_ every authenticated endpoint 401s in an environment where the health
+check is green. Worth an explicit boot-time credential check before the first
+deploy.
+
+**No route-level default deny.**
+In Firestore, a collection with no rule is inaccessible — the `match
+/{document=**} { allow read, write: if false; }` catch-all. A Node route with
+no guard is wide open instead, so the analogue is per-route discipline plus
+`FIRESTORE-RULES-PARITY.md`. A Fastify `onRoute` hook refusing to register any
+`/v1/*` route without an explicit `preHandler` would restore fail-closed by
+default, and would have caught the deliberately misconfigured route in
+`auth.test.ts` at startup rather than at request time.
 
 ---
 
 ## Before first real deployment
 
-**No graceful shutdown.** `apps/api/src/server.ts` has no SIGTERM handler, so a Cloud Run
-deploy drops in-flight requests. Matters as soon as payment webhooks exist.
+**GitHub Actions pinned to major tags** (`@v4`, `@v2`) rather than commit SHAs.
+Acceptable while workflows are `permissions: contents: read` with no deploy
+credentials. Pin to SHAs with Dependabot before any workflow gains write
+permissions.
 
-**No env validation, no `.env.example`.** `ALLOWED_ORIGINS` and `PORT` are read ad hoc.
-`.gitignore` already whitelists `.env.example`, but the file does not exist. A typo'd
-origin in production fails closed to `localhost:5173`, silently.
+**No audit log (spec §6.7).**
+`PUT /v1/config/:name` records `updatedBy` on the document, which is a
+stand-in, not the append-only log the spec requires. Needed before any admin
+override, money transition or KYC access endpoint ships — those are statutory
+records.
 
-**No pino `redact` baseline.** Full request URLs are logged. A future `?pan=ABCDE1234F`
-lands in Cloud Logging in plaintext. Configure redaction paths centrally before any route
-accepts PII.
+**No idempotency keys.** Required by §6.4 on every payment-mutating endpoint.
+None exist yet because no payment endpoint does.
 
-**GitHub Actions pinned to major tags** (`@v4`, `@v2`) rather than commit SHAs. Acceptable
-while workflows are `permissions: contents: read` with no deploy credentials. Pin to SHAs
-with Dependabot before any workflow gains write permissions.
+---
+
+## Traps worth knowing about
+
+**`@bya/shared` resolves to `dist/`, not `src/`.**
+Editing a shared schema and re-running API tests exercises the _previous_
+build. The first mutation-verification run reported a guard as decorative for
+exactly this reason — the mutation had silently not applied. Run
+`pnpm --filter @bya/shared build` after touching shared, or use `pnpm test`
+from the root, which builds first.
+
+**Tests now live inside each package's tsconfig.**
+They used to be excluded, which forced ESLint's `projectService` to fall back
+to an `allowDefaultProject` allowlist of exact paths — no wildcards, two
+entries per test file, and listing a file that _is_ in a project is itself an
+error. `tsconfig.build.json` keeps `dist/` test-free instead. If you add a
+`scripts/` file, note it is exempt from type-aware linting by a scoped glob.
 
 ---
 
 ## Nice to have
 
 **Brand tokens are duplicated** in `packages/ui/src/tokens.ts` and
-`packages/config/tailwind/preset.js`, with no test asserting parity. All 12 colours
-currently match; nothing keeps them matching. A single test comparing the two would fix
-this permanently.
+`packages/config/tailwind/preset.js`, with no test asserting parity. All 12
+colours currently match; nothing keeps them matching.
 
-**Money module gaps for a marketplace.** No `subtractPaise`, so callers will write raw
-`a - b` and bypass validation. No allocation/split helper for distributing a total across
-platform fee + payout + GST without losing a paise to rounding. `addPaise` is variadic-only
-and blows the call stack around 200k elements.
+**Money module gaps for a marketplace.** No `subtractPaise`, so callers will
+write raw `a - b` and bypass validation. No allocation/split helper for
+distributing a total across platform fee + payout + GST without losing a paise
+to rounding. `addPaise` is variadic-only and blows the call stack around 200k
+elements. All three bite when the payout engine lands.
 
-**Rate-limit regression guard is indirect.** A test asserts `buildApp()`'s instance emits
-`x-ratelimit-*` headers, which would catch a revert of `await app.register(rateLimit, …)`
-back to `void`. Worth confirming it still fails if someone makes that change, since that
-exact defect shipped once.
+**Rate-limit tiers are flat.** One global 100/min. Spec §6.6 specifies tiered
+limits — OTP 5/hour/phone, login 10/15min/IP, payment 20/hour/user. Nothing
+that needs them exists yet.
+
+**No per-role response serialisation.** Spec §6.5 requires field-level
+serialisation by role so an endpoint physically cannot return bank details to
+the wrong audience. Repositories return hand-built views today, which is
+adequate while no PII field exists — and inadequate the moment `accountants`
+lands.
 
 ---
 
 ## Resolved during Phase 1 — do not reintroduce
 
-Six defects, all originally in the _plan_ rather than the implementation. They share one
-shape: **a green gate hiding a broken artifact.** Detail in `CLAUDE.md`.
+Six defects, all originally in the _plan_ rather than the implementation. They
+share one shape: **a green gate hiding a broken artifact.** Detail in
+`CLAUDE.md`.
 
 | Defect                                                                    | Now guarded by                                         |
 | ------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -74,18 +115,60 @@ shape: **a green gate hiding a broken artifact.** Detail in `CLAUDE.md`.
 | `@bya/shared` published raw `.ts` — build green, `start` crashed          | `packages/shared` emits `dist/`                        |
 | `moduleResolution: "Bundler"` on Node-emitting packages                   | `NodeNext` on `shared` and `api`                       |
 | Root eslint ignored `packages/**` while lint-staged linted them           | root uses the shared react preset, no ignores          |
-| `formatINR` regex `/ \| /g` was a tautology stripping nothing             | `/[  ]/g`, verified against both codepoints            |
+| `formatINR` regex `/ \| /g` was a tautology stripping nothing             | `/[  ]/g`, verified against both codepoints            |
 | `import/no-cycle` enabled with no TS resolver — never traversed anything  | `eslint-import-resolver-typescript` + `import/parsers` |
+
+## Resolved during Phase 3
+
+| Item                                          | How                                                                           |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| CI never linted repo-root files               | `pnpm lint:root` added as its own CI step — turbo only walks workspaces       |
+| Non-`AppError` 4xx all reported `BAD_REQUEST` | `statusToCode` maps 401/403/404/409/429 to their real codes                   |
+| No graceful shutdown                          | SIGTERM/SIGINT drain with a 10s ceiling, verified by signalling a live server |
+| No env validation, no `.env.example`          | `platform/env.ts` (Zod, fails at boot) + committed `.env.example`             |
+| No pino `redact` baseline                     | `platform/logger.ts`, tested by asserting secrets are absent from output      |
+
+### Four defects found and fixed inside Phase 3
+
+All four are the Phase 1 shape — **a green gate hiding a broken artifact** — and
+none was caught by reading the code. Each was caught by deliberately breaking
+something, or by running the real thing.
+
+| Defect                                                                                                                                                                                                                                                                                                                                       | Found by                       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| **`server.ts` never called `connectDb()`.** The process started, `/health` said ok, and every database-backed endpoint failed with "buffering timed out after 10000ms" — Mongoose queues against a connection that never arrives instead of failing fast. All 232 tests passed, because tests open their own connection through the harness. | Booting the built artifact     |
+| **`/health` returned `{status:"ok"}` unconditionally.** A server with no database looked healthy to a load balancer, which would route real traffic to it. A check that cannot fail is the same as no check. It now reports database state and 503s when disconnected — both cases pinned by tests.                                          | Same boot                      |
+| The index test passed with `assertIndexes()` replaced by a no-op, because Mongoose's `autoIndex` was silently building the index. `autoIndex` is now off, which is also the correct production setting.                                                                                                                                      | Probe before trusting the test |
+| The service-layer role guard was shadowed by the schema guard, so route tests stayed green with it deleted; and denial 7 observed the happy path instead of attempting the attack, so a handler honouring `?uid=` still passed.                                                                                                              | `scripts/verify-guards.sh`     |
+
+The first two are worth dwelling on: the suite was green, CI would have been
+green, and the API was completely non-functional. Only running the artifact
+found it. **`pnpm build` passing is not evidence that anything works.**
+
+`apps/api/scripts/verify-guards.sh` is the tool for the guard defects. Re-run it
+after touching any guard.
 
 ---
 
 ## Not technical — user decisions
 
-Six product questions in spec §18 block Phase 5. The load-bearing one is **bookings vs
-assignments**: the legacy booking flow is unreachable, which orphans the MIS financial
-dashboard, `ClientUpload` and `processClientTemplate`. Until it is settled, the flagship
-dashboard feature cannot work.
+Six product questions in spec §18 block Phase 5. The load-bearing one is
+**bookings vs assignments**: the legacy booking flow is unreachable, which
+orphans the MIS financial dashboard, `ClientUpload` and
+`processClientTemplate`. Until it is settled, the flagship dashboard feature
+cannot work.
 
-Also outstanding: the live Razorpay key in `../BYA& Keiri/rzp-key.csv`. The legacy app is
-frozen by decision D6, so this is recorded in spec §18's accepted-risk register. It is the
-one item there that does not depend on the rebuild.
+**New in Phase 3 — two service vocabularies disagree.** The seeded catalogue
+has 7 ids (`bookkeeping, tax, payroll, gst, statements, advisory, audit`); the
+profile matching list has 10 (`bookkeeping, gst, tds, itr, payroll, roc, audit,
+advisory, einvoicing, other`). Both are ported verbatim under distinct names.
+Reconciling them is spec §18 Q3, a product decision.
+
+**`FEATURE-INVENTORY.md` §19 has an error.** It records 466 Indian cities; both
+copies of the legacy `india.js` are byte-identical and contain 161. The
+inventory is the parity contract, so this needs correcting at the source.
+
+Also outstanding: the live Razorpay key in `../BYA& Keiri/rzp-key.csv`. The
+legacy app is frozen by decision D6, so this is recorded in spec §18's
+accepted-risk register. It is the one item there that does not depend on the
+rebuild.
