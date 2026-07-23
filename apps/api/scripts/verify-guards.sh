@@ -189,6 +189,22 @@ s=s.replace('    });\n\n    return outcome.result;','    })();\n\n    return out
 fs.writeFileSync(p,s);
 \""
 
+# ---------------------------------------------------------------------------
+# Exam engine (§11): the answer key and server-side scoring
+# ---------------------------------------------------------------------------
+
+run_mutation "E1" "exam: trust the client's session ownership claim" \
+  "apps/api/src/modules/exams/exams.service.ts" "exams" "rejects a submission for someone else" \
+  "perl -0pi -e 's/if \\(stored\\.ownerId !== ctx\\.uid\\) throw forbidden\\(.That exam session is not yours\\..\\);/if (false) throw forbidden(\"x\");/' apps/api/src/modules/exams/exams.service.ts"
+
+run_mutation "E2" "exam: skip the attempt throttle" \
+  "apps/api/src/modules/exams/exams.service.ts" "exams" "blocks a third start after two recent fails" \
+  "perl -0pi -e 's/await assertNotThrottled\\(ctx\\.uid, now\\);//' apps/api/src/modules/exams/exams.service.ts"
+
+run_mutation "E3" "exam: let a used session be re-scored (break idempotency)" \
+  "apps/api/src/modules/exams/exams.service.ts" "exams" "is idempotent" \
+  "perl -0pi -e 's/if \\(stored\\.used\\) \\{/if (false) {/' apps/api/src/modules/exams/exams.service.ts"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   echo "=== all $PASS guards proven load-bearing ==="

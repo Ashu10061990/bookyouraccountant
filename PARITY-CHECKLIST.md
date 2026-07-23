@@ -25,29 +25,29 @@
 
 ## Sections
 
-| §   | Area                                             | Status                  | Decision                               | Who / when         | Ref     |
-| --- | ------------------------------------------------ | ----------------------- | -------------------------------------- | ------------------ | ------- |
-| §1  | System map                                       | ☐ not started           |                                        |                    |         |
-| §2  | Roles & permission matrix                        | ◐ partial — API layer   | PORT (3 roles, admin out-of-band)      | Claude, 2026-07-23 | Phase 3 |
-| §3  | Routing table                                    | ◐ partial — 4 domains   | REBUILD as `/v1/*` REST                | Claude, 2026-07-23 | Phase 3 |
-| §4  | Authentication & onboarding                      | ◐ partial — API half    | PORT (Firebase Auth retained)          | Claude, 2026-07-23 | Phase 3 |
-| §5  | Business dashboard                               | ☐ not started           |                                        |                    |         |
-| §6  | Accountant dashboard                             | ☐ not started           |                                        |                    |         |
-| §7  | Assignment engine (the core product)             | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |         |
-| §8  | Booking engine (legacy, parallel to assignments) | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |         |
-| §9  | Financial dashboard (MIS)                        | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |         |
-| §10 | Compliance calendar                              | ◐ partial — storage     | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3 |
-| §11 | Qualifying exam engine                           | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |         |
-| §12 | Payments & payouts                               | ◐ rates ported only     | DEFER → Phase 6 (constants PORTed)     | Claude, 2026-07-23 | Phase 3 |
-| §13 | Notifications                                    | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |         |
-| §14 | Keiri chatbot                                    | ☐ not started           |                                        |                    |         |
-| §15 | Admin console                                    | ◐ partial — 3 endpoints | REBUILD                                | Claude, 2026-07-23 | Phase 3 |
-| §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |         |
-| §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3 |
-| §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |         |
-| §19 | Reference data tables to preserve                | ◐ 8 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3 |
-| §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |         |
-| §22 | Keiri Tech marketing site                        | ☐ not started           | separate session, user's call          | User, 2026-07-23   |         |
+| §   | Area                                             | Status                  | Decision                               | Who / when         | Ref      |
+| --- | ------------------------------------------------ | ----------------------- | -------------------------------------- | ------------------ | -------- |
+| §1  | System map                                       | ☐ not started           |                                        |                    |          |
+| §2  | Roles & permission matrix                        | ◐ partial — API layer   | PORT (3 roles, admin out-of-band)      | Claude, 2026-07-23 | Phase 3  |
+| §3  | Routing table                                    | ◐ partial — 4 domains   | REBUILD as `/v1/*` REST                | Claude, 2026-07-23 | Phase 3  |
+| §4  | Authentication & onboarding                      | ◐ partial — API half    | PORT (Firebase Auth retained)          | Claude, 2026-07-23 | Phase 3  |
+| §5  | Business dashboard                               | ☐ not started           |                                        |                    |          |
+| §6  | Accountant dashboard                             | ☐ not started           |                                        |                    |          |
+| §7  | Assignment engine (the core product)             | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
+| §8  | Booking engine (legacy, parallel to assignments) | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
+| §9  | Financial dashboard (MIS)                        | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
+| §10 | Compliance calendar                              | ◐ partial — storage     | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3  |
+| §11 | Qualifying exam engine                           | ◐ engine + bank built   | REBUILD (server-side scoring)          | Claude, 2026-07-24 | Phase 3+ |
+| §12 | Payments & payouts                               | ◐ rates ported only     | DEFER → Phase 6 (constants PORTed)     | Claude, 2026-07-23 | Phase 3  |
+| §13 | Notifications                                    | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
+| §14 | Keiri chatbot                                    | ☐ not started           |                                        |                    |          |
+| §15 | Admin console                                    | ◐ partial — 3 endpoints | REBUILD                                | Claude, 2026-07-23 | Phase 3  |
+| §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |          |
+| §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3  |
+| §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |          |
+| §19 | Reference data tables to preserve                | ◐ 9 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3  |
+| §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |          |
+| §22 | Keiri Tech marketing site                        | ☐ not started           | separate session, user's call          | User, 2026-07-23   |          |
 
 ### What "partial" means for each row above
 
@@ -62,6 +62,9 @@
   verification and the safe-field public listing exist. The dashboard _tabs_
   (assignments, earnings) are Phase 5. Contact details are no longer
   world-readable — see the accepted-risk note below.
+- **§11 Qualifying exam.** The 293-question bank (server-only), the pure
+  draw/score engine and the getExam/submitExam routes with throttling and
+  verify-on-pass all exist. The candidate-facing exam _screen_ is Phase 5.
 - **§10 Compliance.** `config/complianceOverrides` can now be read and written,
   which is the backend for `ComplianceOverridesEditor` (§20 dead code). The
   23-obligation calendar itself is not yet ported.
@@ -110,22 +113,22 @@ post-parity pruning scan.
 
 ## Hand-curated data — recreating any of this costs a domain expert's time
 
-| Asset                                                  | §   | Ported? | Where it now lives                                 |
-| ------------------------------------------------------ | --- | ------- | -------------------------------------------------- |
-| 293-question exam bank, 11 topics                      | §19 | ☐       |                                                    |
-| 28-point bookkeeping SOP (Do/Don't/Reconcile)          | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
-| 19 business-type SOP checks (trading/mfg/service)      | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
-| Per-service SOPs (6 services × 4 tasks)                | §19 | ☑       | `packages/shared/src/domain/sop.ts`                |
-| 23-obligation compliance calendar (IT Act 2025)        | §19 | ☐       | storage only — `config/complianceOverrides`        |
-| parseTemplate.js — spreadsheet → dashboard engine      | §19 | ☐       |                                                    |
-| Pricing dials (slabs, synergy, catch-up, discounts)    | §19 | ☑       | `packages/shared/src/domain/pricing*.ts`           |
-| Payout statutory rates (fee, GST, TDS ₹5L, TCS)        | §19 | ☑       | `reference/payout-rates.ts` + `domain/payout.ts`   |
-| India 36 states + **161** cities (not 466 — see below) | §19 | ☑       | `packages/shared/src/reference/india.ts`           |
-| Marketing copy (benefits, FAQs, tiers, testimonials)   | §19 | ☐       |                                                    |
-| Keiri chatbot knowledge base (12 entries)              | §19 | ☐       |                                                    |
-| Software catalogues (11 accounting + 11 compliance)    | §19 | ☑       | `packages/shared/src/reference/profile-options.ts` |
-| Service catalogue (7) + exam centres (6)               | §19 | ☑       | `packages/shared/src/reference/services.ts`        |
-| Profile vocabularies (entity, turnover, GST, volume…)  | §19 | ☑       | `packages/shared/src/reference/profile-options.ts` |
+| Asset                                                  | §   | Ported? | Where it now lives                                      |
+| ------------------------------------------------------ | --- | ------- | ------------------------------------------------------- |
+| 293-question exam bank, 11 topics                      | §19 | ☑       | `apps/api/src/modules/exams/exam-bank.ts` (server-only) |
+| 28-point bookkeeping SOP (Do/Don't/Reconcile)          | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
+| 19 business-type SOP checks (trading/mfg/service)      | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
+| Per-service SOPs (6 services × 4 tasks)                | §19 | ☑       | `packages/shared/src/domain/sop.ts`                     |
+| 23-obligation compliance calendar (IT Act 2025)        | §19 | ☐       | storage only — `config/complianceOverrides`             |
+| parseTemplate.js — spreadsheet → dashboard engine      | §19 | ☐       |                                                         |
+| Pricing dials (slabs, synergy, catch-up, discounts)    | §19 | ☑       | `packages/shared/src/domain/pricing*.ts`                |
+| Payout statutory rates (fee, GST, TDS ₹5L, TCS)        | §19 | ☑       | `reference/payout-rates.ts` + `domain/payout.ts`        |
+| India 36 states + **161** cities (not 466 — see below) | §19 | ☑       | `packages/shared/src/reference/india.ts`                |
+| Marketing copy (benefits, FAQs, tiers, testimonials)   | §19 | ☐       |                                                         |
+| Keiri chatbot knowledge base (12 entries)              | §19 | ☐       |                                                         |
+| Software catalogues (11 accounting + 11 compliance)    | §19 | ☑       | `packages/shared/src/reference/profile-options.ts`      |
+| Service catalogue (7) + exam centres (6)               | §19 | ☑       | `packages/shared/src/reference/services.ts`             |
+| Profile vocabularies (entity, turnover, GST, volume…)  | §19 | ☑       | `packages/shared/src/reference/profile-options.ts`      |
 
 Every ported dataset has a count assertion in `reference.test.ts`. Porting 120
 of 161 cities looks exactly like porting all of them; a count is the cheapest
