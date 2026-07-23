@@ -71,3 +71,26 @@ describe("loadEnv", () => {
     expect(attempt).toThrow(/LOG_LEVEL/);
   });
 });
+
+describe("KMS_MASTER_KEY", () => {
+  it("is optional, so the API boots without KYC configured", () => {
+    expect(loadEnv(VALID).KMS_MASTER_KEY).toBeUndefined();
+  });
+
+  it("accepts a base64 32-byte key", () => {
+    const key = Buffer.alloc(32, 7).toString("base64");
+    expect(loadEnv({ ...VALID, KMS_MASTER_KEY: key }).KMS_MASTER_KEY).toBe(key);
+  });
+
+  // A short key fails deep inside node:crypto at first use otherwise — in
+  // whichever request happens to touch KYC first, in production.
+  it("rejects a key that is not 32 bytes", () => {
+    expect(() =>
+      loadEnv({ ...VALID, KMS_MASTER_KEY: Buffer.alloc(16).toString("base64") }),
+    ).toThrow(/KMS_MASTER_KEY/);
+  });
+
+  it("rejects a key that is not base64", () => {
+    expect(() => loadEnv({ ...VALID, KMS_MASTER_KEY: "not a key" })).toThrow(/KMS_MASTER_KEY/);
+  });
+});

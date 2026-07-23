@@ -43,6 +43,24 @@ const envSchema = z.object({
   // Default Credentials when running on Google infrastructure. Required only
   // when running outside it, which the auth layer reports on its own.
   FIREBASE_PROJECT_ID: z.string().min(1).optional(),
+
+  /**
+   * Base64 32-byte master key wrapping the per-value data keys (§6.5).
+   *
+   * Optional so the API boots without it — but any endpoint touching KYC then
+   * fails loudly rather than storing a PAN in plaintext. Silently falling back
+   * to no encryption is the one behaviour that must not exist here.
+   *
+   * Development only. Production replaces `localKms` with a cloud KMS, which is
+   * what gives rotation and access audit without re-encrypting the database.
+   */
+  KMS_MASTER_KEY: z
+    .string()
+    .refine(
+      (value) => Buffer.from(value, "base64").length === 32,
+      "KMS_MASTER_KEY must be a base64-encoded 32-byte key (generate: openssl rand -base64 32)",
+    )
+    .optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
