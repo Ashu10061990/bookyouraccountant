@@ -45,6 +45,14 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # `pnpm lint` is `turbo run lint`, and turbo's task graph only walks the
+      # workspaces under apps/* and packages/*. Nothing at the repo root was
+      # ever covered — a scripts/reconcile-payouts.ts would go unchecked while
+      # this pipeline reported green. Root files were gated only by lint-staged,
+      # which does not run in CI and is bypassable with `--no-verify`.
+      - name: Lint repo-root files
+        run: pnpm lint:root
+
       - name: Test
         run: pnpm test
 
