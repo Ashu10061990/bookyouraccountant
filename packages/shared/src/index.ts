@@ -19,3 +19,4 @@ export * from "./schemas/exam.js";
 export * from "./domain/compliance.js";
 export * from "./reference/marketing.js";
 export * from "./reference/chatbot-kb.js";
+export * from "./domain/marketing-economics.js";

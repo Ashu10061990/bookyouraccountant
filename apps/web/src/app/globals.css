@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Marketing design foundation. The brand identity — dark navy hero, gold
+ * (saffron) accents, Space Grotesk display — is carried forward faithfully from
+ * the legacy marketing site; the tokens live in the Tailwind preset, and the
+ * few things utilities do not express well (the hero's layered radial glow, the
+ * reveal animation) live here.
+ */
+:root {
+  --font-display: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+  --font-body: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: #0f1e13;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Hero: dark radial base with a slow gold glow bloom. */
+.hero-bg {
+  background: radial-gradient(1200px 600px at 70% -10%, #306339, #0e1c12 60%);
+}
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(700px 360px at 85% 20%, rgba(233, 162, 59, 0.22), transparent 70%);
+  pointer-events: none;
+  animation: glow 6s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.reveal {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .hero-glow::before {
+    animation: none;
+  }
+}
+
+/* Sticky blurred nav over the dark hero. */
+.nav-blur {
+  background: rgba(14, 28, 18, 0.82);
+  backdrop-filter: blur(14px);
+}

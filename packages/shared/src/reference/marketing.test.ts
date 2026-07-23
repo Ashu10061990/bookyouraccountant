@@ -9,14 +9,8 @@ import { CHATBOT_KB } from "./chatbot-kb.js";
  */
 describe("marketing copy", () => {
   it("has the twelve benefits the inventory records, across its groups", () => {
-    const totalBenefits = BENEFIT_GROUPS.reduce(
-      (n, g) =>
-        n +
-        (Array.isArray((g as { items?: unknown[] }).items)
-          ? (g as { items: unknown[] }).items.length
-          : 0),
-      0,
-    );
+    const groups = BENEFIT_GROUPS as readonly { items: readonly unknown[] }[];
+    const totalBenefits = groups.reduce((n, g) => n + g.items.length, 0);
     expect(totalBenefits).toBe(12);
   });
 
