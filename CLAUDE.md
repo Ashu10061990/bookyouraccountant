@@ -269,6 +269,27 @@ From spec §18. Not technical calls; the user must decide:
 
 ---
 
+## Resuming cold
+
+This file loads automatically. To pick up work with no prior conversation:
+
+1. Read this file top to bottom — the prime directive and retention policy first.
+2. `OPEN-ITEMS.md` — known gaps, none blocking, ordered by when they hurt.
+3. `PARITY-CHECKLIST.md` — the gate every phase must pass.
+4. `../BYA& Keiri/FEATURE-INVENTORY.md` — what the legacy system does. The parity contract.
+5. `../docs/specs/2026-07-23-garp-architecture-design.md` §17 for phasing, §18 for the
+   product questions blocking Phase 5.
+
+Then: `pnpm install && pnpm test` (expect 50 passing) to confirm the workspace is healthy.
+
+**Next actions, in the order they unblock things:**
+
+- Settle spec §18 — especially **bookings vs assignments**, which decides whether the MIS
+  dashboard can exist at all. Blocks Phase 5.
+- Phase 3: API + MongoDB Atlas + Firebase Auth + first domain endpoints.
+- Keiritech repo — not created yet. Smaller, no auth, no database; ships something publicly
+  visible fastest.
+
 ## Reference
 
 | Document                                    | Location                                               |
