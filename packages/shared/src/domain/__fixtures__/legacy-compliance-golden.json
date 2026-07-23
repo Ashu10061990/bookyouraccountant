@@ -1,0 +1,1659 @@
+{
+  "items": [
+    {
+      "name": "TDS / TCS deposit",
+      "appliesTo": "Anyone deducting TDS (Sections 392/393, IT Act 2025)",
+      "desc": "Deposit last month's TDS by challan — Rule 218, IT Rules 2026. March TDS gets time till 30 April.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-30",
+            "period": "for March 25 (year-end exception)"
+          },
+          {
+            "dateIso": "2025-05-07",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-07",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-07",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-07",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-07",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-07",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-07",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-07",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-07",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-07",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-07",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-30",
+            "period": "for March 26 (year-end exception)"
+          },
+          {
+            "dateIso": "2026-05-07",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-07",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-07",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-07",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-07",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-07",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-07",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-07",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-07",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-07",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-07",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-30",
+            "period": "for March 27 (year-end exception)"
+          },
+          {
+            "dateIso": "2027-05-07",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-07",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-07",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-07",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-07",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-07",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-07",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-07",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-07",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-07",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-07",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-1 (outward supplies)",
+      "appliesTo": "GST-registered, monthly filers",
+      "desc": "Report all sales invoices of the previous month.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-11",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-11",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-11",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-11",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-11",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-11",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-11",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-11",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-11",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-11",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-11",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-11",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-11",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-11",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-11",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-11",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-11",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-11",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-11",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-11",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-11",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-11",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-11",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-11",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-11",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-11",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-11",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-11",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-11",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-11",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-11",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-11",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-11",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-11",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-11",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-11",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-1 IFF (QRMP)",
+      "appliesTo": "QRMP scheme filers (turnover ≤ ₹5 Cr)",
+      "desc": "Optional monthly invoice upload for B2B buyers' ITC.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-13",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-13",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-13",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-13",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-13",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-13",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-13",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-13",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-13",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-13",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-13",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-13",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-13",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-13",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-13",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-13",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-13",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-13",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-13",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-13",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-13",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-13",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-13",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-13",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-13",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-13",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-13",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-13",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-13",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-13",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-13",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-13",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-13",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-13",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-13",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-13",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PF (EPF) contribution",
+      "appliesTo": "Employers with 20+ employees (or voluntarily registered)",
+      "desc": "Deposit employee + employer PF for last month.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-15",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-15",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-15",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-15",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-15",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-15",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-15",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-15",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-15",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-15",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-15",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-15",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-15",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-15",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-15",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-15",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-15",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-15",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-15",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-15",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-15",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-15",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-15",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-15",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-15",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-15",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-15",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-15",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-15",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-15",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-15",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-15",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-15",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-15",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-15",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-15",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ESI contribution",
+      "appliesTo": "Employers with 10+ employees (wage limit applies)",
+      "desc": "Deposit ESI for last month.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-15",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-15",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-15",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-15",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-15",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-15",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-15",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-15",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-15",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-15",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-15",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-15",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-15",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-15",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-15",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-15",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-15",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-15",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-15",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-15",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-15",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-15",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-15",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-15",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-15",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-15",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-15",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-15",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-15",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-15",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-15",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-15",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-15",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-15",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-15",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-15",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-3B (summary & tax payment)",
+      "appliesTo": "GST-registered, monthly filers",
+      "desc": "Summary return with tax payment for the previous month.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-20",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-20",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-20",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-20",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-20",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-20",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-20",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-20",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-20",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-20",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-20",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-20",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-20",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-20",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-20",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-20",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-20",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-20",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-20",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-20",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-20",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-20",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-20",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-20",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-20",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-20",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-20",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-20",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-20",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-20",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-20",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-20",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-20",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-20",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-20",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-20",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GST PMT-06 (QRMP tax payment)",
+      "appliesTo": "QRMP filers — months 1 & 2 of each quarter",
+      "desc": "Pay monthly GST by challan while filing quarterly.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-25",
+            "period": "for March 25"
+          },
+          {
+            "dateIso": "2025-05-25",
+            "period": "for April 25"
+          },
+          {
+            "dateIso": "2025-06-25",
+            "period": "for May 25"
+          },
+          {
+            "dateIso": "2025-07-25",
+            "period": "for June 25"
+          },
+          {
+            "dateIso": "2025-08-25",
+            "period": "for July 25"
+          },
+          {
+            "dateIso": "2025-09-25",
+            "period": "for August 25"
+          },
+          {
+            "dateIso": "2025-10-25",
+            "period": "for September 25"
+          },
+          {
+            "dateIso": "2025-11-25",
+            "period": "for October 25"
+          },
+          {
+            "dateIso": "2025-12-25",
+            "period": "for November 25"
+          },
+          {
+            "dateIso": "2026-01-25",
+            "period": "for December 25"
+          },
+          {
+            "dateIso": "2026-02-25",
+            "period": "for January 26"
+          },
+          {
+            "dateIso": "2026-03-25",
+            "period": "for February 26"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-25",
+            "period": "for March 26"
+          },
+          {
+            "dateIso": "2026-05-25",
+            "period": "for April 26"
+          },
+          {
+            "dateIso": "2026-06-25",
+            "period": "for May 26"
+          },
+          {
+            "dateIso": "2026-07-25",
+            "period": "for June 26"
+          },
+          {
+            "dateIso": "2026-08-25",
+            "period": "for July 26"
+          },
+          {
+            "dateIso": "2026-09-25",
+            "period": "for August 26"
+          },
+          {
+            "dateIso": "2026-10-25",
+            "period": "for September 26"
+          },
+          {
+            "dateIso": "2026-11-25",
+            "period": "for October 26"
+          },
+          {
+            "dateIso": "2026-12-25",
+            "period": "for November 26"
+          },
+          {
+            "dateIso": "2027-01-25",
+            "period": "for December 26"
+          },
+          {
+            "dateIso": "2027-02-25",
+            "period": "for January 27"
+          },
+          {
+            "dateIso": "2027-03-25",
+            "period": "for February 27"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-25",
+            "period": "for March 27"
+          },
+          {
+            "dateIso": "2027-05-25",
+            "period": "for April 27"
+          },
+          {
+            "dateIso": "2027-06-25",
+            "period": "for May 27"
+          },
+          {
+            "dateIso": "2027-07-25",
+            "period": "for June 27"
+          },
+          {
+            "dateIso": "2027-08-25",
+            "period": "for July 27"
+          },
+          {
+            "dateIso": "2027-09-25",
+            "period": "for August 27"
+          },
+          {
+            "dateIso": "2027-10-25",
+            "period": "for September 27"
+          },
+          {
+            "dateIso": "2027-11-25",
+            "period": "for October 27"
+          },
+          {
+            "dateIso": "2027-12-25",
+            "period": "for November 27"
+          },
+          {
+            "dateIso": "2028-01-25",
+            "period": "for December 27"
+          },
+          {
+            "dateIso": "2028-02-25",
+            "period": "for January 28"
+          },
+          {
+            "dateIso": "2028-03-25",
+            "period": "for February 28"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Advance income tax",
+      "appliesTo": "Tax after TDS > ₹10,000/yr — Sections 403–408, IT Act 2025",
+      "desc": "Cumulative instalments; interest u/s 424/425 for shortfall. Presumptive taxpayers: single instalment by 15 Mar.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-06-15",
+            "period": "1st instalment — 15% of the year"
+          },
+          {
+            "dateIso": "2025-09-15",
+            "period": "2nd instalment — 45% cumulative"
+          },
+          {
+            "dateIso": "2025-12-15",
+            "period": "3rd instalment — 75% cumulative"
+          },
+          {
+            "dateIso": "2026-03-15",
+            "period": "4th instalment — 100%"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-06-15",
+            "period": "1st instalment — 15% of the year"
+          },
+          {
+            "dateIso": "2026-09-15",
+            "period": "2nd instalment — 45% cumulative"
+          },
+          {
+            "dateIso": "2026-12-15",
+            "period": "3rd instalment — 75% cumulative"
+          },
+          {
+            "dateIso": "2027-03-15",
+            "period": "4th instalment — 100%"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-06-15",
+            "period": "1st instalment — 15% of the year"
+          },
+          {
+            "dateIso": "2027-09-15",
+            "period": "2nd instalment — 45% cumulative"
+          },
+          {
+            "dateIso": "2027-12-15",
+            "period": "3rd instalment — 75% cumulative"
+          },
+          {
+            "dateIso": "2028-03-15",
+            "period": "4th instalment — 100%"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TDS statements (Form 138 salary / Form 140 others)",
+      "appliesTo": "All TDS deductors — replaces 24Q/26Q from TY 2026-27",
+      "desc": "Quarterly deductee-wise statement; late fee ₹200/day u/s 427. Q4 of the old FY files on the old forms.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-05-31",
+            "period": "Q4 of FY 2024-25 (Jan–Mar, old-Act forms)"
+          },
+          {
+            "dateIso": "2025-07-31",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2025-10-31",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2026-01-31",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-05-31",
+            "period": "Q4 of FY 2025-26 (Jan–Mar, old-Act forms)"
+          },
+          {
+            "dateIso": "2026-07-31",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2026-10-31",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2027-01-31",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-05-31",
+            "period": "Q4 of FY 2026-27 (Jan–Mar, old-Act forms)"
+          },
+          {
+            "dateIso": "2027-07-31",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2027-10-31",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2028-01-31",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-3B (QRMP quarterly)",
+      "appliesTo": "QRMP scheme filers (22nd/24th by state)",
+      "desc": "Quarterly summary return.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-22",
+            "period": "Q4 of FY 2024-25"
+          },
+          {
+            "dateIso": "2025-07-22",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2025-10-22",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2026-01-22",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-22",
+            "period": "Q4 of FY 2025-26"
+          },
+          {
+            "dateIso": "2026-07-22",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2026-10-22",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2027-01-22",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-22",
+            "period": "Q4 of FY 2026-27"
+          },
+          {
+            "dateIso": "2027-07-22",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2027-10-22",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2028-01-22",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CMP-08 (composition scheme)",
+      "appliesTo": "GST composition dealers",
+      "desc": "Quarterly statement-cum-challan.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-18",
+            "period": "Q4 of FY 2024-25"
+          },
+          {
+            "dateIso": "2025-07-18",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2025-10-18",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2026-01-18",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-18",
+            "period": "Q4 of FY 2025-26"
+          },
+          {
+            "dateIso": "2026-07-18",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2026-10-18",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2027-01-18",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-18",
+            "period": "Q4 of FY 2026-27"
+          },
+          {
+            "dateIso": "2027-07-18",
+            "period": "Q1 (Apr–Jun)"
+          },
+          {
+            "dateIso": "2027-10-18",
+            "period": "Q2 (Jul–Sep)"
+          },
+          {
+            "dateIso": "2028-01-18",
+            "period": "Q3 (Oct–Dec)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-4 (composition annual return)",
+      "appliesTo": "GST composition dealers",
+      "desc": "Annual return for the previous financial year.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-06-30",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-06-30",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-06-30",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Form 130 — salary TDS certificate",
+      "appliesTo": "All employers (replaces Form 16 from TY 2026-27)",
+      "desc": "Annual TDS certificate to every employee.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-06-15",
+            "period": "for FY 2024-25 (Form 16, old Act)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-06-15",
+            "period": "for FY 2025-26 (Form 16, old Act)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-06-15",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DPT-3 (return of deposits)",
+      "appliesTo": "Companies with loans/advances outstanding",
+      "desc": "Annual return of deposits & exempted borrowings.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-06-30",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-06-30",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-06-30",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ITR — salaried (ITR-1 / ITR-2)",
+      "appliesTo": "Salaried individuals without tax audit",
+      "desc": "Income tax return for the last financial year.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-07-31",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-07-31",
+            "period": "for FY 2025-26 (AY 2026-27, old Act — last old-Act season)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-07-31",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ITR — business/professional, non-audit (ITR-3 / ITR-4)",
+      "appliesTo": "Business & professional income without tax audit",
+      "desc": "Extra month over salaried filers under the staggered calendar.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-08-31",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-08-31",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-08-31",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tax audit report",
+      "appliesTo": "Turnover above audit limits (Form 26 replaces 3CD for new-Act years)",
+      "desc": "Audit report upload — one month before the audited ITR.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-09-30",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-09-30",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-09-30",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DIR-3 KYC",
+      "appliesTo": "Every director with a DIN",
+      "desc": "Annual director KYC — DIN deactivates if missed.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-09-30",
+            "period": "annual KYC"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-09-30",
+            "period": "annual KYC"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-09-30",
+            "period": "annual KYC"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ITR — audit cases",
+      "appliesTo": "Businesses under tax audit",
+      "desc": "Return filing for audited entities.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-10-31",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-10-31",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-10-31",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AOC-4 (financial statements)",
+      "appliesTo": "All companies",
+      "desc": "File financials with ROC within 30 days of AGM.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-10-29",
+            "period": "FY 2024-25 accounts (30 days from AGM)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-10-29",
+            "period": "FY 2025-26 accounts (30 days from AGM)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-10-29",
+            "period": "FY 2026-27 accounts (30 days from AGM)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MGT-7 / 7A (annual return)",
+      "appliesTo": "All companies (7A for OPC & small companies)",
+      "desc": "ROC annual return within 60 days of AGM.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-11-28",
+            "period": "FY 2024-25 (60 days from AGM)"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-11-28",
+            "period": "FY 2025-26 (60 days from AGM)"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-11-28",
+            "period": "FY 2026-27 (60 days from AGM)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GSTR-9 / 9C (annual return)",
+      "appliesTo": "GST-registered, turnover > ₹2 Cr (9C > ₹5 Cr)",
+      "desc": "Annual consolidation of the year's GST returns.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-12-31",
+            "period": "for FY 2024-25"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-12-31",
+            "period": "for FY 2025-26"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-12-31",
+            "period": "for FY 2026-27"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MSME-1 (half-yearly)",
+      "appliesTo": "Companies with dues to MSME suppliers > 45 days",
+      "desc": "Report outstanding MSME payments.",
+      "occurrences": {
+        "2025": [
+          {
+            "dateIso": "2025-04-30",
+            "period": "Oct–Mar half-year"
+          },
+          {
+            "dateIso": "2025-10-31",
+            "period": "Apr–Sep half-year"
+          }
+        ],
+        "2026": [
+          {
+            "dateIso": "2026-04-30",
+            "period": "Oct–Mar half-year"
+          },
+          {
+            "dateIso": "2026-10-31",
+            "period": "Apr–Sep half-year"
+          }
+        ],
+        "2027": [
+          {
+            "dateIso": "2027-04-30",
+            "period": "Oct–Mar half-year"
+          },
+          {
+            "dateIso": "2027-10-31",
+            "period": "Apr–Sep half-year"
+          }
+        ]
+      }
+    }
+  ]
+}
