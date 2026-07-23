@@ -12,25 +12,44 @@ reported `BAD_REQUEST` · no graceful shutdown · no env validation or
 
 ## Before Phase 3 ships to an environment
 
-**The API has never connected to a real _Atlas_ cluster.**
-The built artifact has been booted against a real local `mongod` — seeded,
-served `/v1/services`, returned the right 401s and 404s, and drained cleanly on
-SIGTERM. What that does **not** cover: `mongodb+srv` DNS-seedlist resolution,
-TLS, IP allowlist or VPC peering, and whether `assertIndexes()` completes inside
-the boot timeout against a populated collection.
-_First action when a connection string exists:_ set `MONGODB_URI`, run
-`pnpm --filter @bya/api seed`, then `pnpm --filter @bya/api start` and curl
-`/health` — it now reports database state and returns 503 when disconnected.
-Spec §6.8 requires the `ap-south-1` (Mumbai) region.
+**Atlas is blocked on the IP allowlist — three things to settle.**
+A connection string for `cluster0.9fupu2d.mongodb.net` exists and is in
+`apps/api/.env` (gitignored, commented out). Connecting fails: all three shard
+hosts reject the TLS handshake, which is what Atlas does for a non-allowlisted
+IP. The API runs against a local `mongod` in the meantime.
 
-**Firebase Admin has never verified a real token.**
-`firebaseVerifier` is written and typed but exercised by nothing — every test
-uses the fake. The Firebase SDK is only imported inside `verify()`, so a
-credential or initialisation problem surfaces on the first authenticated
-request, not at boot.
-_Failure:_ every authenticated endpoint 401s in an environment where the health
-check is green. Worth an explicit boot-time credential check before the first
-deploy.
+1. **Allowlist the dev IP** in Atlas > Network Access.
+2. **Confirm the cluster region.** Spec §6.8 requires `ap-south-1` (Mumbai) for
+   Indian data residency under the DPDP Act. A cluster created in the default
+   region is a compliance problem that is far cheaper to fix while it is empty.
+3. **Rotate the database password.** It was shared in a chat transcript, so it
+   should be treated as disclosed. Note the same class of issue is already an
+   accepted risk in spec §18 (the plaintext Razorpay key), so this is a live
+   pattern rather than a hypothetical.
+
+Also note the connection string must carry an explicit database name. The
+onboarding string ends at the host, and Mongoose then silently uses `test` — the
+seed would land in a database nobody looks at. `.env` uses `/bya`.
+
+Still unproven against Atlas specifically: `mongodb+srv` DNS-seedlist
+resolution, TLS, and whether `assertIndexes()` finishes inside the boot timeout
+on a populated collection.
+
+**Firebase Admin rejects bad tokens, but has never _accepted_ a real one.**
+Running locally against the real `accountant-on-call` project, `firebaseVerifier`
+initialises and correctly rejects a malformed token with `auth/argument-error`,
+and the client sees only "Sign in to continue." — the SDK's reason never leaks.
+So the wiring is proven in the negative.
+
+The positive path is not: no real ID token from a signed-in user has ever been
+accepted. That matters because `verifyIdToken(token, true)` — `checkRevoked` is
+on deliberately, so a signed-out user's token dies immediately rather than at
+the end of its hour — calls the Firebase Auth backend and therefore needs real
+credentials. A service-account key is required:
+_Firebase console > Project settings > Service accounts > Generate new private
+key_, saved outside the repo, referenced by `GOOGLE_APPLICATION_CREDENTIALS`.
+_Failure without it:_ every authenticated endpoint 401s while the health check
+stays green. Worth a boot-time credential check before the first deploy.
 
 **No route-level default deny.**
 In Firestore, a collection with no rule is inaccessible — the `match
