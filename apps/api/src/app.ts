@@ -3,9 +3,15 @@ import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
+import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
 import { type Env, loadEnv } from "./platform/env.js";
 import { registerErrorHandler } from "./platform/error-handler.js";
 import { buildLoggerOptions } from "./platform/logger.js";
+import { registerConfigRoutes } from "./modules/config/config.routes.js";
+import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
+import { registerServiceRoutes } from "./modules/services/services.routes.js";
+import { registerUserRoutes } from "./modules/users/users.routes.js";
+import { findAuthUser } from "./modules/users/users.repository.js";
 
 export interface BuildAppOptions {
   /** Disable in tests to keep output readable. */
@@ -16,6 +22,11 @@ export interface BuildAppOptions {
    * once, here, at boot.
    */
   env?: Env;
+  /**
+   * Injected so tests run with no Firebase credentials. In production the
+   * defaults are the real Firebase verifier and the real users repository.
+   */
+  auth?: AuthDeps;
 }
 
 /**
@@ -52,7 +63,19 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   registerErrorHandler(app);
 
+  // Firebase stays the identity provider (spec §2): only data moves to Atlas.
+  // The role, however, always comes from Mongo — see platform/auth.ts.
+  const auth: AuthDeps = options.auth ?? {
+    verifier: firebaseVerifier(env.FIREBASE_PROJECT_ID),
+    userLookup: findAuthUser,
+  };
+
   app.get("/health", () => ({ status: "ok" }));
+
+  registerServiceRoutes(app, auth);
+  registerUserRoutes(app, auth);
+  registerLeadRoutes(app, auth);
+  registerConfigRoutes(app, auth);
 
   return app;
 }

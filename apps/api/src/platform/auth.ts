@@ -60,6 +60,8 @@ declare module "fastify" {
   interface FastifyRequest {
     /** Present only after `requireAuth` has run. */
     ctx?: RequestContext;
+    /** Present after `requireVerifiedToken` — identity, before any user row. */
+    tokenUid?: string;
   }
 }
 
@@ -98,18 +100,10 @@ function bearerToken(request: FastifyRequest): string {
  */
 export function requireAuth(deps: AuthDeps): preHandlerAsyncHookHandler {
   return async function authenticate(request): Promise<void> {
-    const token = bearerToken(request);
+    await verifyToken(deps.verifier, request);
+    const uid = tokenUidOf(request);
 
-    let verified: VerifiedToken;
-    try {
-      verified = await deps.verifier.verify(token);
-    } catch (error) {
-      // Logged, not swallowed, and not echoed to the client.
-      request.log.warn({ err: error }, "token verification failed");
-      throw unauthenticated();
-    }
-
-    const user = await deps.userLookup(verified.uid);
+    const user = await deps.userLookup(uid);
 
     // A valid token for a user with no record is not authenticated *here*. It
     // happens legitimately between OTP and the create-user call, so it is a
@@ -126,8 +120,47 @@ export function requireAuth(deps: AuthDeps): preHandlerAsyncHookHandler {
       );
     }
 
-    request.ctx = { uid: verified.uid, role: user.role, blocked: user.blocked };
+    request.ctx = { uid, role: user.role, blocked: user.blocked };
   };
+}
+
+/** Verifies the bearer token and records the uid. Shared by both guards. */
+async function verifyToken(verifier: TokenVerifier, request: FastifyRequest): Promise<void> {
+  const token = bearerToken(request);
+
+  try {
+    const verified = await verifier.verify(token);
+    request.tokenUid = verified.uid;
+  } catch (error) {
+    // Logged, not swallowed, and never echoed to the client — the verifier's
+    // message names *why* a token failed, which is a probing oracle.
+    request.log.warn({ err: error }, "token verification failed");
+    throw unauthenticated();
+  }
+}
+
+/**
+ * Proves the caller holds a valid token, without requiring a user record.
+ *
+ * Exists for exactly one case: creating your own user document. At that moment
+ * the token is valid but no row exists yet, so `requireAuth` — which rejects a
+ * verified token with no user — cannot be used. Every other route uses
+ * `requireAuth`, because "authenticated" should normally mean "and we know who
+ * you are".
+ */
+export function requireVerifiedToken(deps: Pick<AuthDeps, "verifier">): preHandlerAsyncHookHandler {
+  return async function verifyOnly(request): Promise<void> {
+    await verifyToken(deps.verifier, request);
+  };
+}
+
+/** Reads the verified uid, throwing if no token guard ran. */
+export function tokenUidOf(request: FastifyRequest): string {
+  if (request.tokenUid === undefined) {
+    request.log.error("handler read the token uid on an unverified route");
+    throw unauthenticated();
+  }
+  return request.tokenUid;
 }
 
 /**
