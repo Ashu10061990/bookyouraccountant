@@ -15,3 +15,4 @@ export * from "./domain/pricing.js";
 export * from "./domain/sop.js";
 export * from "./domain/payout.js";
 export * from "./domain/coupon.js";
+export * from "./schemas/exam.js";
