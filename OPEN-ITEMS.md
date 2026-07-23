@@ -12,28 +12,19 @@ reported `BAD_REQUEST` · no graceful shutdown · no env validation or
 
 ## Before Phase 3 ships to an environment
 
-**Atlas is blocked on the IP allowlist — three things to settle.**
-A connection string for `cluster0.9fupu2d.mongodb.net` exists and is in
-`apps/api/.env` (gitignored, commented out). Connecting fails: all three shard
-hosts reject the TLS handshake, which is what Atlas does for a non-allowlisted
-IP. The API runs against a local `mongod` in the meantime.
+**Rotate the Atlas database password.**
+It was shared in a chat transcript, so treat it as disclosed. This is the same
+class of issue already sitting in spec §18's accepted-risk register (the
+plaintext Razorpay key) — a live pattern here, not a hypothetical, and cheap to
+close while the cluster holds nothing but seed data.
 
-1. **Allowlist the dev IP** in Atlas > Network Access.
-2. **Confirm the cluster region.** Spec §6.8 requires `ap-south-1` (Mumbai) for
-   Indian data residency under the DPDP Act. A cluster created in the default
-   region is a compliance problem that is far cheaper to fix while it is empty.
-3. **Rotate the database password.** It was shared in a chat transcript, so it
-   should be treated as disclosed. Note the same class of issue is already an
-   accepted risk in spec §18 (the plaintext Razorpay key), so this is a live
-   pattern rather than a hypothetical.
+After rotating, update `MONGODB_URI` in `apps/api/.env` (gitignored). Before the
+first deploy the value should move to Secret Manager or Doppler per spec §6.5;
+`.env` is a local-development convenience, not the destination.
 
-Also note the connection string must carry an explicit database name. The
-onboarding string ends at the host, and Mongoose then silently uses `test` — the
-seed would land in a database nobody looks at. `.env` uses `/bya`.
-
-Still unproven against Atlas specifically: `mongodb+srv` DNS-seedlist
-resolution, TLS, and whether `assertIndexes()` finishes inside the boot timeout
-on a populated collection.
+**Keep the Atlas IP allowlist current.** A changed dev IP presents as all three
+shard hosts rejecting the TLS handshake — which reads like a TLS fault, not an
+access-control one. Worth knowing before losing an hour to it.
 
 **Firebase Admin rejects bad tokens, but has never _accepted_ a real one.**
 Running locally against the real `accountant-on-call` project, `firebaseVerifier`
@@ -146,6 +137,28 @@ share one shape: **a green gate hiding a broken artifact.** Detail in
 | No graceful shutdown                          | SIGTERM/SIGINT drain with a 10s ceiling, verified by signalling a live server |
 | No env validation, no `.env.example`          | `platform/env.ts` (Zod, fails at boot) + committed `.env.example`             |
 | No pino `redact` baseline                     | `platform/logger.ts`, tested by asserting secrets are absent from output      |
+| Never connected to a real Atlas cluster       | Connected, seeded and served against `cluster0` — see below                   |
+
+### Verified against real Atlas, 2026-07-23
+
+`mongodb+srv` seedlist resolution, TLS and authentication all work. The API
+boots, reports `{"status":"ok","database":"connected"}`, and serves the seeded
+catalogue. Every guard still denies unauthenticated access against the real
+cluster, not just in tests.
+
+`assertIndexes()` built all four unique indexes on Atlas — `services.id`,
+`users.firebaseUid`, `leads.firebaseUid`, `config.name` — and the constraint was
+confirmed live by inserting a duplicate service id and watching Atlas reject it
+with E11000. The seed is idempotent there too: 7 created, then 0 created / 7
+present.
+
+**Region confirmed compliant.** The replica-set node tags report
+`region: AP_SOUTH_1`, `availabilityZone: aps1-az3`, `provider: AWS` — Mumbai,
+which is what spec §6.8 requires for DPDP data residency. Nothing to change.
+
+Still unproven: index builds against a _populated_ collection (the cluster holds
+7 seed rows), and behaviour under VPC peering or a restricted allowlist rather
+than a single dev IP.
 
 ### Four defects found and fixed inside Phase 3
 
