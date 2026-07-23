@@ -111,6 +111,84 @@ s=s.replace('function assertSelfAssignable(role: string | undefined): void {',
 fs.writeFileSync(p,s);
 \""
 
+# ---------------------------------------------------------------------------
+# Phase 3 follow-up: accountants, businesses, KYC and the audit log
+# ---------------------------------------------------------------------------
+
+run_mutation "A1" "accountants: allow a profile to arrive verified" \
+  "apps/api/src/modules/accountants/accountants.service.ts" "accountants" "refuses a profile that tries to arrive verified" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('function assertNoServerOwnedFields(payload: unknown): void {',
+            'function assertNoServerOwnedFields(payload: unknown): void { return;');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "A2" "accountants: leak contact details in the public view" \
+  "apps/api/src/modules/accountants/accountants.serializers.ts" "serializers" "omits the email" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.serializers.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('    verified: document.verified,',
+            '    email: document.email, phone: document.phone,\n    verified: document.verified,');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "A3" "accountants: give every signed-in user the private view" \
+  "apps/api/src/modules/accountants/accountants.serializers.ts" "serializers" "gives another signed-in user the public view" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.serializers.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('  return isOwner || isAdmin ? privateView(document) : publicView(document);',
+            '  return privateView(document);');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "A4" "accountants: let a non-admin read decrypted KYC" \
+  "apps/api/src/modules/accountants/accountants.service.ts" "accountants.service" "refuses the accountant reading their own, reached directly" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace(\\\"  if (ctx.role !== 'admin') {\\n    throw forbidden('Only an administrator may read full KYC details.');\\n  }\\\", '');
+s=s.replace('    throw forbidden(\\\"Only an administrator may read full KYC details.\\\");','');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "A5" "accountants: skip the audit entry on a KYC read" \
+  "apps/api/src/modules/accountants/accountants.service.ts" "accountants" "writes an audit entry naming the admin who read it" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('  await record({', '  await Promise.resolve({');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "B1" "businesses: let any signed-in user read a business" \
+  "apps/api/src/modules/businesses/businesses.service.ts" "businesses.service" "refuses another business reached directly" \
+  "perl -0pi -e 's/if \\(ctx\\.uid !== subjectUid && ctx\\.role !== \"admin\"\\)/if (false)/' apps/api/src/modules/businesses/businesses.service.ts"
+
+run_mutation "B2" "businesses: allow the org PAN through the profile update path" \
+  "apps/api/src/modules/businesses/businesses.service.ts" "businesses" "cannot be set or cleared through the profile update path" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/businesses/businesses.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('function assertNoServerOwnedFields(payload: unknown): void {',
+            'function assertNoServerOwnedFields(payload: unknown): void { return;');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "C1" "crypto: store the PAN in plaintext instead of sealing it" \
+  "apps/api/src/modules/accountants/accountants.service.ts" "accountants" "stores the PAN encrypted, never in plaintext" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/accountants/accountants.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('          panMasked: maskPan(input.pan),','          panMasked: input.pan,');
+fs.writeFileSync(p,s);
+\""
+
+run_mutation "D1" "audit: break the transaction so a failed action still records" \
+  "apps/api/src/modules/audit/audit.service.ts" "audit" "rolls the change back when the work throws" \
+  "node -e \"
+const fs=require('fs');const p='apps/api/src/modules/audit/audit.service.ts';let s=fs.readFileSync(p,'utf8');
+s=s.replace('    await session.withTransaction(async () => {','    await (async () => {');
+s=s.replace('    });\n\n    return outcome.result;','    })();\n\n    return outcome.result;');
+fs.writeFileSync(p,s);
+\""
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   echo "=== all $PASS guards proven load-bearing ==="

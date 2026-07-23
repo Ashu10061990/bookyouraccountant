@@ -43,7 +43,7 @@
 | §14 | Keiri chatbot                                    | ☐ not started           |                                        |                    |         |
 | §15 | Admin console                                    | ◐ partial — 3 endpoints | REBUILD                                | Claude, 2026-07-23 | Phase 3 |
 | §16 | Public marketing site (in-app)                   | ☐ not started           | DEFER → Phase 4                        | Claude, 2026-07-23 |         |
-| §17 | Data model                                       | ◐ 4 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3 |
+| §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3 |
 | §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |         |
 | §19 | Reference data tables to preserve                | ◐ 4 of 12 ported        | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3 |
 | §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |         |
@@ -58,6 +58,10 @@
 - **§4 Auth.** Token verification, role resolution and the blocked-user gate are
   done. The onboarding _flows_ (OTP screens, exam-then-register ordering,
   the §18 exam-pass-then-refresh trap) are Phase 5.
+- **§6 Accountant dashboard.** Profile CRUD, encrypted KYC submission, admin
+  verification and the safe-field public listing exist. The dashboard _tabs_
+  (assignments, earnings) are Phase 5. Contact details are no longer
+  world-readable — see the accepted-risk note below.
 - **§10 Compliance.** `config/complianceOverrides` can now be read and written,
   which is the backend for `ComplianceOverridesEditor` (§20 dead code). The
   23-obligation calendar itself is not yet ported.
@@ -65,8 +69,9 @@
   payout logic, no Razorpay, no ledger.
 - **§15 Admin.** Admin-only writes for services and config, plus the lead list.
   The console's other tabs are Phase 5.
-- **§17 Data model.** `users`, `leads`, `services`, `config`. Every document
-  schema carries optional `legacyId` for §14 traceability.
+- **§17 Data model.** `users`, `leads`, `services`, `config`, `accountants`,
+  `businesses`, `audit_log`. Every document schema carries optional `legacyId`
+  for §14 traceability.
 - **§19 Reference data.** 4 of 12 assets; see the table below.
 
 ---

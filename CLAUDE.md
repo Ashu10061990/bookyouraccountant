@@ -126,14 +126,14 @@ call and has been raised.
 The API is real: authenticated, database-backed, 11 endpoints across 4 domains.
 **No UI yet** — the SPA is still the Phase 1 shell.
 
-| Package           | What                                                          | Tests |
-| ----------------- | ------------------------------------------------------------- | ----- |
-| `packages/config` | eslint / tsconfig / tailwind presets                          | —     |
-| `packages/shared` | money, error codes, Zod schemas, §19 reference data           | 64    |
-| `packages/ui`     | brand tokens, Tailwind preset, `Button`                       | 7     |
-| `apps/api`        | Fastify + Mongoose + Firebase Auth + 4 modules + denial suite | 162   |
-| `apps/app`        | Vite SPA shell — also the future Capacitor bundle             | —     |
-| `apps/web`        | Next.js marketing shell — metadata, robots, sitemap           | —     |
+| Package           | What                                                         | Tests |
+| ----------------- | ------------------------------------------------------------ | ----- |
+| `packages/config` | eslint / tsconfig / tailwind presets                         | —     |
+| `packages/shared` | money, error codes, Zod schemas, §19 reference data          | 64    |
+| `packages/ui`     | brand tokens, Tailwind preset, `Button`                      | 7     |
+| `apps/api`        | Fastify + Mongoose + Firebase Auth + 6 modules + KYC + audit | 318   |
+| `apps/app`        | Vite SPA shell — also the future Capacitor bundle            | —     |
+| `apps/web`        | Next.js marketing shell — metadata, robots, sitemap          | —     |
 
 Every package emits `dist/`. A package that ships TypeScript source pushes its
 build problem onto every consumer — see the `@bya/ui` row below.
@@ -141,7 +141,7 @@ build problem onto every consumer — see the `@bya/ui` row below.
 `apps/web` dev uses **Turbopack** (`next dev --turbopack`). Webpack's dev
 runtime fails on this machine; detail in `OPEN-ITEMS.md`.
 
-233 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
+389 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 
 ### What Phase 3 delivered
 
@@ -153,8 +153,13 @@ runtime fails on this machine; detail in `OPEN-ITEMS.md`.
   every guard mutation-verified. See `FIRESTORE-RULES-PARITY.md`.
 - **§19 reference data** — 4 of 12 assets ported verbatim into `packages/shared`.
 
-**Deferred, recorded, not dropped:** audit log (§6.7), KYC encryption (§6.5),
-`accountants`/`businesses`, payments, assignments. See `OPEN-ITEMS.md`.
+**Phase 3 + follow-up delivered:** the four platform modules, plus the audit log
+(§6.7), envelope encryption (§6.5), and the `accountants` and `businesses`
+modules. The §18 accepted risk (accountant bank details world-readable) is no
+longer reproduced — see `OPEN-ITEMS.md`.
+
+**Deferred, recorded, not dropped:** payments (§12), assignments (§7, blocked on
+§18 Q1), the exam engine (§11). See `OPEN-ITEMS.md`.
 
 ### Phases ahead
 
@@ -199,7 +204,7 @@ gating). **A Node API deletes the second layer.**
 
 ```bash
 pnpm dev          # all three apps
-pnpm test         # 233 tests
+pnpm test         # 389 tests
 pnpm lint
 pnpm lint:root    # repo-root files — turbo's graph does NOT cover them
 pnpm typecheck
@@ -350,7 +355,7 @@ This file loads automatically. To pick up work with no prior conversation:
    product questions blocking Phase 5. Phase 3's amendment to §17 is in
    `../docs/specs/2026-07-23-bya-phase3-api-auth-data.md` §1.2.
 
-Then: `pnpm install && pnpm test` (expect 233 passing) to confirm the workspace is healthy.
+Then: `pnpm install && pnpm test` (expect 389 passing) to confirm the workspace is healthy.
 
 **Next actions, in the order they unblock things:**
 

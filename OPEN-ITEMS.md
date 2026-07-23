@@ -8,6 +8,10 @@ than fixed mid-flight.
 reported `BAD_REQUEST` · no graceful shutdown · no env validation or
 `.env.example` · no pino `redact` baseline. Detail at the bottom.
 
+**Closed in the Phase 3 follow-up (2026-07-24):** audit log · KYC envelope
+encryption · per-role response serialisation · the §18 world-readable-accountant
+accepted risk. Detail below.
+
 ---
 
 ## Before Phase 3 ships to an environment
@@ -60,11 +64,10 @@ Acceptable while workflows are `permissions: contents: read` with no deploy
 credentials. Pin to SHAs with Dependabot before any workflow gains write
 permissions.
 
-**No audit log (spec §6.7).**
-`PUT /v1/config/:name` records `updatedBy` on the document, which is a
-stand-in, not the append-only log the spec requires. Needed before any admin
-override, money transition or KYC access endpoint ships — those are statutory
-records.
+**Audit log export to WORM storage (§6.7).** The append-only `audit_log` exists
+and is written transactionally, but the spec also calls for a monthly export to
+write-once storage, since these are statutory records. Not built — no retention
+job exists yet.
 
 **No idempotency keys.** Required by §6.4 on every payment-mutating endpoint.
 None exist yet because no payment endpoint does.
@@ -119,17 +122,46 @@ distributing a total across platform fee + payout + GST without losing a paise
 to rounding. `addPaise` is variadic-only and blows the call stack around 200k
 elements. All three bite when the payout engine lands.
 
-**Rate-limit tiers are flat.** One global 100/min. Spec §6.6 specifies tiered
-limits — OTP 5/hour/phone, login 10/15min/IP, payment 20/hour/user. Nothing
-that needs them exists yet.
-
-**No per-role response serialisation.** Spec §6.5 requires field-level
-serialisation by role so an endpoint physically cannot return bank details to
-the wrong audience. Repositories return hand-built views today, which is
-adequate while no PII field exists — and inadequate the moment `accountants`
-lands.
+**Rate-limit tiers are flat.** One global limit (`RATE_LIMIT_MAX`, default
+100/min). Spec §6.6 also specifies tiered limits — OTP 5/hour/phone, login
+10/15min/IP, payment 20/hour/user. The global limit is now configurable; the
+tiers arrive with the endpoints that need them (none does yet).
 
 ---
+
+## Accepted risk now defended against
+
+Spec §18 records, as a live accepted risk on the frozen legacy app: _"accountants
+read rule allows public reads — bank account numbers, IFSC codes, phone and
+email of every verified accountant are world-readable."_ The legacy app is
+frozen (D6), so that stays live **there** until cutover.
+
+The rebuild no longer reproduces it. The `accountants` public listing and
+profile read return a safe-field view built by naming fields, with no spread
+and no path that emits contact details or KYC — enforced by
+`accountants.serializers.ts` and pinned by tests that assert the bank account,
+IFSC, phone, email, PAN and sealed values are all absent from public and
+signed-in-non-owner responses. When the app cutover happens, the risk closes
+with it rather than being carried forward.
+
+## Phase 3 follow-up — completed 2026-07-24
+
+- **Audit log (§6.7).** Append-only by construction (no update/delete path in
+  the repository); `withAudit` commits the action and its record in one
+  transaction. Wired into config writes, accountant verification, and every KYC
+  read/write.
+- **Envelope encryption (§6.5).** Per-value AES-256-GCM data keys wrapped by a
+  KMS port (`localKms` for dev, cloud later). Authenticated, tamper-tested. No
+  KMS key configured → 503, never plaintext storage.
+- **`accountants`.** Profile, encrypted KYC, admin verification, safe public
+  listing. Anti-self-verification guarded three ways.
+- **`businesses`.** Owner/admin only, no listing route, org PAN encrypted and
+  unreachable from the profile path.
+
+All 18 service guards (9 original + 9 new) proven load-bearing by
+`scripts/verify-guards.sh`. Two new guards were decorative until a direct
+service-layer test was added — the same route-shadows-service problem found in
+Phase 3 proper, caught again by the same tool.
 
 ## Resolved during Phase 1 — do not reintroduce
 
