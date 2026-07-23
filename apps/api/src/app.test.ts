@@ -1,13 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { FastifyInstance } from "fastify";
+import Fastify, { type FastifyInstance } from "fastify";
+import rateLimit from "@fastify/rate-limit";
 import { isApiErrorBody } from "@bya/shared";
 import { buildApp } from "./app.js";
+import { registerErrorHandler } from "./platform/error-handler.js";
 import { notFound } from "./platform/errors.js";
 
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  app = buildApp({ logger: false });
+  app = await buildApp({ logger: false });
   // Test-only routes exercising both error paths.
   app.get("/__boom", () => {
     throw notFound("Assignment not found");
@@ -61,5 +63,44 @@ describe("error handler", () => {
     const res = await app.inject({ method: "GET", url: "/does-not-exist" });
     expect(res.statusCode).toBe(404);
     expect(isApiErrorBody(res.json())).toBe(true);
+  });
+});
+
+describe("rate limiting", () => {
+  // Uses a separate, deliberately tiny-limit instance so the test is fast and
+  // does not disturb the shared `app` (whose real limit is 100/minute).
+  async function buildTinyLimitApp(): Promise<FastifyInstance> {
+    const tinyApp = Fastify({ logger: false });
+    await tinyApp.register(rateLimit, { max: 2, timeWindow: "1 minute" });
+    registerErrorHandler(tinyApp);
+    tinyApp.get("/__limited", () => ({ ok: true }));
+    await tinyApp.ready();
+    return tinyApp;
+  }
+
+  it("returns 429 once the limit is exceeded", async () => {
+    const tinyApp = await buildTinyLimitApp();
+    try {
+      await tinyApp.inject({ method: "GET", url: "/__limited" });
+      await tinyApp.inject({ method: "GET", url: "/__limited" });
+      const third = await tinyApp.inject({ method: "GET", url: "/__limited" });
+      expect(third.statusCode).toBe(429);
+    } finally {
+      await tinyApp.close();
+    }
+  });
+
+  it("reports the 429 in the project's error wire shape", async () => {
+    const tinyApp = await buildTinyLimitApp();
+    try {
+      await tinyApp.inject({ method: "GET", url: "/__limited" });
+      await tinyApp.inject({ method: "GET", url: "/__limited" });
+      const third = await tinyApp.inject({ method: "GET", url: "/__limited" });
+      const body: unknown = third.json();
+      expect(isApiErrorBody(body)).toBe(true);
+      expect((body as { error: { code: string } }).error.code).toBe("RATE_LIMITED");
+    } finally {
+      await tinyApp.close();
+    }
   });
 });

@@ -1,5 +1,5 @@
 import { ERROR_CODES } from "@bya/shared";
-import type { FastifyInstance } from "fastify";
+import type { FastifyError, FastifyInstance } from "fastify";
 import { AppError } from "./errors.js";
 
 /**
@@ -9,11 +9,27 @@ import { AppError } from "./errors.js";
  * the requestId, never to the client.
  */
 export function registerErrorHandler(app: FastifyInstance): void {
-  app.setErrorHandler((error, request, reply) => {
-    const appError =
-      error instanceof AppError
-        ? error
-        : new AppError(500, ERROR_CODES.INTERNAL, "Something went wrong.");
+  app.setErrorHandler((error: FastifyError, request, reply) => {
+    // Fastify plugins (rate limit, body parsing, validation) throw errors that
+    // are not AppError but DO carry a meaningful 4xx statusCode. Collapsing
+    // those to 500 would tell a rate-limited client "server broke" instead of
+    // "slow down". Map the status; never forward the plugin's message, which
+    // can echo request content.
+    const status = typeof error.statusCode === "number" ? error.statusCode : 500;
+    let appError: AppError;
+    if (error instanceof AppError) {
+      appError = error;
+    } else if (status === 429) {
+      appError = new AppError(
+        429,
+        ERROR_CODES.RATE_LIMITED,
+        "Too many requests. Please slow down.",
+      );
+    } else if (status >= 400 && status < 500) {
+      appError = new AppError(status, ERROR_CODES.BAD_REQUEST, "Request could not be processed.");
+    } else {
+      appError = new AppError(500, ERROR_CODES.INTERNAL, "Something went wrong.");
+    }
 
     const level = appError.status >= 500 ? "error" : "warn";
     request.log[level](
