@@ -46,7 +46,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
     });
   });
 
-  app.setNotFoundHandler((request, reply) => {
+  app.setNotFoundHandler({ preHandler: app.rateLimit() }, (request, reply) => {
     void reply.status(404).send({
       error: {
         code: ERROR_CODES.NOT_FOUND,

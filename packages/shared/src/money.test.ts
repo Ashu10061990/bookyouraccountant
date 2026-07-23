@@ -67,7 +67,7 @@ describe("addPaise", () => {
   });
 
   it("rejects non-integer input", () => {
-    expect(() => addPaise(10.5)).toThrow("must be an integer");
+    expect(() => addPaise(10.5)).toThrow("must be a safe integer");
   });
 });
 
@@ -99,6 +99,14 @@ describe("assertPaise", () => {
   });
 
   it("rejects fractional values", () => {
-    expect(() => assertPaise(10.5)).toThrow("must be an integer");
+    expect(() => assertPaise(10.5)).toThrow("must be a safe integer");
+  });
+
+  it("rejects values beyond MAX_SAFE_INTEGER", () => {
+    expect(() => assertPaise(Number.MAX_SAFE_INTEGER + 1)).toThrow("must be a safe integer");
+  });
+
+  it("accepts MAX_SAFE_INTEGER itself", () => {
+    expect(() => assertPaise(Number.MAX_SAFE_INTEGER)).not.toThrow();
   });
 });

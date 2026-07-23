@@ -18,8 +18,8 @@ export function assertPaise(value: number): asserts value is Paise {
   if (!Number.isFinite(value)) {
     throw new TypeError(`Paise value is not a finite number: ${value}`);
   }
-  if (!Number.isInteger(value)) {
-    throw new TypeError(`Paise value must be an integer, received: ${value}`);
+  if (!Number.isSafeInteger(value)) {
+    throw new TypeError(`Paise value must be a safe integer, received: ${value}`);
   }
 }
 

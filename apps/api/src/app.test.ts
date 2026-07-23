@@ -67,6 +67,17 @@ describe("error handler", () => {
 });
 
 describe("rate limiting", () => {
+  it("rate limits the instance returned by buildApp() itself", async () => {
+    // Regression guard: the previous Critical shipped because `void
+    // app.register(rateLimit, ...)` doesn't attach before routes are
+    // registered. Both other tests here build their own Fastify instance and
+    // would stay green even if that regressed, so this asserts directly
+    // against the shared `app` built via `buildApp()` in this file's
+    // `beforeAll`.
+    const res = await app.inject({ method: "GET", url: "/health" });
+    expect(res.headers["x-ratelimit-limit"]).toBeTruthy();
+  });
+
   // Uses a separate, deliberately tiny-limit instance so the test is fast and
   // does not disturb the shared `app` (whose real limit is 100/minute).
   async function buildTinyLimitApp(): Promise<FastifyInstance> {

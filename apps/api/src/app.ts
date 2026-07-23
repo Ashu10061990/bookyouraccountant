@@ -24,7 +24,6 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     // Fastify's default request id is a per-process counter, so two instances
     // both emit "req-1". A UUID keeps ids correlatable across instances.
     genReqId: () => randomUUID(),
-    disableRequestLogging: false,
   });
 
   // These MUST be awaited. `void app.register(...)` returns before the plugin

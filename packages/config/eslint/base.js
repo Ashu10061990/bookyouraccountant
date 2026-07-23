@@ -1,7 +1,30 @@
+import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import importPlugin from "eslint-plugin-import";
 import globals from "globals";
+
+// eslint-import-resolver-typescript resolves a non-glob `project` entry with
+// `path.resolve(process.cwd(), entry)` — i.e. relative to whatever directory
+// the `eslint` process happens to be invoked from, NOT relative to this
+// config file. Turbo runs each package's `lint` script with that package as
+// cwd, while the root `eslint . --max-warnings=0` runs with the repo root as
+// cwd, so a repo-root-relative string like `"tsconfig.base.json"` resolves
+// correctly from the root but silently misses from inside a package — and
+// once it misses, get-tsconfig falls back to searching upward for the
+// nearest `tsconfig.json` by name, which lands on that package's own
+// tsconfig.json. That file `extends` the scoped `@bya/config` package, and
+// get-tsconfig (in this version) resolves scoped-package `extends` targets
+// through the literal `node_modules/@bya/config` symlink path rather than
+// its realpath — one directory level short of the real `packages/config`
+// location — so the further relative `extends: "../../../tsconfig.base.json"`
+// inside `packages/config/typescript/base.json` then fails with
+// `File '../../../tsconfig.base.json' not found.` regardless of which
+// package triggered it. Passing an absolute path sidesteps `process.cwd()`
+// entirely (`path.resolve` returns an absolute input unchanged), so the
+// resolver always finds and parses this extends-free root tsconfig
+// directly, no matter where `eslint` is invoked from.
+const repoRootTsconfig = fileURLToPath(new URL("../../../tsconfig.base.json", import.meta.url));
 
 /** Shared flat config for Node/TypeScript packages. */
 export default tseslint.config(
@@ -10,9 +33,48 @@ export default tseslint.config(
   {
     languageOptions: {
       globals: { ...globals.node },
-      parserOptions: { projectService: true },
+      parserOptions: {
+        // `*.test.ts` files are excluded from `packages/shared` and
+        // `apps/api`'s tsconfig.json (so compiled tests never ship in
+        // `dist/`), which means the project service can't find a tsconfig
+        // project containing them. `allowDefaultProject` lets it fall back to
+        // an ad-hoc single-file program for exactly those files, so they keep
+        // getting type-aware linting instead of erroring out. Listed as exact
+        // paths (no wildcards) so this can never accidentally swallow a test
+        // file in a package — like packages/ui — whose tsconfig does NOT
+        // exclude tests and where the file is correctly found by the real
+        // project service already. Both the package-relative form (lint run
+        // from inside the package, e.g. `apps/api`'s own `pnpm lint`) and the
+        // repo-root-relative form (`eslint .` from the repo root) are listed,
+        // since ESLint matches this glob against whichever path is current.
+        projectService: {
+          allowDefaultProject: [
+            "src/money.test.ts",
+            "src/errors.test.ts",
+            "src/app.test.ts",
+            "src/platform/errors.test.ts",
+            "packages/shared/src/money.test.ts",
+            "packages/shared/src/errors.test.ts",
+            "apps/api/src/app.test.ts",
+            "apps/api/src/platform/errors.test.ts",
+          ],
+        },
+      },
     },
     plugins: { import: importPlugin },
+    settings: {
+      // Without this, eslint-plugin-import falls back to its default (JS-only)
+      // parser to build the export map it needs for cross-file rules like
+      // `import/no-cycle`. That parse silently fails on TypeScript syntax, so
+      // the rule treats every `.ts`/`.tsx` file as unresolvable and never
+      // actually traverses anything — it looks "on" but never fires.
+      "import/parsers": {
+        "@typescript-eslint/parser": [".ts", ".tsx"],
+      },
+      "import/resolver": {
+        typescript: { alwaysTryTypes: true, project: [repoRootTsconfig] },
+      },
+    },
     rules: {
       // --- Spec §8: a caught error is handled, rethrown, or logged. Never swallowed.
       "no-empty": ["error", { allowEmptyCatch: false }],
