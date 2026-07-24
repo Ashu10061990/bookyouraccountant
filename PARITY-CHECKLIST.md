@@ -163,6 +163,30 @@ at the repo root, or macOS `._` metadata.
 | Mobile-responsiveness pass (6 files, `clamp()` padding + grid overflow fixes) | ☐       |       |
 | `keiri-mobile.css` — universal mobile patch for the Keiri static site         | ☐       |       |
 
+## Slice: accountant onboarding + exam (2026-07-25)
+
+Built end-to-end and **walked in a browser** against the live API + Firebase Auth
+emulator. Spec `docs/specs/2026-07-24-accountant-onboarding-slice-design.md`.
+
+| Inventory § | Feature                         | Status in rebuild                         | Decision                                                                  |
+| ----------- | ------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| §4          | Auth & onboarding (OTP → role)  | built (client), walked E2E                | PORT                                                                      |
+| §11         | Qualifying exam screen          | built (client, timed/no-back), walked E2E | PORT                                                                      |
+| §6          | Accountant profile register     | built (client, born-verified), walked E2E | PORT                                                                      |
+| §6          | Accountant verified terminal    | built (summary, not a faked dashboard)    | PORT                                                                      |
+| §6          | KYC onboarding screen           | not built                                 | **DEFER — next slice, 2026-07-25** (backend exists)                       |
+| §6 / §20    | Rate slab / `RateField`         | not built                                 | **DEFER — pricing surface, 2026-07-25** (not in `createAccountantSchema`) |
+| §6          | Accountant dashboard tabs       | not built                                 | **DEFER — Phase 5, 2026-07-25** (partly §18 Q1)                           |
+| §16         | Marketing CTAs → real `/signin` | still point at `/contact` placeholder     | **DEFER — quick `apps/web` follow-up, 2026-07-25**                        |
+
+**Open decision surfaced, kicked to the user (an instance of §18 Q3, the services
+decision):** the profile's **Specialties** picker draws from `SERVICES` (7-entry
+marketplace/pricing catalogue, what `GET /v1/services` returns and what the tested
+e2e path uses), while `packages/shared` also documents a separate `PROFILE_SERVICES`
+(10-entry) as the profile/matching vocabulary. The spec chose `SERVICES`; it is
+internally consistent and not a slice blocker, but which catalogue profiles should
+use is a real product call to settle with §18 Q3.
+
 ## Standalone tools — retained, fate undetermined
 
 Three self-contained HTML utilities at the legacy repo root, ~900 KB each. They read like

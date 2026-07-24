@@ -30,17 +30,36 @@ first deploy the value should move to Secret Manager or Doppler per spec §6.5;
 shard hosts rejecting the TLS handshake — which reads like a TLS fault, not an
 access-control one. Worth knowing before losing an hour to it.
 
+**`local-db.sh` is a standalone mongod — transactions fail against it.** Found
+walking the onboarding slice (2026-07-25): `POST /v1/exam/submit` wraps its writes
+in a Mongo transaction (`withTransaction`), and transactions require a **replica
+set**. `local-db.sh` starts a standalone, so the endpoint 500s with _"Transaction
+numbers are only allowed on a replica set member or mongos"_. Atlas is a replica
+set and the test harness uses `MongoMemoryReplSet`, so this is green everywhere
+except a hand-run local server. This hits **every transactional endpoint** (exam
+submit, audited KYC/config writes). For a full local walkthrough, run mongod as a
+single-node replica set instead: `mongod --replSet rs0 --dbpath … --port 27018`,
+then `replSetInitiate({_id:"rs0", members:[{_id:0, host:"127.0.0.1:27018"}]})`,
+and set `MONGODB_URI=mongodb://127.0.0.1:27018/bya?replicaSet=rs0`. Worth folding
+into `local-db.sh` so the local DB matches production topology by default.
+
 **Firebase Admin rejects bad tokens, but has never _accepted_ a real one.**
 Running locally against the real `accountant-on-call` project, `firebaseVerifier`
 initialises and correctly rejects a malformed token with `auth/argument-error`,
 and the client sees only "Sign in to continue." — the SDK's reason never leaks.
 So the wiring is proven in the negative.
 
-The positive path is not: no real ID token from a signed-in user has ever been
-accepted. That matters because `verifyIdToken(token, true)` — `checkRevoked` is
-on deliberately, so a signed-out user's token dies immediately rather than at
-the end of its hour — calls the Firebase Auth backend and therefore needs real
-credentials. A service-account key is required:
+The positive path is now proven — but via the **Firebase Auth emulator**, not the
+real project. The onboarding slice (2026-07-25) walked real signed-in tokens all
+the way through: OTP sign-in against the emulator, the API verifying those tokens
+via the **gated no-key dev verifier** (`FIREBASE_ALLOW_UNREVOKED_CHECK=true` +
+`FIREBASE_AUTH_EMULATOR_HOST`, both refused under `NODE_ENV=production`), and
+authenticated endpoints (`/v1/users`, `/v1/exam/*`, `/v1/accountants`) accepting
+them. So token acceptance is no longer unproven.
+
+What is still not exercised is the **production** path: `verifyIdToken(token, true)`
+with `checkRevoked` on against the **real** `accountant-on-call` project, which
+calls the Firebase Auth backend and needs a real service-account key —
 _Firebase console > Project settings > Service accounts > Generate new private
 key_, saved outside the repo, referenced by `GOOGLE_APPLICATION_CREDENTIALS`.
 _Failure without it:_ every authenticated endpoint 401s while the health check

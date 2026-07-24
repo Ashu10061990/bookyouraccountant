@@ -156,11 +156,13 @@ call and has been raised.
 
 ---
 
-## Current state (2026-07-24)
+## Current state (2026-07-25)
 
 The API is real — authenticated, Atlas-backed, 21 route paths across 7 domains —
-and the **marketing site is a real, working website**. The product SPA
-(`apps/app`) is still a Phase-1 shell.
+the **marketing site is a real, working website**, and the **accountant
+onboarding + exam flow now works end-to-end** in the product SPA (`apps/app`):
+phone-OTP sign-in → 20-question qualifying exam → register profile → verified
+accountant, **walked in a browser against the live API** (not just compiled).
 
 | Package           | What                                                            | Tests |
 | ----------------- | --------------------------------------------------------------- | ----- |
@@ -169,7 +171,7 @@ and the **marketing site is a real, working website**. The product SPA
 | `packages/ui`     | brand tokens, Tailwind preset, `Button`                         | 7     |
 | `apps/api`        | Fastify + Mongoose + Firebase Auth, 7 modules, KYC, audit, exam | 330   |
 | `apps/web`        | Next.js marketing **site** — 5 pages, SSR, responsive           | —     |
-| `apps/app`        | Vite SPA **shell** — still Phase 1; future Capacitor bundle     | —     |
+| `apps/app`        | Vite SPA — **onboarding + exam, walked E2E** (§4/§6/§11)        | —     |
 
 **517 tests, full gate green** (`format`, `typecheck`, `lint`, `lint:root`,
 `test`, `build`, plus `smoke.sh` and `verify-guards.sh`).
@@ -203,6 +205,16 @@ Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 - **The marketing site** (§16) — Home (live savings calculator, FAQ accordion),
   About, Why, Dashboards & MIS, Contact. SSR + SEO metadata, responsive,
   faithful dark-navy/gold brand.
+- **Accountant onboarding + exam (§4/§6/§11)** — the SPA's first real journey.
+  Firebase **client** auth (phone OTP), a typed API client (bearer token), an
+  `AuthProvider`, and the screens: Landing → SignIn → Onboarding (resume + stage
+  machine) → ExamStep (30s-per-question ring timer, no-back, idempotent submit) →
+  ProfileStep (`createAccountantSchema` form) → verified terminal. The exam is
+  server-scored; the profile is **born verified** from the server's recorded pass
+  (client never sends `verified`). Verified by walking the whole flow in a browser
+  against the live API + Firebase **Auth emulator** (see below), confirming
+  born-verification from the actual network trace. Backend was already built +
+  tested; this slice added the SPA + a gated no-key dev token verifier.
 
 Two §18 accepted risks are no longer reproduced by the rebuild: accountant bank
 details are not world-readable (serialise-on-read), and KYC is encrypted at rest.
@@ -369,6 +381,25 @@ confirms the test fails, and restores the file. Re-run it whenever a guard
 changes — and note it does not rebuild `@bya/shared`, whose `dist/` is what the
 API actually imports.
 
+### The onboarding slice found two more (2026-07-25)
+
+Both were invisible to `typecheck`, `lint`, `build`, and every `app.inject` test,
+and both surfaced only by walking the flow in a real browser against a real API.
+
+| Defect                                                                                                                                                                                                                                                                                                                                         | Lesson                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The SPA API client set `content-type: application/json` on **every** request, so bodyless POSTs (`/v1/exam/start`) sent an empty JSON body → Fastify's parser **400s** it. Bootstrap (which has a body) worked, so the bug hid until the exam.                                                                                                 | `app.inject` never sets a stray content-type; the browser's `fetch` does. **The client↔server contract only fully executes in the browser.** Only declare a JSON content-type when there is a body.                                                                           |
+| Exam **submit 500'd** against the local dev DB: `submitExam` uses a Mongo transaction, and `apps/api/scripts/local-db.sh` starts a **standalone** mongod — transactions need a replica set. Atlas and the test harness (`MongoMemoryReplSet`) are replica sets, so it was green everywhere except the one place a human would actually run it. | **Any transactional endpoint (exam submit, audited KYC/config writes) 500s against `local-db.sh`.** For a full local walkthrough, run mongod as a single-node replica set (`--replSet rs0` + `replSetInitiate`, `MONGODB_URI=…?replicaSet=rs0`). Recorded in `OPEN-ITEMS.md`. |
+
+Verifying this slice needs Firebase auth in the browser. The rig, all local, no
+console/SMS/cost: the **Firebase Auth emulator** (`firebase.json` at the repo
+root; `npx firebase-tools emulators:start --only auth --project accountant-on-call`),
+the API booted with `FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099` +
+`FIREBASE_ALLOW_UNREVOKED_CHECK=true` against a replica-set mongod, and the SPA
+with `VITE_FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099` (`apps/app/.env.local`).
+The emulator prints each OTP to its log. The real project is untouched: the
+emulator seam is off unless those env vars are set.
+
 ---
 
 ## Open product questions — the user must decide
@@ -443,16 +474,24 @@ bash apps/api/scripts/smoke.sh   # the built API actually boots and serves
 
 To see the marketing site: `pnpm --filter @bya/web dev` → http://localhost:3000.
 
+**Just finished (2026-07-25):** accountant onboarding + exam, walked end-to-end
+in a browser. Spec `docs/specs/2026-07-24-accountant-onboarding-slice-design.md`,
+plan `docs/plans/2026-07-24-accountant-onboarding-slice.md`.
+
 **Next actions.** Per the vertical-slice method, pick a whole area and finish it:
 
-- **Accountant onboarding + exam** — the strongest next slice. The entire backend
-  exists and is tested (OTP identity → 20-question exam → profile → verified).
-  What is missing is the SPA screens + Firebase **client** auth. This would also
-  make the marketing site's CTAs real (they point at `/contact` as a placeholder).
+- **Accountant KYC screen** — the natural next slice on the same surface. The
+  backend exists (`PUT /v1/accountants/me/kyc`, envelope-encrypted); it needs the
+  onboarding/settings screen. Small, self-contained, no new blockers.
 - **Phase 4 SEO pages** — ~40 programmatic compliance pages. The compliance
   calendar data is ported, so this is largely templating over existing data.
+- **Business onboarding** — the other side of the marketplace; mirrors this
+  slice's shape (OTP → role bootstrap → org-PAN KYC → dashboard-stub).
 - **Payments (§12)** — needs idempotency keys and webhook-as-source-of-truth
   first; the payout _maths_ is already ported and golden-verified.
+
+The marketing site's CTAs can now point at the real `/signin` instead of the
+`/contact` placeholder (a quick follow-up in `apps/web`).
 
 **Blocked on the user, not on code:**
 
