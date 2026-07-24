@@ -14,6 +14,7 @@
     "@bya/shared": "workspace:*",
     "@bya/ui": "workspace:*",
     "@tanstack/react-query": "^5.62.7",
+    "firebase": "^11.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1"
