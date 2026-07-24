@@ -1,22 +1,31 @@
-import { Button } from "@bya/ui";
 import { Route, Routes } from "react-router-dom";
-
-function Home() {
-  return (
-    <main className="grid min-h-screen place-items-center bg-paper font-body text-ink">
-      <div className="text-center">
-        <h1 className="font-display text-3xl font-bold text-navy">BookYourAccountant</h1>
-        <p className="mt-2 text-ink-soft">Application shell — routes land here.</p>
-        <Button className="mt-6">Get started</Button>
-      </div>
-    </main>
-  );
-}
+import { Landing } from "./routes/Landing.js";
+import { SignIn } from "./routes/SignIn.js";
+import { RequireAuth } from "./routes/RequireAuth.js";
+import { Onboarding } from "./routes/onboarding/Onboarding.js";
+import { Accountant } from "./routes/Accountant.js";
 
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route
+        path="/onboarding"
+        element={
+          <RequireAuth>
+            <Onboarding />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/accountant"
+        element={
+          <RequireAuth>
+            <Accountant />
+          </RequireAuth>
+        }
+      />
     </Routes>
   );
 }
