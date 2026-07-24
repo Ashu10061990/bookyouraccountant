@@ -25,29 +25,29 @@
 
 ## Sections
 
-| §   | Area                                             | Status                  | Decision                               | Who / when         | Ref      |
-| --- | ------------------------------------------------ | ----------------------- | -------------------------------------- | ------------------ | -------- |
-| §1  | System map                                       | ☐ not started           |                                        |                    |          |
-| §2  | Roles & permission matrix                        | ◐ partial — API layer   | PORT (3 roles, admin out-of-band)      | Claude, 2026-07-23 | Phase 3  |
-| §3  | Routing table                                    | ◐ partial — 4 domains   | REBUILD as `/v1/*` REST                | Claude, 2026-07-23 | Phase 3  |
-| §4  | Authentication & onboarding                      | ◐ partial — API half    | PORT (Firebase Auth retained)          | Claude, 2026-07-23 | Phase 3  |
-| §5  | Business dashboard                               | ☐ not started           |                                        |                    |          |
-| §6  | Accountant dashboard                             | ☐ not started           |                                        |                    |          |
-| §7  | Assignment engine (the core product)             | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
-| §8  | Booking engine (legacy, parallel to assignments) | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
-| §9  | Financial dashboard (MIS)                        | ☐ not started           | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |          |
-| §10 | Compliance calendar                              | ◐ data + storage        | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3  |
-| §11 | Qualifying exam engine                           | ◐ engine + bank built   | REBUILD (server-side scoring)          | Claude, 2026-07-24 | Phase 3+ |
-| §12 | Payments & payouts                               | ◐ rates ported only     | DEFER → Phase 6 (constants PORTed)     | Claude, 2026-07-23 | Phase 3  |
-| §13 | Notifications                                    | ☐ not started           | DEFER → Phase 5                        | Claude, 2026-07-23 |          |
-| §14 | Keiri chatbot                                    | ☐ not started           |                                        |                    |          |
-| §15 | Admin console                                    | ◐ partial — 3 endpoints | REBUILD                                | Claude, 2026-07-23 | Phase 3  |
-| §16 | Public marketing site (in-app)                   | ◐ 5 pages built         | REBUILD (Next.js SSR)                  | Claude, 2026-07-24 | Phase 4  |
-| §17 | Data model                                       | ◐ 7 of 22 collections   | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3  |
-| §18 | Cloud Functions catalogue (18)                   | ☐ not started           | DEFER → Phase 5/6                      | Claude, 2026-07-23 |          |
-| §19 | Reference data tables to preserve                | ◐ 10 of 12 ported       | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3  |
-| §20 | Dead / unreachable code register                 | ☐ not started           | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |          |
-| §22 | Keiri Tech marketing site                        | ☐ not started           | separate session, user's call          | User, 2026-07-23   |          |
+| §   | Area                                             | Status                        | Decision                               | Who / when         | Ref     |
+| --- | ------------------------------------------------ | ----------------------------- | -------------------------------------- | ------------------ | ------- |
+| §1  | System map                                       | ☐ not started                 |                                        |                    |         |
+| §2  | Roles & permission matrix                        | ◐ partial — API layer         | PORT (3 roles, admin out-of-band)      | Claude, 2026-07-23 | Phase 3 |
+| §3  | Routing table                                    | ◐ partial — 4 domains         | REBUILD as `/v1/*` REST                | Claude, 2026-07-23 | Phase 3 |
+| §4  | Authentication & onboarding                      | ◐ accountant onboarding built | PORT (Firebase Auth retained)          | Claude, 2026-07-25 | slice   |
+| §5  | Business dashboard                               | ☐ not started                 |                                        |                    |         |
+| §6  | Accountant dashboard                             | ◐ register + terminal         | PORT (born-verified onboarding)        | Claude, 2026-07-25 | slice   |
+| §7  | Assignment engine (the core product)             | ☐ not started                 | DEFER → Phase 5                        | Claude, 2026-07-23 |         |
+| §8  | Booking engine (legacy, parallel to assignments) | ☐ not started                 | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |         |
+| §9  | Financial dashboard (MIS)                        | ☐ not started                 | DEFER → blocked on §18 Q1              | Claude, 2026-07-23 |         |
+| §10 | Compliance calendar                              | ◐ data + storage              | REBUILD (`config/complianceOverrides`) | Claude, 2026-07-23 | Phase 3 |
+| §11 | Qualifying exam engine                           | ✅ engine + screen, walked    | REBUILD (server-side scoring)          | Claude, 2026-07-25 | slice   |
+| §12 | Payments & payouts                               | ◐ rates ported only           | DEFER → Phase 6 (constants PORTed)     | Claude, 2026-07-23 | Phase 3 |
+| §13 | Notifications                                    | ☐ not started                 | DEFER → Phase 5                        | Claude, 2026-07-23 |         |
+| §14 | Keiri chatbot                                    | ☐ not started                 |                                        |                    |         |
+| §15 | Admin console                                    | ◐ partial — 3 endpoints       | REBUILD                                | Claude, 2026-07-23 | Phase 3 |
+| §16 | Public marketing site (in-app)                   | ◐ 5 pages built               | REBUILD (Next.js SSR)                  | Claude, 2026-07-24 | Phase 4 |
+| §17 | Data model                                       | ◐ 7 of 22 collections         | REBUILD (Mongo, `legacyId` retained)   | Claude, 2026-07-23 | Phase 3 |
+| §18 | Cloud Functions catalogue (18)                   | ☐ not started                 | DEFER → Phase 5/6                      | Claude, 2026-07-23 |         |
+| §19 | Reference data tables to preserve                | ◐ 10 of 12 ported             | PORT (verbatim, generated)             | Claude, 2026-07-23 | Phase 3 |
+| §20 | Dead / unreachable code register                 | ☐ not started                 | KEEP-UNDECIDED (all 14)                | Claude, 2026-07-23 |         |
+| §22 | Keiri Tech marketing site                        | ☐ not started                 | separate session, user's call          | User, 2026-07-23   |         |
 
 ### What "partial" means for each row above
 
@@ -56,15 +56,20 @@
 - **§3 Routing.** 11 endpoints across 4 domains. The legacy client-side route
   table is a Phase 5 concern.
 - **§4 Auth.** Token verification, role resolution and the blocked-user gate are
-  done. The onboarding _flows_ (OTP screens, exam-then-register ordering,
-  the §18 exam-pass-then-refresh trap) are Phase 5.
+  done, and the **accountant onboarding flow is built and walked E2E** — OTP
+  sign-in, the role bootstrap, and the exam-then-register ordering. The
+  business-side onboarding is the remaining half.
 - **§6 Accountant dashboard.** Profile CRUD, encrypted KYC submission, admin
-  verification and the safe-field public listing exist. The dashboard _tabs_
-  (assignments, earnings) are Phase 5. Contact details are no longer
-  world-readable — see the accepted-risk note below.
+  verification and the safe-field public listing exist, and the **profile
+  register screen + verified terminal are built and walked E2E** (born-verified
+  from the recorded exam pass). The KYC onboarding _screen_ is the next slice;
+  the dashboard _tabs_ (assignments, earnings) are Phase 5. Contact details are
+  no longer world-readable — see the accepted-risk note below.
 - **§11 Qualifying exam.** The 293-question bank (server-only), the pure
   draw/score engine and the getExam/submitExam routes with throttling and
-  verify-on-pass all exist. The candidate-facing exam _screen_ is Phase 5.
+  verify-on-pass all exist — **and the candidate-facing exam screen (30s
+  per-question timer, no going back, idempotent submit) is now built and walked
+  E2E.**
 - **§10 Compliance.** The 23-obligation calendar is ported
   (`domain/compliance.ts`, golden-verified) and `config/complianceOverrides`
   is read/writable — the backend for `ComplianceOverridesEditor` (§20 dead
