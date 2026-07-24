@@ -54,6 +54,13 @@ a recorded _restore / rebuild / drop_ decision. None may be silently skipped.
 - 36 states + **161** Indian cities (the inventory says 466 — it is wrong, see
   `PARITY-CHECKLIST.md`); marketing copy; 12-entry chatbot knowledge base
 
+> **Status: all 12 are now ported** into `packages/shared` (the exam bank into
+> `apps/api`, server-only — it holds the answer key). Each was **generated from
+> the frozen source by a script, never retyped**, and each has a count assertion.
+> Regenerate rather than hand-edit: `packages/shared/scripts/gen-*.mjs`,
+> `apps/api/scripts/gen-exam-bank.mjs`. `parseTemplate.js` is the one §19 item
+> still unported — it belongs to the MIS dashboard, blocked on §18 Q1.
+
 ### Retention policy — keep everything, prune later (decided by the user)
 
 **Nothing is deleted during the rebuild.** Every file, module, component and dataset in
@@ -94,6 +101,34 @@ decision. Attach the table to the phase's completion note.
 
 ---
 
+## 🔁 HOW TO WORK HERE — vertical slices, not layers
+
+**Decided by the user, 2026-07-24.** Take **one area and build it completely
+end-to-end — backend, frontend, a UI that opens in a browser and works — before
+starting the next area.**
+
+Do **not** build horizontal layers (all the API across many features, with
+nothing usable). That is what the first stretch of this rebuild did, and it left
+a lot built but nothing clickable. The user's words: _"covers area first end to
+end than move forward."_
+
+In practice:
+
+- Pick a whole feature or user journey, carry it to a rendering, working screen
+  against the real API and real data, **then** pick the next.
+- Building real screens is **in scope now**, not deferred to a later phase. Both
+  frontends (`apps/web` Next.js, `apps/app` Vite SPA) are live surfaces.
+- When you finish a slice, confirm which area to slice next rather than
+  resuming a layered plan.
+- This never overrides the prime directive: still no feature dropped, still a
+  recorded decision for anything deferred.
+
+**Verification is part of the slice.** A slice is not done when it compiles — it
+is done when you have opened it and watched it work. See the hard-won lessons: a
+fully green pipeline has twice coexisted with something completely broken.
+
+---
+
 ## Workspace
 
 `GARP-Associates/` is a plain folder, **not a repo**. Each product is its own GitHub repo
@@ -121,61 +156,75 @@ call and has been raised.
 
 ---
 
-## Current state — Phase 3 complete (API layer)
+## Current state (2026-07-24)
 
-The API is real: authenticated, database-backed, 11 endpoints across 4 domains.
-**No UI yet** — the SPA is still the Phase 1 shell.
+The API is real — authenticated, Atlas-backed, 21 route paths across 7 domains —
+and the **marketing site is a real, working website**. The product SPA
+(`apps/app`) is still a Phase-1 shell.
 
-| Package           | What                                                         | Tests |
-| ----------------- | ------------------------------------------------------------ | ----- |
-| `packages/config` | eslint / tsconfig / tailwind presets                         | —     |
-| `packages/shared` | money, error codes, Zod schemas, §19 reference data          | 64    |
-| `packages/ui`     | brand tokens, Tailwind preset, `Button`                      | 7     |
-| `apps/api`        | Fastify + Mongoose + Firebase Auth + 6 modules + KYC + audit | 318   |
-| `apps/app`        | Vite SPA shell — also the future Capacitor bundle            | —     |
-| `apps/web`        | Next.js marketing shell — metadata, robots, sitemap          | —     |
+| Package           | What                                                            | Tests |
+| ----------------- | --------------------------------------------------------------- | ----- |
+| `packages/config` | eslint / tsconfig / tailwind presets                            | —     |
+| `packages/shared` | money, schemas, all §19 data, pricing/SOP/payout/compliance     | 180   |
+| `packages/ui`     | brand tokens, Tailwind preset, `Button`                         | 7     |
+| `apps/api`        | Fastify + Mongoose + Firebase Auth, 7 modules, KYC, audit, exam | 330   |
+| `apps/web`        | Next.js marketing **site** — 5 pages, SSR, responsive           | —     |
+| `apps/app`        | Vite SPA **shell** — still Phase 1; future Capacitor bundle     | —     |
+
+**517 tests, full gate green** (`format`, `typecheck`, `lint`, `lint:root`,
+`test`, `build`, plus `smoke.sh` and `verify-guards.sh`).
+Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
+
+> **Read `COVERAGE.md` before assuming anything is done.** It is the blunt map of
+> built vs deferred, including the 18-Cloud-Function tally. Headline: roughly a
+> quarter of the legacy backend behaviours are built. Nothing is dropped, but
+> "not dropped" is not "done".
+
+### What exists
+
+- **`platform/`** — Zod-validated env (fails at boot), Mongoose with fail-loud
+  `assertIndexes` (`autoIndex` off), the `TokenVerifier` port, a
+  `KeyManagementService` port + AES-256-GCM envelope encryption, pino redaction,
+  stable 4xx codes, SIGTERM draining.
+- **7 API modules** — `services`, `users`, `leads`, `config`, `accountants`,
+  `businesses`, `exams`, plus an append-only `audit` log. Each
+  `routes → service → repository → schema`.
+- **The security layer** — denial tests in `apps/api/src/security/denials.test.ts`,
+  **21 guards each mutation-verified** (broken, test confirmed to fail, restored).
+  See `FIRESTORE-RULES-PARITY.md`.
+- **§19 hand-curated data — 12 of 12 ported.** Exam bank (server-only), SOP
+  templates, pricing dials, payout rates, compliance calendar, india, software
+  catalogues, marketing copy, chatbot KB. Every one **generated from the frozen
+  legacy source, never retyped**, with count assertions.
+- **Pure domain engines** in `packages/shared/src/domain/` — `computeQuote`
+  (pricing), `buildSopTasks`, `computePayout` (statutory maths), `computePayable`
+  (coupon), the compliance calendar. Each proven **byte-for-byte against golden
+  vectors captured from the frozen legacy** (`packages/shared/scripts/gen-*.mjs`).
+- **The marketing site** (§16) — Home (live savings calculator, FAQ accordion),
+  About, Why, Dashboards & MIS, Contact. SSR + SEO metadata, responsive,
+  faithful dark-navy/gold brand.
+
+Two §18 accepted risks are no longer reproduced by the rebuild: accountant bank
+details are not world-readable (serialise-on-read), and KYC is encrypted at rest.
 
 Every package emits `dist/`. A package that ships TypeScript source pushes its
-build problem onto every consumer — see the `@bya/ui` row below.
+build problem onto every consumer — see the `@bya/ui` lesson below.
 
-`apps/web` dev uses **Turbopack** (`next dev --turbopack`). Webpack's dev
-runtime fails on this machine; detail in `OPEN-ITEMS.md`.
-
-515 tests, CI green. Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
-
-### What Phase 3 delivered
-
-- **`platform/`** — Zod-validated env, Mongoose with fail-loud index assertion, the
-  `TokenVerifier` port, pino redaction, stable 4xx codes, SIGTERM draining.
-- **Four modules** — `services`, `users`, `leads`, `config`, each
-  `routes → service → repository → schema`.
-- **The security layer** — 29 denial tests in `apps/api/src/security/denials.test.ts`,
-  every guard mutation-verified. See `FIRESTORE-RULES-PARITY.md`.
-- **§19 reference data** — 4 of 12 assets ported verbatim into `packages/shared`.
-
-**Phase 3 + follow-up delivered:** the four platform modules, plus the audit log
-(§6.7), envelope encryption (§6.5), and the `accountants` and `businesses`
-modules. The §18 accepted risk (accountant bank details world-readable) is no
-longer reproduced — see `OPEN-ITEMS.md`.
-
-**Pure domain logic ported (§19):** the pricing engine (`computeQuote`), SOP
-templates (`buildSopTasks`), payout statutory maths (`computePayout`) and the
-first-day-free coupon now live in `packages/shared/src/domain/`, each proven
-byte-for-byte against golden vectors captured from the frozen legacy.
-
-**Deferred, recorded, not dropped:** the assignment _lifecycle_ and wizard (§7,
-UI blocked on §18 Q1), payments/Razorpay wiring (§12), the compliance calendar screen (§10 UI).
-See `OPEN-ITEMS.md`.
+`apps/web` dev uses **Turbopack** (`next dev --turbopack`). Webpack's dev runtime
+fails on this machine; detail in `OPEN-ITEMS.md`.
 
 ### Phases ahead
 
-| Phase | Delivers                                                  |
-| ----- | --------------------------------------------------------- |
-| 3+    | `accountants` + `businesses` + KYC encryption + audit log |
-| 4     | Marketing pages + ~40 programmatic compliance SEO pages   |
-| 5     | The product UI — **blocked** on the §18 product questions |
-| 6     | Domain-by-domain migration of live data to Atlas          |
-| 7     | Capacitor → App Store / Play Store                        |
+| Phase | Delivers                                                       |
+| ----- | -------------------------------------------------------------- |
+| 4     | ~40 programmatic compliance SEO pages (the 5 core pages exist) |
+| 5     | The product UI — assignment wizard, dashboards, admin console  |
+| 6     | Domain-by-domain migration of live data to Atlas               |
+| 7     | Capacitor → App Store / Play Store                             |
+
+Phase numbering is the spec's. Given the vertical-slice method above, treat this
+as a backlog of **areas** rather than a strict order — pick the next whole area
+and finish it end-to-end.
 
 ---
 
@@ -210,7 +259,7 @@ gating). **A Node API deletes the second layer.**
 
 ```bash
 pnpm dev          # all three apps
-pnpm test         # 515 tests
+pnpm test         # 517 tests
 pnpm lint
 pnpm lint:root    # repo-root files — turbo's graph does NOT cover them
 pnpm typecheck
@@ -236,7 +285,18 @@ database-backed request.
 
 `apps/api` needs a `.env` — copy `.env.example`. `MONGODB_URI` has no default,
 deliberately: a fallback pointing at a real cluster writes to the wrong database
-and surfaces only as data corruption.
+and surfaces only as data corruption. Scripts load it via `--env-file-if-exists`.
+
+**Atlas is live and verified.** `cluster0.9fupu2d.mongodb.net`, region
+`AP_SOUTH_1` (Mumbai — which is what spec §6.8 requires for DPDP residency).
+Seeded; `assertIndexes` built all four unique indexes there and a duplicate was
+confirmed rejected with E11000. The connection string must carry an explicit
+`/bya` database name — the onboarding string ends at the host, and Mongoose then
+silently uses `test`.
+
+For local work with no network: `bash apps/api/scripts/local-db.sh` starts a
+persistent `mongod` on 27018 using the binary `mongodb-memory-server` already
+caches (no install, no Docker).
 
 ---
 
@@ -311,9 +371,12 @@ API actually imports.
 
 ---
 
-## Open product questions — these block Phase 5
+## Open product questions — the user must decide
 
-From spec §18. Not technical calls; the user must decide:
+From spec §18. Not technical calls. Q1 is the load-bearing one: it blocks the
+booking engine, the assignment lifecycle and the MIS dashboard. Areas that do
+**not** depend on these (marketing, onboarding + exam, SEO pages) can and should
+proceed without them.
 
 1. **Bookings vs assignments.** The legacy booking flow is unreachable, which orphans the
    MIS dashboard, `ClientUpload` and `processClientTemplate`. Until this is settled, the
@@ -342,6 +405,14 @@ From spec §18. Not technical calls; the user must decide:
 - **Two unshipped patches** sit in the legacy folder: a mobile-responsiveness pass in
   `bookyouraccountant-source-updated.zip` and `keiri-mobile.css`. Finished work, never
   applied. Carry them into the rebuild rather than redoing them.
+- **Import extensions differ by package.** `packages/shared` and `apps/api` are
+  `NodeNext` — relative imports need the `.js` extension. `apps/web` is Next.js
+  with `moduleResolution: "Bundler"` — imports there are **extensionless**. Using
+  `.js` in the web app breaks `next build` (webpack) while dev may still pass.
+- **`@bya/shared` resolves to `dist/`, not `src/`.** Editing a shared file and
+  re-running API tests exercises the _previous_ build. Run
+  `pnpm --filter @bya/shared build`, or `pnpm test` from the root which builds
+  first. A mutation-verification run once reported a false pass for exactly this.
 - **The ~60 zip archives are fully analysed — do not re-extract them.** Every source file
   was hash-compared against the live trees; only the newest archive holds anything not
   already present (the mobile pass above). See `FEATURE-INVENTORY.md` §21.
@@ -352,7 +423,8 @@ From spec §18. Not technical calls; the user must decide:
 
 This file loads automatically. To pick up work with no prior conversation:
 
-1. Read this file top to bottom — the prime directive and retention policy first.
+1. Read this file top to bottom — the prime directive, the retention policy and
+   **how to work here (vertical slices)** first.
 2. `OPEN-ITEMS.md` — known gaps, ordered by when they hurt.
 3. `PARITY-CHECKLIST.md` — the gate every phase must pass.
 4. `FIRESTORE-RULES-PARITY.md` — which of the two lines of defence have been rebuilt.
@@ -362,20 +434,41 @@ This file loads automatically. To pick up work with no prior conversation:
    product questions blocking Phase 5. Phase 3's amendment to §17 is in
    `../docs/specs/2026-07-23-bya-phase3-api-auth-data.md` §1.2.
 
-Then: `pnpm install && pnpm test` (expect 515 passing) to confirm the workspace is healthy.
+Then confirm the workspace is healthy:
 
-**Next actions, in the order they unblock things:**
+```bash
+pnpm install && pnpm test        # 517 passing
+bash apps/api/scripts/smoke.sh   # the built API actually boots and serves
+```
 
-- Settle spec §18 — especially **bookings vs assignments**, which decides whether the MIS
-  dashboard can exist at all. Blocks Phase 5.
-- Point the API at a real Atlas cluster. Everything is tested against
-  `mongodb-memory-server`; nothing has touched Atlas or verified a real Firebase token.
-  First item in `OPEN-ITEMS.md`.
-- Phase 3 follow-up: `accountants` + `businesses`, which need KYC envelope encryption
-  (§6.5) and the audit log (§6.7) first.
-- Keiritech — the folder exists on disk with its own plan at
-  `../docs/plans/2026-07-23-keiritech-rebuild.md`. Handled in a separate session by the
-  user's decision, 2026-07-23.
+To see the marketing site: `pnpm --filter @bya/web dev` → http://localhost:3000.
+
+**Next actions.** Per the vertical-slice method, pick a whole area and finish it:
+
+- **Accountant onboarding + exam** — the strongest next slice. The entire backend
+  exists and is tested (OTP identity → 20-question exam → profile → verified).
+  What is missing is the SPA screens + Firebase **client** auth. This would also
+  make the marketing site's CTAs real (they point at `/contact` as a placeholder).
+- **Phase 4 SEO pages** — ~40 programmatic compliance pages. The compliance
+  calendar data is ported, so this is largely templating over existing data.
+- **Payments (§12)** — needs idempotency keys and webhook-as-source-of-truth
+  first; the payout _maths_ is already ported and golden-verified.
+
+**Blocked on the user, not on code:**
+
+- **Spec §18 Q1, bookings vs assignments.** Gates the booking engine, the
+  assignment lifecycle, the MIS dashboard and everything downstream. The single
+  highest-leverage decision outstanding.
+- **Rotate the Atlas password** — it was shared in a chat transcript, so treat it
+  as disclosed. Before deploy it belongs in Secret Manager/Doppler (§6.5).
+- **Firebase service-account key** — `firebaseVerifier` correctly _rejects_ bad
+  tokens against the real project, but no real signed-in token has ever been
+  _accepted_; `checkRevoked: true` needs real credentials. Generate at Firebase
+  console → Project settings → Service accounts, save **outside** the repo, point
+  `GOOGLE_APPLICATION_CREDENTIALS` at it.
+
+Keiritech is a separate repo and a separate session, by the user's decision
+(2026-07-23); its plan is at `../docs/plans/2026-07-23-keiritech-rebuild.md`.
 
 ## Reference
 
