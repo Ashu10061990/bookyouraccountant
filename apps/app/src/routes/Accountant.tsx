@@ -28,12 +28,14 @@ export function Accountant() {
               <h1 className="font-display text-2xl font-bold text-navy">
                 {profile.data.verified ? "You're verified" : "Profile under review"}
               </h1>
-              {profile.data.verified && profile.data.examTotal !== undefined && (
-                <p className="mt-1 text-ink-soft">
-                  {profile.data.examScore}/{profile.data.examTotal} on the qualifying exam. Your
-                  profile is live to businesses.
-                </p>
-              )}
+              {profile.data.verified &&
+                profile.data.examScore !== undefined &&
+                profile.data.examTotal !== undefined && (
+                  <p className="mt-1 text-ink-soft">
+                    {profile.data.examScore}/{profile.data.examTotal} on the qualifying exam. Your
+                    profile is live to businesses.
+                  </p>
+                )}
             </div>
 
             <dl className="mt-6 grid gap-3 border-t border-line pt-6 text-sm">

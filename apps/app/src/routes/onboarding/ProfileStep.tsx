@@ -37,7 +37,7 @@ export function ProfileStep({ onDone }: { onDone: () => void }) {
       name,
       state,
       city,
-      experienceYears: Number(experienceYears),
+      experienceYears: experienceYears === "" ? Number.NaN : Number(experienceYears),
       qualifications,
       specialties,
       languages,
@@ -117,7 +117,7 @@ export function ProfileStep({ onDone }: { onDone: () => void }) {
         <MultiSelect
           options={QUALIFICATIONS.map((q) => ({
             value: q,
-            label: q.toUpperCase().replace("_", " "),
+            label: q.toUpperCase().replaceAll("_", " "),
           }))}
           selected={qualifications}
           onToggle={(v) => setQualifications((l) => toggle(l, v))}
