@@ -1,4 +1,90 @@
-// TEMPORARY placeholder — replaced in Task 6
+import { useAuth } from "../lib/auth-context.js";
+import { useAccountant } from "../lib/queries.js";
+import { Panel, Pill, Spinner } from "../components/ui.js";
+
 export function Accountant() {
-  return <div>Accountant (coming in Task 6)</div>;
+  const { user, signOut } = useAuth();
+  const profile = useAccountant(user?.uid);
+
+  return (
+    <div className="min-h-screen bg-paper px-6 py-10 font-body">
+      <div className="mx-auto max-w-2xl">
+        {profile.isPending ? (
+          <Panel title="Loading your profile…">
+            <Spinner />
+          </Panel>
+        ) : profile.data === null || profile.isError ? (
+          <Panel title="Profile not found">
+            <p className="text-ink-soft">
+              We couldn&apos;t load your profile. Try signing in again.
+            </p>
+          </Panel>
+        ) : (
+          <Panel>
+            <div className="text-center">
+              <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-navy/10 text-2xl">
+                {profile.data.verified ? "✓" : "⏳"}
+              </div>
+              <h1 className="font-display text-2xl font-bold text-navy">
+                {profile.data.verified ? "You're verified" : "Profile under review"}
+              </h1>
+              {profile.data.verified && profile.data.examTotal !== undefined && (
+                <p className="mt-1 text-ink-soft">
+                  {profile.data.examScore}/{profile.data.examTotal} on the qualifying exam. Your
+                  profile is live to businesses.
+                </p>
+              )}
+            </div>
+
+            <dl className="mt-6 grid gap-3 border-t border-line pt-6 text-sm">
+              <Row label="Name" value={profile.data.name} />
+              <Row label="Location" value={`${profile.data.city}, ${profile.data.state}`} />
+              <Row label="Experience" value={`${String(profile.data.experienceYears)} years`} />
+              <ChipRow
+                label="Qualifications"
+                values={profile.data.qualifications.map((q) => q.toUpperCase())}
+              />
+              <ChipRow label="Specialties" values={profile.data.specialties} />
+              <ChipRow label="Languages" values={profile.data.languages} />
+            </dl>
+
+            <p className="mt-6 rounded-lg bg-paper2 px-4 py-3 text-xs text-ink-soft">
+              Dashboard (assignments, earnings, MIS) arrives in a later phase.
+            </p>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="mt-4 text-sm font-semibold text-ink-soft"
+            >
+              Sign out
+            </button>
+          </Panel>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <dt className="text-sage">{label}</dt>
+      <dd className="text-right font-semibold text-ink">{value}</dd>
+    </div>
+  );
+}
+
+function ChipRow({ label, values }: { label: string; values: string[] }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <dt className="text-sage">{label}</dt>
+      <dd className="flex flex-wrap justify-end gap-1.5">
+        {values.map((v) => (
+          <Pill key={v} tone="line">
+            {v}
+          </Pill>
+        ))}
+      </dd>
+    </div>
+  );
 }
