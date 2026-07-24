@@ -94,3 +94,30 @@ describe("KMS_MASTER_KEY", () => {
     expect(() => loadEnv({ ...VALID, KMS_MASTER_KEY: "not a key" })).toThrow(/KMS_MASTER_KEY/);
   });
 });
+
+describe("FIREBASE_ALLOW_UNREVOKED_CHECK", () => {
+  it("defaults to false", () => {
+    expect(loadEnv({ ...VALID }).FIREBASE_ALLOW_UNREVOKED_CHECK).toBe(false);
+  });
+
+  it("parses the string 'true' to boolean true in development", () => {
+    const env = loadEnv({
+      ...VALID,
+      NODE_ENV: "development",
+      FIREBASE_ALLOW_UNREVOKED_CHECK: "true",
+    });
+    expect(env.FIREBASE_ALLOW_UNREVOKED_CHECK).toBe(true);
+  });
+
+  it("rejects a non-boolean string loudly", () => {
+    expect(() => loadEnv({ ...VALID, FIREBASE_ALLOW_UNREVOKED_CHECK: "yes" })).toThrow(
+      /FIREBASE_ALLOW_UNREVOKED_CHECK/,
+    );
+  });
+
+  it("REFUSES to boot when true under NODE_ENV=production", () => {
+    expect(() =>
+      loadEnv({ ...VALID, NODE_ENV: "production", FIREBASE_ALLOW_UNREVOKED_CHECK: "true" }),
+    ).toThrow(/must not be true when NODE_ENV=production/);
+  });
+});

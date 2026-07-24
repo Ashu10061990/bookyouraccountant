@@ -19,6 +19,7 @@ export function testEnv(overrides: Partial<Env> = {}): Env {
     // regression guard still asserts x-ratelimit-* headers on a real instance,
     // while a test file making hundreds of requests does not trip it.
     RATE_LIMIT_MAX: 100_000,
+    FIREBASE_ALLOW_UNREVOKED_CHECK: false,
     ...overrides,
   };
 }

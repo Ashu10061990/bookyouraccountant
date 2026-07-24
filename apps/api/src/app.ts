@@ -116,7 +116,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   // Firebase stays the identity provider (spec §2): only data moves to Atlas.
   // The role, however, always comes from Mongo — see platform/auth.ts.
   const auth: AuthDeps = options.auth ?? {
-    verifier: firebaseVerifier(env.FIREBASE_PROJECT_ID),
+    verifier: firebaseVerifier(env.FIREBASE_PROJECT_ID, {
+      checkRevoked: !env.FIREBASE_ALLOW_UNREVOKED_CHECK,
+    }),
     userLookup: findAuthUser,
   };
 

@@ -205,24 +205,39 @@ export function contextOf(request: FastifyRequest): RequestContext {
  * pays for initialising the SDK. Firebase remains the identity provider by
  * decision: only data moves to Atlas, because re-implementing auth is the
  * easiest thing here to get catastrophically wrong.
+ *
+ * `opts.checkRevoked` defaults to `true` (the production behaviour). The app
+ * composition root (`app.ts`) passes `false` only when the gated dev flag
+ * `FIREBASE_ALLOW_UNREVOKED_CHECK` is set — see env.ts, which refuses to boot
+ * with that flag true in production.
  */
-export function firebaseVerifier(projectId?: string): TokenVerifier {
+export function firebaseVerifier(
+  projectId?: string,
+  opts: { checkRevoked?: boolean } = {},
+): TokenVerifier {
+  const checkRevoked = opts.checkRevoked ?? true;
+
   return {
     async verify(idToken: string): Promise<VerifiedToken> {
       const { getApps, initializeApp, applicationDefault } = await import("firebase-admin/app");
       const { getAuth } = await import("firebase-admin/auth");
 
       if (getApps().length === 0) {
-        initializeApp({
-          credential: applicationDefault(),
-          ...(projectId === undefined ? {} : { projectId }),
-        });
+        // With revocation checking we call the Auth backend, which needs real
+        // credentials (Application Default Credentials). Without it — the gated
+        // dev path — a projectId is enough to verify a token's signature against
+        // Google's public certs and validate its audience/issuer, no key needed.
+        initializeApp(
+          checkRevoked
+            ? {
+                credential: applicationDefault(),
+                ...(projectId === undefined ? {} : { projectId }),
+              }
+            : { ...(projectId === undefined ? {} : { projectId }) },
+        );
       }
 
-      // checkRevoked: a signed-out or disabled user's token stops working
-      // immediately rather than at the end of its hour.
-      const decoded = await getAuth().verifyIdToken(idToken, true);
-
+      const decoded = await getAuth().verifyIdToken(idToken, checkRevoked);
       return { uid: decoded.uid, claims: { ...decoded } };
     },
   };
