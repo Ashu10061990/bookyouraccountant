@@ -17,13 +17,19 @@ export function Onboarding() {
   const profile = useAccountant(user?.uid);
 
   useEffect(() => {
+    // Resolve the entry state exactly once. After we leave "resolving", the
+    // stage advances only through user actions (exam pass, registration) — this
+    // effect must never re-derive it, or a re-run while the user is mid-profile
+    // would regress them to the exam.
+    if (stage !== "resolving") return;
     if (profile.isPending) return;
     if (profile.isError) {
       setErr("Couldn't reach the server. Is the API running on :8080?");
       return;
     }
-    // Already verified → straight to the terminal. Any existing profile → also
-    // the terminal (rebuild profiles are born verified or not created).
+    // Already have a profile → go to the terminal, which shows the verified
+    // state (this slice's happy path: the profile is created only after the
+    // exam pass, so it is born verified) or a pending state otherwise.
     if (profile.data !== null) {
       void nav("/accountant", { replace: true });
       return;
@@ -37,7 +43,7 @@ export function Onboarding() {
         setErr(error instanceof Error ? error.message : "Could not set up your account.");
       }
     })();
-  }, [profile.isPending, profile.isError, profile.data, user, nav]);
+  }, [stage, profile.isPending, profile.isError, profile.data, user, nav]);
 
   return (
     <div className="min-h-screen bg-paper px-6 py-10 font-body">
@@ -45,7 +51,11 @@ export function Onboarding() {
         <div className="mb-6 flex justify-end">
           <button
             type="button"
-            onClick={() => void signOut().then(() => nav("/", { replace: true }))}
+            onClick={() =>
+              void signOut()
+                .then(() => nav("/", { replace: true }))
+                .catch(() => setErr("Could not sign out. Try again."))
+            }
             className="rounded-lg border border-line px-3 py-2 text-sm font-semibold text-ink-soft"
           >
             Sign out
