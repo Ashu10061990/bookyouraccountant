@@ -610,7 +610,7 @@ async function request<T>(method: string, path: string, body?: unknown, authed =
       headers,
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
-  } catch (cause) {
+  } catch {
     throw new ApiError(0, "NETWORK", "Can't reach the server. Is the API running on :8080?");
   }
 
@@ -1337,9 +1337,15 @@ export function LiveExam({
     else setI((prev) => (prev === from ? from + 1 : prev));
   };
 
+  // Keep the interval's callback pointing at the latest advanceFrom WITHOUT
+  // making the timer effect depend on it — depending on it would recreate the
+  // timer every render. This ref indirection is why no exhaustive-deps disable
+  // is needed (CLAUDE.md forbids eslint-disable).
+  const advanceRef = useRef(advanceFrom);
+  advanceRef.current = advanceFrom;
+
   useEffect(() => {
     setRemaining(secondsPerQ);
-    const startI = i;
     let fired = false;
     const tick = setInterval(() => {
       setRemaining((r) => {
@@ -1347,7 +1353,7 @@ export function LiveExam({
           clearInterval(tick);
           if (!fired) {
             fired = true;
-            advanceFrom(startI);
+            advanceRef.current(i);
           }
           return 0;
         }
@@ -1355,8 +1361,7 @@ export function LiveExam({
       });
     }, 1000);
     return () => clearInterval(tick);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [i]);
+  }, [i, secondsPerQ]);
 
   if (submitting)
     return (
@@ -1510,7 +1515,7 @@ Create `apps/app/src/routes/onboarding/ExamStep.tsx`:
 ```tsx
 import type { ExamPaper, ExamResult } from "@bya/shared";
 import { EXAM_POLICY } from "@bya/shared";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@bya/ui";
 import { startExam } from "../../lib/queries.js";
 import { ErrorNote, Panel, Pill, Spinner } from "../../components/ui.js";
