@@ -20,7 +20,12 @@ interface ErrorBody {
 }
 
 async function request<T>(method: string, path: string, body?: unknown, authed = true): Promise<T> {
-  const headers: Record<string, string> = { "content-type": "application/json" };
+  const headers: Record<string, string> = {};
+  // Only declare a JSON content-type when there is actually a body. A POST that
+  // carries `content-type: application/json` with an empty body makes Fastify's
+  // body parser reject the request with 400 — which is exactly what bodyless
+  // POSTs like /v1/exam/start would otherwise hit.
+  if (body !== undefined) headers["content-type"] = "application/json";
 
   if (authed) {
     const user = auth.currentUser;
