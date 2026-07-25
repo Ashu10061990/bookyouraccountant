@@ -56,6 +56,20 @@ export interface Notifier {
   notify(input: NotifyInput): Promise<void>;
 }
 
+declare module "fastify" {
+  interface FastifyInstance {
+    /**
+     * The `Notifier` `app.ts` composes at boot: `createNotifier` over
+     * `buildNotificationSenders(env)` (N2's `notification-adapters.ts`) — a
+     * real channel adapter per fully-configured secret set, an empty one
+     * otherwise (every attempt then logs `skipped`). Always present once
+     * `buildApp` has run; decorated once, at composition time, the same way
+     * `storage` is in `platform/storage.ts`.
+     */
+    notifier: Notifier;
+  }
+}
+
 /** The outcome of one channel's delivery attempt. */
 export const DELIVERY_STATUSES = ["sent", "failed", "skipped"] as const;
 export type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];

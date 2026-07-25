@@ -119,6 +119,32 @@ const envSchema = z
      * production and against real AWS.
      */
     S3_ENDPOINT: z.url().optional(),
+
+    /**
+     * Notifications — spec `docs/specs/2026-07-25-notifications-slice.md`.
+     *
+     * All optional, and meaningful only in matching sets per channel:
+     * `app.ts`'s `buildNotificationSenders` (`notification-adapters.ts`)
+     * builds a real channel adapter only when its full set below is present.
+     * A partially-configured channel (e.g. `SMTP_HOST` with no `SMTP_PASS`)
+     * is treated the same as an unconfigured one — omitted from the fan-out
+     * — rather than sent half-formed. With everything below unset, every
+     * channel is simply absent, and `createNotifier` records a `skipped`
+     * delivery-log row for each instead of crashing.
+     */
+    // SMTP email — all three or none.
+    SMTP_HOST: z.string().min(1).optional(),
+    SMTP_USER: z.string().min(1).optional(),
+    SMTP_PASS: z.string().min(1).optional(),
+
+    // Meta WhatsApp Cloud API — both or none.
+    WA_TOKEN: z.string().min(1).optional(),
+    WA_PHONE_ID: z.string().min(1).optional(),
+
+    // MSG91 SMS (flow API) — all three or none.
+    MSG91_AUTHKEY: z.string().min(1).optional(),
+    MSG91_TEMPLATE: z.string().min(1).optional(),
+    MSG91_SENDER: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.FIREBASE_ALLOW_UNREVOKED_CHECK) {

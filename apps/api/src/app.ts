@@ -7,6 +7,8 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
 import { type Cipher, createCipher } from "./platform/crypto.js";
 import { localKms } from "./platform/kms.js";
+import { buildNotificationSenders } from "./platform/notification-adapters.js";
+import { createNotifier, type Notifier } from "./platform/notifications.js";
 import { s3Storage, type StoragePort, unavailableStorage } from "./platform/storage.js";
 import { AppError } from "./platform/errors.js";
 import { isConnected } from "./platform/db.js";
@@ -22,6 +24,7 @@ import { registerExamRoutes } from "./modules/exams/exams.routes.js";
 import { type OnExamPass } from "./modules/exams/exams.service.js";
 import { latestPass as examLatestPass } from "./modules/exams/exams.repository.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
+import { logDelivery } from "./modules/notifications/notifications.repository.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
 import { registerUploadRoutes } from "./modules/uploads/uploads.routes.js";
 import { registerUserRoutes } from "./modules/users/users.routes.js";
@@ -53,9 +56,20 @@ export interface BuildAppOptions {
    * `S3_BUCKET` is unset — see `unavailableStorage`.
    */
   storage?: StoragePort;
+  /**
+   * Injected in tests (a fake `Notifier`, or a real one built over fake
+   * `ChannelSender`s). In production it is `createNotifier` over
+   * `buildNotificationSenders(env)` — a real channel adapter per
+   * fully-configured secret set, none at all when nothing is configured —
+   * and `notifications.repository.ts`'s `logDelivery`.
+   */
+  notifier?: Notifier;
   /** Randomness for the exam draw. Defaults to `Math.random`; seeded in tests. */
   examRng?: () => number;
-  /** Current-time source for the exam throttle. Defaults to `new Date()`. */
+  /**
+   * Current-time source for the exam throttle and the notifier's
+   * delivery-log timestamps. Defaults to `new Date()`.
+   */
   now?: () => Date;
 }
 
@@ -179,6 +193,26 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   // for `POST /v1/uploads/presign`. This composition root is the only place
   // that decides which storage backend is live.
   app.decorate("storage", storage);
+
+  // Same gated-adapter shape as `cipher`/`storage` above, but the "nothing
+  // configured" case is not a fail-loud stand-in — an empty `senders` list is
+  // a legitimate, silent-by-design state: every notification then logs
+  // `skipped` per channel (createNotifier's own behaviour) rather than the
+  // 503 `unavailableCipher`/`unavailableStorage` throw. That is deliberate —
+  // a missing SMTP/WhatsApp/MSG91 credential must never fail the business
+  // action (e.g. an accountant's verification) that triggers a notification.
+  const notifier =
+    options.notifier ??
+    createNotifier(buildNotificationSenders(env), {
+      logDelivery,
+      now: options.now ?? (() => new Date()),
+    });
+
+  // Decorated for the same reason `storage` is: a single place every future
+  // caller reads it from. N3 wires `accountant_verified` into the
+  // accountants service by injecting `app.notifier` where routes are
+  // registered — no route yet reads it from here in N2.
+  app.decorate("notifier", notifier);
 
   // Exam ⇄ accountants cross-wiring, done at the composition root so neither
   // module depends on the other:
