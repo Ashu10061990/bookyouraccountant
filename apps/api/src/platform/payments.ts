@@ -36,20 +36,27 @@ export interface PaymentGateway {
 }
 
 /**
- * Decodes two hex strings and reports whether they are byte-for-byte equal,
- * in constant time — and safely when they are not even the same length.
+ * Reports whether two hex digests are equal, in constant time — and safely
+ * when they are not even the same length.
  *
- * `crypto.timingSafeEqual` throws `ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH` when
- * given buffers of different byte length, so the length check here MUST
- * happen first: a malformed or truncated signature must fail verification,
- * never crash the request handler that calls it (a webhook signature is
- * attacker-controlled input).
+ * Compares the hex **strings** (their ASCII bytes), not the decoded bytes,
+ * deliberately: `Buffer.from(hex, "hex")` silently drops a trailing odd
+ * nibble, so decoding first would let a candidate like `<valid-digest>a`
+ * (one extra char) decode to the same 32 bytes and wrongly verify. A SHA-256
+ * hex digest is always 64 chars, so the length check rejects anything longer
+ * or shorter (including that appended-char case) before the compare.
+ *
+ * `crypto.timingSafeEqual` throws `ERR_CRYPTO_TIMING_SAFE_EQUAL_LENGTH` on
+ * unequal-length buffers, so the length check MUST come first: a malformed or
+ * truncated signature must fail verification, never crash the handler that
+ * calls it (a webhook signature is attacker-controlled input).
  */
 function hexDigestsMatch(expectedHex: string, candidateHex: string): boolean {
-  const expected = Buffer.from(expectedHex, "hex");
-  const candidate = Buffer.from(candidateHex, "hex");
+  if (candidateHex.length !== expectedHex.length) return false;
 
-  if (expected.length !== candidate.length) return false;
+  const expected = Buffer.from(expectedHex, "utf8");
+  const candidate = Buffer.from(candidateHex, "utf8");
+  // Equal string length ⇒ equal buffer length ⇒ timingSafeEqual is safe.
   return timingSafeEqual(expected, candidate);
 }
 

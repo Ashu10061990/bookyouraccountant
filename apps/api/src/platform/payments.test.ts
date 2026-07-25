@@ -50,6 +50,14 @@ describe("verifyPaymentSignature", () => {
     expect(verifyPaymentSignature(SECRET, ORDER_ID, PAYMENT_ID, "")).toBe(false);
   });
 
+  it("rejects a valid signature with a trailing character appended", () => {
+    // Guards the hex-string (not decoded-byte) comparison: Buffer.from(hex,"hex")
+    // silently drops a trailing odd nibble, so `<valid>a` would decode to the
+    // same 32 bytes and wrongly verify if we compared decoded bytes.
+    const valid = paymentSignatureFor(SECRET, ORDER_ID, PAYMENT_ID);
+    expect(verifyPaymentSignature(SECRET, ORDER_ID, PAYMENT_ID, `${valid}a`)).toBe(false);
+  });
+
   it("rejects a signature computed with the wrong secret", () => {
     const signature = paymentSignatureFor(OTHER_SECRET, ORDER_ID, PAYMENT_ID);
     expect(verifyPaymentSignature(SECRET, ORDER_ID, PAYMENT_ID, signature)).toBe(false);
@@ -91,6 +99,11 @@ describe("verifyWebhookSignature", () => {
   it("rejects a tampered raw body even against an otherwise-valid signature", () => {
     const signature = webhookSignatureFor(SECRET, RAW_BODY);
     expect(verifyWebhookSignature(SECRET, `${RAW_BODY}tampered`, signature)).toBe(false);
+  });
+
+  it("rejects a valid signature with a trailing character appended", () => {
+    const valid = webhookSignatureFor(SECRET, RAW_BODY);
+    expect(verifyWebhookSignature(SECRET, RAW_BODY, `${valid}a`)).toBe(false);
   });
 });
 
