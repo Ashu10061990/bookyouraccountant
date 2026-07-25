@@ -76,6 +76,19 @@ export const accountantProfileSchema = z.object({
   languages: z.array(z.enum(LANGUAGES)).min(1),
   accountingSoftware: z.array(z.string()).default([]),
   complianceSoftware: z.array(z.string()).default([]),
+  /**
+   * Object keys into S3 — never URLs, never presigned — set by the client
+   * after a direct-to-S3 upload via a presigned PUT (`POST
+   * /v1/uploads/presign`, see `docs/specs/2026-07-25-s3-storage-slice.md`).
+   * Validated here only for shape; a schema has no notion of "the caller's
+   * own uid", so the actual security property — this key names an object
+   * the caller owns — is a server-side prefix check
+   * (`assertOwnedKeys` in `accountants.service.ts`). Not server-owned: unlike
+   * `SERVER_OWNED_ACCOUNTANT_FIELDS` below, the client legitimately sets
+   * these once it holds a key from a completed upload.
+   */
+  photoKey: z.string().max(300).optional(),
+  marksheetKeys: z.array(z.string().max(300)).max(10).optional(),
 });
 
 export const createAccountantSchema = accountantProfileSchema;

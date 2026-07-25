@@ -8,6 +8,7 @@ import type { RequestContext } from "../../platform/auth.js";
 import type { Cipher } from "../../platform/crypto.js";
 import { maskAccountNumber, maskPan } from "../../platform/crypto.js";
 import { conflict, forbidden, notFound } from "../../platform/errors.js";
+import type { StoragePort } from "../../platform/storage.js";
 import { AUDIT_ACTIONS, record, withAudit } from "../audit/audit.service.js";
 import * as repository from "./accountants.repository.js";
 import type { AccountantDocument } from "./accountants.schema.js";
@@ -48,6 +49,27 @@ function assertNoServerOwnedFields(payload: unknown): void {
 
   if (present.length > 0) {
     throw forbidden(`These fields are not yours to set: ${present.join(", ")}.`);
+  }
+}
+
+/**
+ * Rejects a photo/marksheet key outside the caller's own uid prefix. Unlike
+ * `assertNoServerOwnedFields`, these can't be kept out of the schema — the
+ * client legitimately sets them once it holds a key from a completed
+ * direct-to-S3 upload — so ownership is enforced by prefix instead, stopping
+ * one accountant claiming another's uploaded object by naming its key.
+ */
+function assertOwnedKeys(uid: string, changes: UpdateAccountantInput): void {
+  if (changes.photoKey !== undefined && !changes.photoKey.startsWith(`photos/${uid}/`)) {
+    throw forbidden("That file key is not yours.");
+  }
+
+  if (changes.marksheetKeys !== undefined) {
+    for (const key of changes.marksheetKeys) {
+      if (!key.startsWith(`marksheets/${uid}/`)) {
+        throw forbidden("That file key is not yours.");
+      }
+    }
   }
 }
 
@@ -104,6 +126,7 @@ export async function updateOwnProfile(
   rawBody: unknown,
 ): Promise<AccountantDocument> {
   assertNoServerOwnedFields(rawBody);
+  assertOwnedKeys(ctx.uid, changes);
 
   const updated = await repository.updateProfile(ctx.uid, changes);
   if (updated === null) throw notFound("You do not have an accountant profile yet.");
@@ -116,6 +139,17 @@ export async function getByUid(firebaseUid: string): Promise<AccountantDocument>
   if (document === null) throw notFound("No such accountant.");
 
   return document;
+}
+
+/** A short-lived presigned GET for the caller's own stored photo — always "my own", never a caller-supplied uid. */
+export async function presignPhotoDownload(
+  storage: StoragePort,
+  ctx: RequestContext,
+): Promise<string> {
+  const document = await getByUid(ctx.uid);
+  if (document.photoKey === undefined) throw notFound("No profile photo on file.");
+
+  return storage.presignDownload(document.photoKey);
 }
 
 export function listVerified(filter: repository.ListFilter): Promise<AccountantDocument[]> {

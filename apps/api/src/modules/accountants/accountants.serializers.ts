@@ -53,6 +53,15 @@ export interface PrivateAccountantView extends PublicAccountantView {
   examTotal: number;
   verifiedAt?: Date;
   createdAt: Date;
+  /**
+   * Raw S3 object keys, never a URL — owner/admin only. A caller mints a
+   * short-lived download URL from these via `GET
+   * /v1/accountants/me/uploads/photo` rather than reading a key straight off
+   * this view; kept out of `publicView` entirely, since a key is only
+   * meaningful (and only ever readable) alongside `presignDownload`.
+   */
+  photoKey?: string;
+  marksheetKeys?: string[];
   kyc?: {
     panMasked: string;
     bankAccountMasked: string;
@@ -108,6 +117,8 @@ export function privateView(document: AccountantDocument): PrivateAccountantView
     examTotal: document.examTotal,
     ...(document.verifiedAt === undefined ? {} : { verifiedAt: document.verifiedAt }),
     createdAt: document.createdAt,
+    ...(document.photoKey === undefined ? {} : { photoKey: document.photoKey }),
+    ...(document.marksheetKeys === undefined ? {} : { marksheetKeys: document.marksheetKeys }),
     ...(document.kyc === undefined
       ? {}
       : {

@@ -65,10 +65,19 @@ export type NewAccountant = Omit<
   | "verifiedAt"
   | "verifiedBy"
   | "legacyId"
+  | "photoKey"
+  | "marksheetKeys"
 > & {
   email?: string | undefined;
   phone?: string | undefined;
   bio?: string | undefined;
+  // `CreateAccountantInput` (zod's `.optional()`) types these as
+  // `string | undefined`, not a strictly-absent-or-`string` key — same reason
+  // as `email`/`phone`/`bio` above. `insert` below never reads either: a
+  // photo/marksheet key is set later via `PATCH /v1/accountants/me`, guarded
+  // by `assertOwnedKeys`, not at profile creation.
+  photoKey?: string | undefined;
+  marksheetKeys?: string[] | undefined;
 };
 
 export async function insert(profile: NewAccountant): Promise<AccountantDocument> {

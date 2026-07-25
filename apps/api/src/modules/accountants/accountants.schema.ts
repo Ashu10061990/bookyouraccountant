@@ -57,6 +57,13 @@ export interface AccountantDocument {
   languages: string[];
   accountingSoftware: string[];
   complianceSoftware: string[];
+  /**
+   * Object keys into S3, never URLs. Client-set (after a direct-to-S3
+   * upload), but owner-prefix-guarded — see `assertOwnedKeys` in
+   * `accountants.service.ts`.
+   */
+  photoKey?: string;
+  marksheetKeys?: string[];
 
   // ---- server-owned: no client payload can reach these ----
   verified: boolean;
@@ -103,6 +110,16 @@ const schema = new mongoose.Schema<AccountantDocument>(
     languages: { type: [String], required: true, enum: LANGUAGES },
     accountingSoftware: { type: [String], required: true, default: [] },
     complianceSoftware: { type: [String], required: true, default: [] },
+    photoKey: { type: String, required: false },
+    // `default: undefined` looks redundant but is not: Mongoose implicitly
+    // defaults EVERY array-typed path to `[]` unless told otherwise, so
+    // without this an accountant who never uploaded a marksheet would still
+    // get `marksheetKeys: []` (not absent) — silently defeating the
+    // `document.marksheetKeys === undefined` check in `privateView` and
+    // showing an empty list to every accountant, forever, on a field the
+    // shared schema deliberately models as optional (no `.default([])`,
+    // unlike `accountingSoftware`/`complianceSoftware` above).
+    marksheetKeys: { type: [String], required: false, default: undefined },
 
     verified: { type: Boolean, required: true, default: false },
     examScore: { type: Number, required: true, default: 0 },

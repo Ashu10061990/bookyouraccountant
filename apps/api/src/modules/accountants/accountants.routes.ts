@@ -107,6 +107,21 @@ export function registerAccountantRoutes(
     return { accountant: viewFor(updated, ctx) };
   });
 
+  /**
+   * A short-lived presigned GET for the caller's own stored profile photo.
+   *
+   * No `:uid` param — always "my own photo" — so there is nothing here for a
+   * caller to point at someone else's key; `service.presignPhotoDownload`
+   * loads the document by `ctx.uid` alone. 404s when no photo has been set.
+   */
+  app.get(
+    "/v1/accountants/me/uploads/photo",
+    { preHandler: requireAuth(deps) },
+    async (request) => ({
+      url: await service.presignPhotoDownload(request.server.storage, contextOf(request)),
+    }),
+  );
+
   /** KYC in: plaintext over TLS, sealed server-side, masked in the response. */
   app.put("/v1/accountants/me/kyc", { preHandler: requireAuth(deps) }, async (request) => {
     const ctx = contextOf(request);
