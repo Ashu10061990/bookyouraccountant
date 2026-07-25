@@ -525,19 +525,41 @@ This file loads automatically. To pick up work with no prior conversation:
 Then confirm the workspace is healthy:
 
 ```bash
-pnpm install && pnpm test        # 517 passing
+pnpm install && pnpm test        # 615 passing (428 apps/api + 180 shared + 7 ui)
 bash apps/api/scripts/smoke.sh   # the built API actually boots and serves
 ```
 
+Everything through the integration layer is **merged to `main`** (2026-07-25).
+No unmerged branches carry live work. One ceremony was deferred: a **final
+whole-branch code-review** of the integration commits (the storage/notifications/
+payments slices had per-task verification + a green gate + offline security
+tests, but not the final adversarial pass). Run `/code-review ultra` on the
+range before those paths take real money/PII in production.
+
 To see the marketing site: `pnpm --filter @bya/web dev` → http://localhost:3000.
 
-**Just finished:** accountant onboarding + exam walked E2E (2026-07-25), then the
-third-party integration layer — S3 storage, notifications, Razorpay payments
-(specs `docs/specs/2026-07-25-{s3-storage,notifications,payments}-slice.md`,
-branch `slice/aws-storage-and-integrations`). §18 product decisions resolved
-(above).
+**Just finished:** accountant onboarding + exam walked E2E, then the third-party
+integration layer — S3 storage, notifications, Razorpay payments (specs
+`docs/specs/2026-07-25-{s3-storage,notifications,payments}-slice.md`). §18 product
+decisions resolved (above). **All merged to `main` (2026-07-25, `d09bc14`).**
 
-**Next actions.** Per the vertical-slice method:
+**START HERE next session → the assignment engine (§7).** It's the flagship the
+§18 Q1 decision unblocks, and every dependency it needs is already built and
+waiting. Read `../BYA& Keiri/FEATURE-INVENTORY.md` §7 + §8 for the lifecycle,
+then brainstorm/plan a first slice. The ready seams:
+
+- pricing: `computeQuote` (`packages/shared/src/domain/pricing.ts`, golden-verified)
+- SOP: `buildSopTasks` (`packages/shared/src/domain/sop.ts`)
+- payout maths: `computePayout` (`packages/shared/src/domain/payout.ts`)
+- payments: `request.server.payments` (Razorpay order create) + the webhook that
+  is already the **source of truth** — wire `paymentEvents` → mint a paid
+  assignment (the seam P3 left as a documented TODO)
+- notifications: `request.server.notifier` — add `assignment_posted`/`assigned`
+  events to `NOTIFICATION_TEMPLATES` and fan out to matched accountants
+- storage: `request.server.storage` — the MIS `.xlsx` upload reuses `photos`/`mis`
+  scopes; `parseTemplate.js` (the one unported §19 asset) is the MIS engine
+
+**Next actions (other slices).** Per the vertical-slice method:
 
 - **The assignment engine (§7) — the flagship, now unblocked.** §18 Q1 resolved
   (assignments win), and payments + notifications + storage are built and waiting
