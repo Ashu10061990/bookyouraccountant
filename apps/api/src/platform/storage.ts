@@ -1,5 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { extname } from "node:path";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ERROR_CODES } from "@bya/shared";
 import { AppError, badRequest } from "./errors.js";
 
@@ -35,6 +42,18 @@ export interface StoragePort {
   presignDownload(key: string): Promise<string>;
   /** Remove an object (used by the future cascade-delete). */
   remove(key: string): Promise<void>;
+}
+
+declare module "fastify" {
+  interface FastifyInstance {
+    /**
+     * The storage backend `app.ts` selected at boot — `unavailableStorage()`
+     * until `S3_BUCKET` is configured. Always present once `buildApp` has
+     * run; unlike `FastifyRequest.ctx` (set per-request by a preHandler),
+     * this is decorated once, at composition time.
+     */
+    storage: StoragePort;
+  }
 }
 
 /**
@@ -131,5 +150,101 @@ export function unavailableStorage(): StoragePort {
     presignUpload: () => Promise.resolve(unavailable()),
     presignDownload: () => Promise.resolve(unavailable()),
     remove: () => Promise.resolve(unavailable()),
+  };
+}
+
+/** Configuration for the real `s3Storage` adapter — see `env.ts` for where these come from. */
+export interface S3Config {
+  region: string;
+  bucket: string;
+  /** Set only for a local S3-compatible store (LocalStack/MinIO); omitted against real AWS. */
+  endpoint?: string;
+  /**
+   * Static credentials — for local dev and LocalStack only. In production
+   * both are omitted and the SDK's default provider chain resolves the
+   * deployment's IAM role instead; see `s3Storage` below.
+   */
+  accessKeyId?: string;
+  secretAccessKey?: string;
+}
+
+/** How long a presigned PUT (upload) URL stays valid. */
+const UPLOAD_EXPIRY_SECONDS = 300;
+/** How long a presigned GET (download) URL stays valid — short, since one is minted per read. */
+const DOWNLOAD_EXPIRY_SECONDS = 120;
+
+/**
+ * The real storage adapter, over `@aws-sdk/client-s3` and its request
+ * presigner. One `S3Client` is built per adapter instance and reused across
+ * calls, per the SDK's own guidance — it owns connection-pooling state that
+ * a fresh client per request would throw away.
+ *
+ * `endpoint` and `credentials` are added to the client config only when
+ * present: `exactOptionalPropertyTypes` forbids setting either to `undefined`
+ * explicitly, so this builds the config with conditional spreads rather than
+ * `endpoint: config.endpoint` (which would be `string | undefined`).
+ *
+ * `forcePathStyle` follows whether `endpoint` is set. A local S3-compatible
+ * store (LocalStack/MinIO) is addressed path-style — `<endpoint>/<bucket>/…`
+ * — because it has no wildcard DNS/TLS for the virtual-hosted `<bucket>.
+ * <endpoint>/…` form real AWS uses by default. Real AWS supports both, so
+ * this only needs to switch on, never off.
+ *
+ * Credentials are passed only when *both* `accessKeyId` and `secretAccessKey`
+ * are present. With either or both absent, the client falls back to the
+ * SDK's default provider chain (environment variables, a shared config file,
+ * or — the intended production path — the instance/task's IAM role). A
+ * partial credential pair (one set, one not) is therefore treated the same
+ * as neither being set, rather than sent to the SDK half-formed.
+ */
+export function s3Storage(config: S3Config): StoragePort {
+  const client = new S3Client({
+    region: config.region,
+    forcePathStyle: config.endpoint !== undefined,
+    ...(config.endpoint === undefined ? {} : { endpoint: config.endpoint }),
+    ...(config.accessKeyId !== undefined && config.secretAccessKey !== undefined
+      ? {
+          credentials: {
+            accessKeyId: config.accessKeyId,
+            secretAccessKey: config.secretAccessKey,
+          },
+        }
+      : {}),
+  });
+
+  return {
+    /**
+     * Known limitation: a presigned PUT does not itself hard-enforce
+     * `maxBytes` — S3 accepts whatever bytes the client sends to the signed
+     * URL, regardless of the size the caller declared when asking for it.
+     * Hard-enforcing a ceiling on the URL itself needs either a bucket
+     * policy keyed on object size or a presigned POST with a signed policy
+     * document, which trades this simple PUT flow for a multipart form.
+     * For now, `maxBytes` is validated server-side against the request (the
+     * caller checks the declared size against the scope's cap before ever
+     * minting a URL) and relies on the browser client to honor it — not a
+     * hard guarantee against a client that ignores both. `maxBytes` stays
+     * part of this method's signature so that server-side check has it,
+     * even though the adapter itself never reads it.
+     */
+    async presignUpload({ key, contentType }): Promise<UploadTarget> {
+      const command = new PutObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+        ContentType: contentType,
+      });
+      const uploadUrl = await getSignedUrl(client, command, { expiresIn: UPLOAD_EXPIRY_SECONDS });
+
+      return { key, uploadUrl, expiresInSeconds: UPLOAD_EXPIRY_SECONDS };
+    },
+
+    async presignDownload(key): Promise<string> {
+      const command = new GetObjectCommand({ Bucket: config.bucket, Key: key });
+      return getSignedUrl(client, command, { expiresIn: DOWNLOAD_EXPIRY_SECONDS });
+    },
+
+    async remove(key): Promise<void> {
+      await client.send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }));
+    },
   };
 }

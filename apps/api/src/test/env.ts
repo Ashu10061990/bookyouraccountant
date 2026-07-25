@@ -20,6 +20,13 @@ export function testEnv(overrides: Partial<Env> = {}): Env {
     // while a test file making hundreds of requests does not trip it.
     RATE_LIMIT_MAX: 100_000,
     FIREBASE_ALLOW_UNREVOKED_CHECK: false,
+    // Defaulted, like the fields above — required in `Env`, so listed here
+    // even though most tests never touch storage. S3_BUCKET and the
+    // credential/endpoint fields are genuinely optional (no default) and are
+    // deliberately omitted, exactly like FIREBASE_PROJECT_ID/KMS_MASTER_KEY
+    // above: a test that needs storage configured passes S3_BUCKET etc. via
+    // `overrides`.
+    AWS_REGION: "ap-south-1",
     ...overrides,
   };
 }

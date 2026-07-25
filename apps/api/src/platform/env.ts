@@ -86,6 +86,39 @@ const envSchema = z
         "KMS_MASTER_KEY must be a base64-encoded 32-byte key (generate: openssl rand -base64 32)",
       )
       .optional(),
+
+    /**
+     * File storage — spec `docs/specs/2026-07-25-s3-storage-slice.md`.
+     *
+     * Defaulted rather than optional: a region is meaningless to omit (unlike
+     * `S3_BUCKET`, there is no "storage disabled" reading of a missing region),
+     * and `ap-south-1` (Mumbai) matches the DPDP residency requirement the rest
+     * of the stack already honors.
+     */
+    AWS_REGION: z.string().min(1).default("ap-south-1"),
+
+    /**
+     * Optional, and the switch the storage adapter is selected on (`app.ts`):
+     * unset ⇒ `unavailableStorage()`, fail-loud rather than a silent no-op.
+     * Set only once real (or LocalStack) storage is meant to be reachable.
+     */
+    S3_BUCKET: z.string().min(1).optional(),
+
+    /**
+     * Static credentials — local dev and LocalStack only. Both optional, and
+     * meaningful only together: `app.ts` passes them to the adapter solely
+     * when both are present, otherwise leaving the AWS SDK's default provider
+     * chain to resolve the deployment's IAM role. Never set in production.
+     */
+    AWS_ACCESS_KEY_ID: z.string().min(1).optional(),
+    AWS_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+
+    /**
+     * Set to point the S3 client at a local S3-compatible store instead of
+     * real AWS — e.g. `http://127.0.0.1:4566` for LocalStack. Unset in
+     * production and against real AWS.
+     */
+    S3_ENDPOINT: z.url().optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.FIREBASE_ALLOW_UNREVOKED_CHECK) {

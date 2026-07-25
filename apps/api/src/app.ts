@@ -7,6 +7,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
 import { type Cipher, createCipher } from "./platform/crypto.js";
 import { localKms } from "./platform/kms.js";
+import { s3Storage, type StoragePort, unavailableStorage } from "./platform/storage.js";
 import { AppError } from "./platform/errors.js";
 import { isConnected } from "./platform/db.js";
 import { type Env, loadEnv } from "./platform/env.js";
@@ -44,6 +45,13 @@ export interface BuildAppOptions {
    * deliberately unavailable when that is unset — see `unavailableCipher`.
    */
   cipher?: Cipher;
+  /**
+   * Injected in tests (a fake `StoragePort`, per the storage slice's task 3).
+   * In production it is built from `S3_BUCKET` (+ region, optional endpoint,
+   * optional static credentials), and is deliberately unavailable when
+   * `S3_BUCKET` is unset — see `unavailableStorage`.
+   */
+  storage?: StoragePort;
   /** Randomness for the exam draw. Defaults to `Math.random`; seeded in tests. */
   examRng?: () => number;
   /** Current-time source for the exam throttle. Defaults to `new Date()`. */
@@ -145,6 +153,32 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     (env.KMS_MASTER_KEY === undefined
       ? unavailableCipher()
       : createCipher(localKms(Buffer.from(env.KMS_MASTER_KEY, "base64"))));
+
+  // Same shape as `cipher` just above: real adapter when configured, a
+  // fail-loud stand-in otherwise — never a silent no-op that reports an
+  // upload succeeded while storing nothing. Credentials are passed to the
+  // adapter only when both are present; with either or both absent the AWS
+  // SDK falls back to its default provider chain (in production: the
+  // instance/task's IAM role).
+  const storage =
+    options.storage ??
+    (env.S3_BUCKET === undefined
+      ? unavailableStorage()
+      : s3Storage({
+          region: env.AWS_REGION,
+          bucket: env.S3_BUCKET,
+          ...(env.S3_ENDPOINT === undefined ? {} : { endpoint: env.S3_ENDPOINT }),
+          ...(env.AWS_ACCESS_KEY_ID !== undefined && env.AWS_SECRET_ACCESS_KEY !== undefined
+            ? { accessKeyId: env.AWS_ACCESS_KEY_ID, secretAccessKey: env.AWS_SECRET_ACCESS_KEY }
+            : {}),
+        }));
+
+  // Decorated onto the instance, not yet consumed by any route — the uploads
+  // module (storage slice task 3) registers `POST /v1/uploads/presign` and
+  // reads it from here via `request.server.storage`. Decorating now, rather
+  // than waiting for that module, means this composition root has exactly
+  // one place that decides which storage backend is live.
+  app.decorate("storage", storage);
 
   // Exam ⇄ accountants cross-wiring, done at the composition root so neither
   // module depends on the other:
