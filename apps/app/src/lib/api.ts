@@ -60,4 +60,6 @@ export const api = {
   get: <T>(path: string, authed = true): Promise<T> => request<T>("GET", path, undefined, authed),
   post: <T>(path: string, body?: unknown, authed = true): Promise<T> =>
     request<T>("POST", path, body, authed),
+  patch: <T>(path: string, body?: unknown, authed = true): Promise<T> =>
+    request<T>("PATCH", path, body, authed),
 };

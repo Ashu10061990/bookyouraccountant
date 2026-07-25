@@ -1,10 +1,13 @@
 import { useAuth } from "../lib/auth-context.js";
-import { useAccountant } from "../lib/queries.js";
+import { useAccountant, useMyPhotoUrl } from "../lib/queries.js";
 import { Panel, Pill, Spinner } from "../components/ui.js";
+import { PhotoUpload } from "../components/PhotoUpload.js";
 
 export function Accountant() {
   const { user, signOut } = useAuth();
   const profile = useAccountant(user?.uid);
+  const hasPhoto = profile.data?.photoKey !== undefined;
+  const photo = useMyPhotoUrl(hasPhoto);
 
   return (
     <div className="min-h-screen bg-paper px-6 py-10 font-body">
@@ -49,6 +52,20 @@ export function Accountant() {
               <ChipRow label="Specialties" values={profile.data.specialties} />
               <ChipRow label="Languages" values={profile.data.languages} />
             </dl>
+
+            <div className="mt-6 border-t border-line pt-6">
+              <p className="mb-3 text-sm font-semibold text-sage">Profile photo</p>
+              <div className="flex items-center gap-4">
+                {photo.data !== null && photo.data !== undefined && (
+                  <img
+                    src={photo.data}
+                    alt="Your profile"
+                    className="h-16 w-16 rounded-full object-cover"
+                  />
+                )}
+                <PhotoUpload hasPhoto={hasPhoto} />
+              </div>
+            </div>
 
             <p className="mt-6 rounded-lg bg-paper2 px-4 py-3 text-xs text-ink-soft">
               Dashboard (assignments, earnings, MIS) arrives in a later phase.
