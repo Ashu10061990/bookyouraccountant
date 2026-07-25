@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
 import type { Cipher } from "../platform/crypto.js";
 import type { AuthDeps } from "../platform/auth.js";
+import type { Env } from "../platform/env.js";
 import type { Notifier } from "../platform/notifications.js";
 import type { StoragePort } from "../platform/storage.js";
 import { findAuthUser } from "../modules/users/users.repository.js";
@@ -59,6 +60,13 @@ export async function buildTestApp(
    * exactly like the `cipher`/`storage` params above.
    */
   notifier?: Notifier,
+  /**
+   * Injected so a test can exercise a specific env — e.g. the payments
+   * webhook route (`RAZORPAY_WEBHOOK_SECRET` set, or deliberately absent to
+   * assert the 503 `unavailable*`-style gate). Defaults to `testEnv()`,
+   * exactly what every call site got before this parameter existed.
+   */
+  env?: Env,
 ): Promise<FastifyInstance> {
   const auth: AuthDeps = {
     verifier: fakeVerifier({
@@ -76,7 +84,7 @@ export async function buildTestApp(
 
   const app = await buildApp({
     logger: false,
-    env: testEnv(),
+    env: env ?? testEnv(),
     auth,
     // Omitted by default, so a test that touches KYC without asking for a
     // cipher gets the loud 503 a misconfigured server would give.

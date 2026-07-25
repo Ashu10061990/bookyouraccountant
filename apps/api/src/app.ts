@@ -4,6 +4,7 @@ import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import { ERROR_CODES } from "@bya/shared";
 import Fastify, { type FastifyInstance } from "fastify";
+import fastifyRawBody from "fastify-raw-body";
 import { type AuthDeps, firebaseVerifier } from "./platform/auth.js";
 import { type Cipher, createCipher } from "./platform/crypto.js";
 import { localKms } from "./platform/kms.js";
@@ -30,6 +31,7 @@ import { type OnExamPass } from "./modules/exams/exams.service.js";
 import { latestPass as examLatestPass } from "./modules/exams/exams.repository.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
 import { logDelivery } from "./modules/notifications/notifications.repository.js";
+import { registerPaymentRoutes } from "./modules/payments/payments.routes.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
 import { registerUploadRoutes } from "./modules/uploads/uploads.routes.js";
 import { registerUserRoutes } from "./modules/users/users.routes.js";
@@ -132,6 +134,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     credentials: true,
   });
   await app.register(rateLimit, { max: env.RATE_LIMIT_MAX, timeWindow: "1 minute" });
+
+  // See payments.routes.ts for why raw bytes matter. Scoped to just that
+  // route (`config: { rawBody: true }`); must precede any route registration.
+  await app.register(fastifyRawBody, { field: "rawBody", global: false, runFirst: true });
 
   registerErrorHandler(app);
 
@@ -272,6 +278,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     now: options.now ?? (() => new Date()),
     onPass: onExamPass,
   });
+  registerPaymentRoutes(app, env);
 
   /**
    * A self-describing index, so hitting the root of the API tells you what it
