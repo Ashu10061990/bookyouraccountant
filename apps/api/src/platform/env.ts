@@ -145,6 +145,23 @@ const envSchema = z
     MSG91_AUTHKEY: z.string().min(1).optional(),
     MSG91_TEMPLATE: z.string().min(1).optional(),
     MSG91_SENDER: z.string().min(1).optional(),
+
+    /**
+     * Payments (Razorpay) — spec `docs/specs/2026-07-25-payments-slice.md`.
+     *
+     * All three optional, and each gates a different thing in `app.ts` /
+     * the webhook route: `razorpayGateway` (`platform/payments.ts`) replaces
+     * `unavailablePaymentGateway()` only once BOTH `RAZORPAY_KEY_ID` and
+     * `RAZORPAY_KEY_SECRET` are present — that pair is the gateway itself
+     * (order-create, order-fetch). `RAZORPAY_WEBHOOK_SECRET` is separate and
+     * gates only `POST /v1/payments/webhook` (P3), which verifies the
+     * `x-razorpay-signature` header against it — so the gateway can be live
+     * while the webhook is still unconfigured, or vice versa. Dummy creds
+     * now; real values land later via env / Secrets Manager.
+     */
+    RAZORPAY_KEY_ID: z.string().min(1).optional(),
+    RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
+    RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === "production" && env.FIREBASE_ALLOW_UNREVOKED_CHECK) {

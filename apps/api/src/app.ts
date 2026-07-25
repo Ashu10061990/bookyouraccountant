@@ -9,6 +9,11 @@ import { type Cipher, createCipher } from "./platform/crypto.js";
 import { localKms } from "./platform/kms.js";
 import { buildNotificationSenders } from "./platform/notification-adapters.js";
 import { createNotifier, type Notifier } from "./platform/notifications.js";
+import {
+  type PaymentGateway,
+  razorpayGateway,
+  unavailablePaymentGateway,
+} from "./platform/payments.js";
 import { s3Storage, type StoragePort, unavailableStorage } from "./platform/storage.js";
 import { AppError } from "./platform/errors.js";
 import { isConnected } from "./platform/db.js";
@@ -56,6 +61,12 @@ export interface BuildAppOptions {
    * `S3_BUCKET` is unset — see `unavailableStorage`.
    */
   storage?: StoragePort;
+  /**
+   * Injected in tests (a fake `PaymentGateway`). In production it is built
+   * from `RAZORPAY_KEY_ID` + `RAZORPAY_KEY_SECRET`, and is deliberately
+   * unavailable when either is unset — see `unavailablePaymentGateway`.
+   */
+  payments?: PaymentGateway;
   /**
    * Injected in tests (a fake `Notifier`, or a real one built over fake
    * `ChannelSender`s). In production it is `createNotifier` over
@@ -193,6 +204,19 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   // for `POST /v1/uploads/presign`. This composition root is the only place
   // that decides which storage backend is live.
   app.decorate("storage", storage);
+
+  // Same gated-adapter shape as `cipher`/`storage` above: a real adapter when
+  // both Razorpay keys are configured, `unavailablePaymentGateway()` — every
+  // createOrder/fetchOrder call fails loud with a 503 — otherwise. Payments
+  // has no route consumer yet (spec `docs/specs/2026-07-25-payments-slice.md`:
+  // "honest scope"); decorating it now is the seam P3's webhook route and,
+  // later, the assignment engine read from.
+  const payments =
+    options.payments ??
+    (env.RAZORPAY_KEY_ID !== undefined && env.RAZORPAY_KEY_SECRET !== undefined
+      ? razorpayGateway({ keyId: env.RAZORPAY_KEY_ID, keySecret: env.RAZORPAY_KEY_SECRET })
+      : unavailablePaymentGateway());
+  app.decorate("payments", payments);
 
   // Same gated-adapter shape as `cipher`/`storage` above, but the "nothing
   // configured" case is not a fail-loud stand-in — an empty `senders` list is

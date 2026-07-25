@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import Razorpay from "razorpay";
 import { ERROR_CODES } from "@bya/shared";
 import { AppError } from "./errors.js";
 
@@ -33,6 +34,20 @@ export interface Order {
 export interface PaymentGateway {
   createOrder(input: CreateOrderInput): Promise<Order>;
   fetchOrder(orderId: string): Promise<Order>;
+}
+
+declare module "fastify" {
+  interface FastifyInstance {
+    /**
+     * The payment gateway `app.ts` selected at boot — `unavailablePaymentGateway()`
+     * until `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` are both configured. Always
+     * present once `buildApp` has run, the same composition-time decoration as
+     * `storage`/`notifier`. No route reads it yet — the webhook handler (P3) and,
+     * later, the assignment engine's order-create call are the seam this exists
+     * for.
+     */
+    payments: PaymentGateway;
+  }
 }
 
 /**
@@ -105,5 +120,78 @@ export function unavailablePaymentGateway(): PaymentGateway {
   return {
     createOrder: () => Promise.resolve(unavailable()),
     fetchOrder: () => Promise.resolve(unavailable()),
+  };
+}
+
+/** `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` — see `env.ts` for where these come from. */
+export interface RazorpayConfig {
+  keyId: string;
+  keySecret: string;
+}
+
+/**
+ * The subset of Razorpay's order-response shape this adapter actually reads.
+ *
+ * The real SDK response (`Orders.RazorpayOrder`) carries ~20 fields — line
+ * items, transfers, capture settings, tokens — this port exposes none of.
+ * It also types `notes` as `{ [key: string]: string | number | null }`,
+ * because the general Razorpay API accepts non-string note values, even
+ * though this codebase only ever sends `Record<string, string>`
+ * (`CreateOrderInput.notes`). Rather than couple `normalizeOrder` to that
+ * wide surface, this names only the four fields it reads, and the SDK calls
+ * below assert their result into this shape once, at the one place an
+ * external type meets this codebase's own. Every read after that point is
+ * checked against this interface exactly as if it were the SDK's declared
+ * return type — nothing downstream is untyped, which is what "no `any`" is
+ * actually guarding against.
+ */
+interface RazorpayOrderResponse {
+  id: string;
+  amount: number | string;
+  status: string;
+  notes?: Record<string, string>;
+}
+
+/**
+ * Razorpay amounts are already integer paise (repo rule) — `Number(amount)`
+ * only ever normalizes the SDK's `number | string` into `number`, never
+ * converts a unit.
+ */
+function normalizeOrder(order: RazorpayOrderResponse): Order {
+  return {
+    id: order.id,
+    amountPaise: Number(order.amount),
+    status: order.status,
+    notes: order.notes ?? {},
+  };
+}
+
+/**
+ * The real adapter, over the official `razorpay` SDK. One client is built
+ * per adapter instance and reused across both methods — the same shape as
+ * `s3Storage`'s `S3Client` in `platform/storage.ts`. Unlike `firebaseVerifier`
+ * (`platform/auth.ts`) or `smtpEmail` (`platform/notification-adapters.ts`),
+ * which lazily import their SDKs to defer heavier or side-effecting
+ * initialization, constructing `Razorpay(...)` does no I/O — it only stores
+ * the given key id/secret — so there is nothing to gain by deferring it.
+ */
+export function razorpayGateway(config: RazorpayConfig): PaymentGateway {
+  const client = new Razorpay({ key_id: config.keyId, key_secret: config.keySecret });
+
+  return {
+    async createOrder({ amountPaise, receipt, notes }): Promise<Order> {
+      const order = await client.orders.create({
+        amount: amountPaise,
+        currency: "INR",
+        receipt,
+        notes,
+      });
+      return normalizeOrder(order as unknown as RazorpayOrderResponse);
+    },
+
+    async fetchOrder(orderId): Promise<Order> {
+      const order = await client.orders.fetch(orderId);
+      return normalizeOrder(order as unknown as RazorpayOrderResponse);
+    },
   };
 }
