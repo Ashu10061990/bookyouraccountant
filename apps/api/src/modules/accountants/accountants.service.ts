@@ -8,8 +8,10 @@ import type { RequestContext } from "../../platform/auth.js";
 import type { Cipher } from "../../platform/crypto.js";
 import { maskAccountNumber, maskPan } from "../../platform/crypto.js";
 import { conflict, forbidden, notFound } from "../../platform/errors.js";
+import type { Notifier } from "../../platform/notifications.js";
 import type { StoragePort } from "../../platform/storage.js";
 import { AUDIT_ACTIONS, record, withAudit } from "../audit/audit.service.js";
+import { notifyVerified } from "./accountants.notifications.js";
 import * as repository from "./accountants.repository.js";
 import type { AccountantDocument } from "./accountants.schema.js";
 
@@ -77,18 +79,12 @@ export async function createProfile(
   ctx: RequestContext,
   input: CreateAccountantInput,
   rawBody: unknown,
-  /**
-   * A server-confirmed exam pass, if this accountant has one. Resolved by the
-   * route from the exams module. The legacy flow takes the exam *before*
-   * registering, so this is the primary path by which a profile becomes
-   * verified — never from client input, which `assertNoServerOwnedFields`
-   * refuses.
-   */
-  examPass?: { score: number; total: number } | null,
+  /** A server-confirmed exam pass, if this accountant has one — resolved by the route from the exams module, never from client input, which `assertNoServerOwnedFields` refuses. */
+  examPass: { score: number; total: number } | null,
+  notifier: Notifier,
 ): Promise<AccountantDocument> {
-  // Checked against the RAW body, not the parsed input: the schema strips
-  // unknown keys, so by the time it is parsed an attempt is invisible. An
-  // attempt to set `verified` should be refused loudly, not silently ignored.
+  // Checked against the RAW body, not the parsed input, since the schema
+  // strips unknown keys — an attempt to set `verified` must be refused loudly.
   assertNoServerOwnedFields(rawBody);
 
   if ((await repository.findByUid(ctx.uid)) !== null) {
@@ -97,9 +93,8 @@ export async function createProfile(
 
   const created = await repository.insert({ firebaseUid: ctx.uid, ...input });
 
-  // Born unverified, then verified only if the server already recorded a pass.
-  // A separate step, so the insert keeps forcing verified:false against any
-  // client attempt, and the verification is audited.
+  // Born unverified, then verified only if the server already recorded a pass
+  // — a separate step, so the insert still forces verified:false either way.
   if (examPass) {
     await withAudit(
       {
@@ -114,7 +109,10 @@ export async function createProfile(
         return { result: undefined, subjectId: ctx.uid };
       },
     );
-    return (await repository.findByUid(ctx.uid)) ?? created;
+
+    const verified = (await repository.findByUid(ctx.uid)) ?? created;
+    notifyVerified(notifier, verified);
+    return verified;
   }
 
   return created;
@@ -254,16 +252,16 @@ export async function readKycPlaintext(
 }
 
 /**
- * Marks an accountant verified — admin only, audited, idempotent.
- *
- * Verification is the gate to paid work, so it is both the most valuable field
- * to forge and the one most worth an immutable record of who granted it.
+ * Marks an accountant verified — admin only, audited, idempotent. Verification
+ * is the gate to paid work, so it is both the most valuable field to forge and
+ * the one most worth an immutable record of who granted it.
  */
 export async function verifyAccountant(
   ctx: RequestContext,
   subjectUid: string,
   examScore: number,
   examTotal: number,
+  notifier: Notifier,
 ): Promise<AccountantDocument> {
   if (ctx.role !== "admin") throw forbidden("Only an administrator may verify an accountant.");
 
@@ -271,7 +269,7 @@ export async function verifyAccountant(
   if (existing === null) throw notFound("No such accountant.");
   if (existing.verified) throw conflict("This accountant is already verified.");
 
-  return withAudit(
+  const verified = await withAudit(
     {
       action: AUDIT_ACTIONS.ACCOUNTANT_VERIFY,
       actor: ctx,
@@ -295,4 +293,7 @@ export async function verifyAccountant(
       return { result: updated, subjectId: subjectUid };
     },
   );
+
+  notifyVerified(notifier, verified);
+  return verified;
 }

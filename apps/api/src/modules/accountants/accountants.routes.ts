@@ -93,7 +93,13 @@ export function registerAccountantRoutes(
       // A profile created after passing the exam is born verified — the pass is
       // read from the server's own record, never from the request.
       const examPass = latestExamPass === undefined ? null : await latestExamPass(ctx.uid);
-      const created = await service.createProfile(ctx, input, request.body, examPass);
+      const created = await service.createProfile(
+        ctx,
+        input,
+        request.body,
+        examPass,
+        request.server.notifier,
+      );
 
       return reply.status(201).send({ accountant: viewFor(created, ctx) });
     },
@@ -157,6 +163,7 @@ export function registerAccountantRoutes(
         request.params.uid,
         examScore,
         examTotal,
+        request.server.notifier,
       );
 
       return { accountant: viewFor(verified, ctx) };

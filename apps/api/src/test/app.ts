@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
 import type { Cipher } from "../platform/crypto.js";
 import type { AuthDeps } from "../platform/auth.js";
+import type { Notifier } from "../platform/notifications.js";
 import type { StoragePort } from "../platform/storage.js";
 import { findAuthUser } from "../modules/users/users.repository.js";
 import { fakeVerifier, tokenFor } from "./auth-fake.js";
@@ -49,6 +50,15 @@ export async function buildTestApp(
    * the `cipher` parameter above for KYC.
    */
   storage?: StoragePort,
+  /**
+   * Injected so a test can assert exactly what `notify` was called with — a
+   * fake `Notifier` that records every call — without touching Mongo's
+   * delivery-log collection or any real channel adapter. Omitted by default,
+   * so a test that does not ask for one gets the app's real notifier (no
+   * configured senders in `testEnv()` ⇒ every attempt logs `skipped`),
+   * exactly like the `cipher`/`storage` params above.
+   */
+  notifier?: Notifier,
 ): Promise<FastifyInstance> {
   const auth: AuthDeps = {
     verifier: fakeVerifier({
@@ -74,6 +84,7 @@ export async function buildTestApp(
     ...(exam?.examRng === undefined ? {} : { examRng: exam.examRng }),
     ...(exam?.now === undefined ? {} : { now: exam.now }),
     ...(storage === undefined ? {} : { storage }),
+    ...(notifier === undefined ? {} : { notifier }),
   });
   await app.ready();
   return app;
