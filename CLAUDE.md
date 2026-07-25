@@ -402,22 +402,62 @@ emulator seam is off unless those env vars are set.
 
 ---
 
-## Open product questions — the user must decide
+## Product decisions — RESOLVED (2026-07-25, by the user; recorded by Claude)
 
-From spec §18. Not technical calls. Q1 is the load-bearing one: it blocks the
-booking engine, the assignment lifecycle and the MIS dashboard. Areas that do
-**not** depend on these (marketing, onboarding + exam, SEO pages) can and should
-proceed without them.
+The spec §18 questions were the load-bearing blockers. The user delegated them
+("do whatever is required as per the previous code") and they are now settled.
+Rationale is recorded so a cold session inherits the _why_, not just the _what_.
 
-1. **Bookings vs assignments.** The legacy booking flow is unreachable, which orphans the
-   MIS dashboard, `ClientUpload` and `processClientTemplate`. Until this is settled, the
-   flagship financial-dashboard feature cannot work. **Highest priority.**
-2. Restore the accountant browse marketplace, or commit to post-and-claim?
-3. Seed the six missing services, or become bookkeeping-only? (`FALLBACK_SERVICES` has one
-   entry; the pricing engine, SOP templates and booking validator all define seven.)
-4. Keiritech and BYA — separate brands or one?
-5. Keep the built-but-unshipped course and account-head SOP?
-6. Redesign, or feature parity first?
+1. **§18 Q1 — Bookings vs assignments → ASSIGNMENTS WIN.** In the legacy,
+   **assignments are the live, primary product** (post-and-claim, first-accept-
+   wins, questionnaire-priced, Razorpay, SOP-gated); **bookings are fully built
+   but unreachable** (no UI entry) and strand the MIS dashboard. The rebuild
+   commits to the **assignment** model. The booking engine is **not ported**
+   (kept in the frozen legacy for reference per the retention policy; a
+   `KEEP-UNDECIDED` that the pruning scan formalises). **The MIS dashboard is
+   rewired to derive its client list from assignments, not bookings** — which is
+   what unstrands it.
+2. **§18 Q2 — Browse marketplace vs post-and-claim → POST-AND-CLAIM.** No
+   browse-and-book flow (that was the booking entry). A **read-only accountant
+   showcase** stays for discovery (`GET /v1/accountants`, already built,
+   safe-field). Engagement is: business posts an assignment → verified
+   accountants claim it.
+3. **§18 Q3 — Seed six services vs bookkeeping-only → SEED ALL 7.** The pricing
+   engine, SOP templates, booking validator and `functions/seed.js` all define
+   **seven** services; `SERVICES` in `packages/shared` already carries all 7.
+   Ship the full catalogue, not bookkeeping-only. (Note the open sub-question
+   this surfaced: profile _specialties_ currently use `SERVICES` (7) vs the
+   documented `PROFILE_SERVICES` (10) matching vocab — reconcile when the
+   matching feature is built.)
+4. **Keiritech vs BYA → SEPARATE, by definition.** **Keiritech is the parent
+   _company_** (its own marketing "face" website, handled in a separate repo/
+   session); **BYA is the _product_.** Not a brand merge — two different things.
+   The rebuild already treats Keiritech as a separate repo.
+5. **§18 Q5 — built-but-unshipped course + account-head SOP → KEEP-UNDECIDED
+   (defer).** Carried in the frozen legacy; port only if a later slice needs
+   them. Not a priority.
+6. **§18 Q6 — redesign vs parity-first → PARITY-FIRST.** The prime directive
+   stands: replace, don't redesign. No feature dropped except by a dated written
+   decision (this list).
+
+### Infrastructure decisions (2026-07-25)
+
+- **Cloud → AWS.** File storage is **AWS S3** (the legacy Cloud Storage
+  equivalent: resumes, marksheets, KYC doc images, photos, MIS `.xlsx`).
+  Compute/hosting moves to AWS (ECS / App Runner / Lambda / Amplify — a DevOps
+  choice, not app code; the API is portable Fastify/Node, the SPA a static
+  bundle). **MongoDB Atlas stays** (cloud-agnostic). Secrets → **AWS Secrets
+  Manager** (supersedes the spec's Secret Manager/Doppler note).
+- **Auth → Firebase Auth STAYS.** Identity is cloud-agnostic and the onboarding
+  slice already ships on it; "AWS" means compute + storage + hosting, **not**
+  auth. Moving to Cognito would rebuild the auth layer for no stated benefit —
+  not done without an explicit call. _If you want Cognito, say so before the next
+  auth-touching slice._
+- **Third-party integrations → ports + gated adapters, dummy creds now.**
+  Razorpay (payments), WhatsApp Cloud API + MSG91 (SMS) + SMTP (email,
+  notifications). Built behind ports like the existing `TokenVerifier` /
+  `KeyManagementService`, each adapter **fails loud or no-ops when unconfigured**
+  (never silently); real creds land later via env / Secrets Manager.
 
 ---
 
