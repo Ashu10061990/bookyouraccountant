@@ -12,9 +12,34 @@ reported `BAD_REQUEST` · no graceful shutdown · no env validation or
 encryption · per-role response serialisation · the §18 world-readable-accountant
 accepted risk. Detail below.
 
+**Built 2026-07-25 (dummy creds):** the whole third-party integration layer —
+**AWS S3 file storage** (the legacy Cloud-Storage gap is now closed: owner-scoped
+presigned uploads + accountant photo/marksheet keys), **notifications**
+(SMTP/WhatsApp/MSG91 ports + delivery log, wired to `accountant_verified`), and
+**Razorpay payments** (port + webhook-as-source-of-truth + idempotency). Each is
+a gated port; the security-critical logic is tested offline. See "real
+integration credentials" below for what remains to light them up.
+
 ---
 
 ## Before Phase 3 ships to an environment
+
+**Provide the real integration credentials.** Everything is wired with dummy
+values and each adapter is gated on its own env — no credential, no send/charge
+(a `skipped`/503, never a silent success). To light them up (AWS Secrets Manager
+in prod): **Razorpay** `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` /
+`RAZORPAY_WEBHOOK_SECRET`; **WhatsApp Cloud** `WA_TOKEN` / `WA_PHONE_ID`;
+**MSG91** `MSG91_AUTHKEY` / `MSG91_TEMPLATE` / `MSG91_SENDER`; **SMTP**
+`SMTP_HOST` / `SMTP_USER` / `SMTP_PASS`; **S3** `S3_BUCKET` + `AWS_REGION` (+ an
+IAM role, or `AWS_ACCESS_KEY_ID`/`SECRET`). A real S3 byte-upload also needs the
+bucket's CORS to allow the browser `PUT` (or a LocalStack round-trip locally,
+`S3_ENDPOINT=http://127.0.0.1:4566`). The signature/idempotency/owner-scoping
+logic is already proven; these creds only exercise the last mile.
+
+**Refactor `apps/api/src/app.ts` composition wiring.** It's at ~299 lines (the
+repo's ~300 ceiling) after adding the storage/notifier/payments wiring — extract
+the port construction into a small `composition`/`wiring` module before the next
+integration touches it.
 
 **Rotate the Atlas database password.**
 It was shared in a chat transcript, so treat it as disclosed. This is the same

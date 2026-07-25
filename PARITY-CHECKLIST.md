@@ -192,6 +192,25 @@ e2e path uses), while `packages/shared` also documents a separate `PROFILE_SERVI
 internally consistent and not a slice blocker, but which catalogue profiles should
 use is a real product call to settle with §18 Q3.
 
+## Slice: AWS storage + third-party integrations (2026-07-25)
+
+Built behind gated ports with **dummy creds** (real creds later). Specs
+`docs/specs/2026-07-25-{s3-storage,notifications,payments}-slice.md`, branch
+`slice/aws-storage-and-integrations`. Infra decisions (AWS S3, Firebase Auth
+stays) recorded in `CLAUDE.md`.
+
+| Inventory §  | Feature                                                       | Status in rebuild                                                                   | Decision                                          |
+| ------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------- |
+| §6 / Storage | File storage (resumes/marksheets/kyc/photos/mis)              | S3 port + owner-scoped presigned uploads + accountant photo/marksheet keys          | **REBUILD — Cloud Storage → AWS S3, 2026-07-25**  |
+| §13          | Notifications — SMTP / WhatsApp Cloud / MSG91 + delivery log  | ports + `allSettled` fan-out + log, wired to `accountant_verified`                  | **PORT (dummy creds), 2026-07-25**                |
+| §12          | Razorpay — order create/fetch + webhook + idempotency         | port/adapter + `POST /v1/payments/webhook` (HMAC verify + unique-index idempotency) | **PORT — webhook-as-source-of-truth, 2026-07-25** |
+| §12          | Confirm-payment → mint paid assignment; payout ledger trigger | maths ported; the webhook is the truth-store; wiring not built                      | **DEFER — assignment engine slice, 2026-07-25**   |
+| §13          | Assignment-posted / assigned notification fan-out             | notifier built; the triggers not wired                                              | **DEFER — assignment engine slice, 2026-07-25**   |
+
+All security-critical logic (S3 key owner-scoping, HMAC signature verification,
+webhook idempotency, fan-out isolation) is **tested offline**; real
+sends/charges/uploads await real credentials.
+
 ## Standalone tools — retained, fate undetermined
 
 Three self-contained HTML utilities at the legacy repo root, ~900 KB each. They read like

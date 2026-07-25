@@ -8,9 +8,13 @@
 >
 > **The rebuild is not feature-complete.** It is a Phase-3-plus foundation: the
 > API, the security model, the domain engines and the hand-curated data — plus
-> the **first product UI journey (accountant onboarding + exam), now walked
-> end-to-end in a browser.** The rest of the UI layer and several major server
-> features are **not built yet**. Nothing is _dropped_ — `DROP` is not an
+> the **first product UI journey (accountant onboarding + exam), walked
+> end-to-end in a browser**, and the **third-party integration layer (2026-07-25):
+> AWS S3 file storage, notifications, Razorpay payments** — each behind a gated
+> port, built + tested with dummy creds (real sends/charges await real creds).
+> The rest of the UI layer and several major server features (the assignment
+> engine, MIS, admin console, dashboards) are **not built yet**. Nothing is
+> _dropped_ — `DROP` is not an
 > available decision until the post-parity pruning scan — but "not dropped" is
 > not "done", and this file keeps that distinction visible.
 
@@ -62,29 +66,29 @@ to the pruning scan).
 
 ## By inventory section
 
-| §   | Area                      | Status              | Note                                                                                                                                          |
-| --- | ------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| §1  | System map                | n/a                 | descriptive                                                                                                                                   |
-| §2  | Roles & permissions       | ✅ enforced         | 3 roles, admin out-of-band, re-checked from Mongo per request                                                                                 |
-| §3  | Routing table             | ◐ API only          | 20+ `/v1/*` endpoints; the client route table is Phase 5                                                                                      |
-| §4  | Auth & onboarding         | ◐ accountant done   | token/role/blocked gate + **OTP sign-in screen + role bootstrap built, walked E2E**; business-side onboarding pending                         |
-| §5  | Business dashboard        | ⛔ not built        | Phase 5; browse marketplace blocked on §18 Q2                                                                                                 |
-| §6  | Accountant dashboard      | ◐ register+terminal | profile **register screen + verified terminal built, walked E2E** (born-verified from the exam pass); KYC screen next, dashboard tabs Phase 5 |
-| §7  | Assignment engine         | ◐ pure logic        | pricing/SOP/coupon ported + golden-verified; wizard + lifecycle Phase 5, UI blocked on §18 Q1                                                 |
-| §8  | Booking engine            | ⛔ blocked          | §18 Q1                                                                                                                                        |
-| §9  | Financial dashboard (MIS) | ⛔ blocked          | orphaned by §18 Q1; `parseTemplate.js` not ported                                                                                             |
-| §10 | Compliance calendar       | ◐ data+storage      | 23 obligations ported + golden-verified; `config/complianceOverrides` r/w done; screen Phase 5                                                |
-| §11 | Qualifying exam           | ✅ built+walked     | bank, engine, routes, throttle, verify-on-pass **+ the timed exam screen (30s/no-back/idempotent submit), walked E2E**                        |
-| §12 | Payments & payouts        | ◐ rates+maths       | rates + payout maths ported; Razorpay, orders, webhooks, ledger deferred                                                                      |
-| §13 | Notifications             | ⛔ not built        | email/WhatsApp/SMS senders + delivery log — Phase 5                                                                                           |
-| §14 | Keiri chatbot             | ◐ KB ported         | 12-entry KB in the contract; the Claude-backed chat + lead tool Phase 5 (spec §D15)                                                           |
-| §15 | Admin console             | ◐ 3 endpoints       | services/config writes + lead list + verify; the console UI and most admin actions Phase 5                                                    |
-| §16 | Public marketing site     | ◐ copy ported       | marketing copy in the contract; the Next.js pages Phase 4                                                                                     |
-| §17 | Data model                | ◐ 7 of 22           | users, leads, services, config, accountants, businesses, exam*, audit; the rest per-domain                                                    |
-| §18 | Cloud Functions           | see table above     | 5 done                                                                                                                                        |
-| §19 | Reference data            | ✅ **12 of 12**     | **all hand-curated assets ported**                                                                                                            |
-| §20 | Dead / unreachable code   | ◑ tracked           | all 14 items `KEEP-UNDECIDED`; `ComplianceOverridesEditor` backend now exists                                                                 |
-| §22 | Keiritech site            | ↗ separate          | its own repo/session (user's call)                                                                                                            |
+| §   | Area                      | Status              | Note                                                                                                                                                                               |
+| --- | ------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| §1  | System map                | n/a                 | descriptive                                                                                                                                                                        |
+| §2  | Roles & permissions       | ✅ enforced         | 3 roles, admin out-of-band, re-checked from Mongo per request                                                                                                                      |
+| §3  | Routing table             | ◐ API only          | 20+ `/v1/*` endpoints; the client route table is Phase 5                                                                                                                           |
+| §4  | Auth & onboarding         | ◐ accountant done   | token/role/blocked gate + **OTP sign-in screen + role bootstrap built, walked E2E**; business-side onboarding pending                                                              |
+| §5  | Business dashboard        | ⛔ not built        | Phase 5; browse marketplace blocked on §18 Q2                                                                                                                                      |
+| §6  | Accountant dashboard      | ◐ register+terminal | profile **register screen + verified terminal built, walked E2E** (born-verified from the exam pass); KYC screen next, dashboard tabs Phase 5                                      |
+| §7  | Assignment engine         | ◐ pure logic        | pricing/SOP/coupon ported + golden-verified; wizard + lifecycle Phase 5, UI blocked on §18 Q1                                                                                      |
+| §8  | Booking engine            | ⛔ blocked          | §18 Q1                                                                                                                                                                             |
+| §9  | Financial dashboard (MIS) | ⛔ blocked          | orphaned by §18 Q1; `parseTemplate.js` not ported                                                                                                                                  |
+| §10 | Compliance calendar       | ◐ data+storage      | 23 obligations ported + golden-verified; `config/complianceOverrides` r/w done; screen Phase 5                                                                                     |
+| §11 | Qualifying exam           | ✅ built+walked     | bank, engine, routes, throttle, verify-on-pass **+ the timed exam screen (30s/no-back/idempotent submit), walked E2E**                                                             |
+| §12 | Payments & payouts        | ◐ infra built       | rates + payout maths ported; **Razorpay port/adapter + webhook (HMAC verify + idempotency) built, dummy creds**; order-create→paid-assignment wiring awaits the assignment engine  |
+| §13 | Notifications             | ◐ built (dummy)     | **3-channel ports (SMTP/WhatsApp/MSG91) + delivery log + allSettled fan-out, wired to `accountant_verified`**; real sends await creds; assignment-posted fan-out awaits the engine |
+| §14 | Keiri chatbot             | ◐ KB ported         | 12-entry KB in the contract; the Claude-backed chat + lead tool Phase 5 (spec §D15)                                                                                                |
+| §15 | Admin console             | ◐ 3 endpoints       | services/config writes + lead list + verify; the console UI and most admin actions Phase 5                                                                                         |
+| §16 | Public marketing site     | ◐ copy ported       | marketing copy in the contract; the Next.js pages Phase 4                                                                                                                          |
+| §17 | Data model                | ◐ 7 of 22           | users, leads, services, config, accountants, businesses, exam*, audit; the rest per-domain                                                                                         |
+| §18 | Cloud Functions           | see table above     | 5 done                                                                                                                                                                             |
+| §19 | Reference data            | ✅ **12 of 12**     | **all hand-curated assets ported**                                                                                                                                                 |
+| §20 | Dead / unreachable code   | ◑ tracked           | all 14 items `KEEP-UNDECIDED`; `ComplianceOverridesEditor` backend now exists                                                                                                      |
+| §22 | Keiritech site            | ↗ separate          | its own repo/session (user's call)                                                                                                                                                 |
 
 ---
 

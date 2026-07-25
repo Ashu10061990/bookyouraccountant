@@ -158,22 +158,25 @@ call and has been raised.
 
 ## Current state (2026-07-25)
 
-The API is real — authenticated, Atlas-backed, 21 route paths across 7 domains —
-the **marketing site is a real, working website**, and the **accountant
-onboarding + exam flow now works end-to-end** in the product SPA (`apps/app`):
-phone-OTP sign-in → 20-question qualifying exam → register profile → verified
-accountant, **walked in a browser against the live API** (not just compiled).
+The API is real — authenticated, Atlas-backed — the **marketing site is a real,
+working website**, the **accountant onboarding + exam flow works end-to-end** in
+the product SPA (`apps/app`): phone-OTP sign-in → 20-question qualifying exam →
+register profile → verified accountant, **walked in a browser against the live
+API** — and the **third-party integration layer is now built** (2026-07-25):
+**AWS S3 file storage, notifications (SMTP/WhatsApp/MSG91), and Razorpay
+payments** (webhook-as-source-of-truth + idempotency), each behind a gated port
+with **dummy creds** (real creds drop in later — see the resolved decisions).
 
-| Package           | What                                                            | Tests |
-| ----------------- | --------------------------------------------------------------- | ----- |
-| `packages/config` | eslint / tsconfig / tailwind presets                            | —     |
-| `packages/shared` | money, schemas, all §19 data, pricing/SOP/payout/compliance     | 180   |
-| `packages/ui`     | brand tokens, Tailwind preset, `Button`                         | 7     |
-| `apps/api`        | Fastify + Mongoose + Firebase Auth, 7 modules, KYC, audit, exam | 330   |
-| `apps/web`        | Next.js marketing **site** — 5 pages, SSR, responsive           | —     |
-| `apps/app`        | Vite SPA — **onboarding + exam, walked E2E** (§4/§6/§11)        | —     |
+| Package           | What                                                                                                       | Tests |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- | ----- |
+| `packages/config` | eslint / tsconfig / tailwind presets                                                                       | —     |
+| `packages/shared` | money, schemas, all §19 data, pricing/SOP/payout/compliance                                                | 180   |
+| `packages/ui`     | brand tokens, Tailwind preset, `Button`                                                                    | 7     |
+| `apps/api`        | Fastify + Mongoose + Firebase Auth; modules incl. uploads/notifications/payments; S3/notify/Razorpay ports | 428   |
+| `apps/web`        | Next.js marketing **site** — 5 pages, SSR, responsive                                                      | —     |
+| `apps/app`        | Vite SPA — **onboarding + exam (walked E2E)** + S3 photo upload                                            | —     |
 
-**517 tests, full gate green** (`format`, `typecheck`, `lint`, `lint:root`,
+**615 tests, full gate green** (`format`, `typecheck`, `lint`, `lint:root`,
 `test`, `build`, plus `smoke.sh` and `verify-guards.sh`).
 Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 
@@ -187,7 +190,21 @@ Remote: `git@github-garp:Ashu10061990/bookyouraccountant.git`.
 - **`platform/`** — Zod-validated env (fails at boot), Mongoose with fail-loud
   `assertIndexes` (`autoIndex` off), the `TokenVerifier` port, a
   `KeyManagementService` port + AES-256-GCM envelope encryption, pino redaction,
-  stable 4xx codes, SIGTERM draining.
+  stable 4xx codes, SIGTERM draining. **Four more gated ports** follow the same
+  shape (real adapter + fail-loud/skip fallback, chosen from env): `StoragePort`
+  (AWS S3), `Notifier` (SMTP/WhatsApp/MSG91 fan-out), `PaymentGateway` (Razorpay).
+- **Third-party integrations (2026-07-25, dummy creds)** — **S3 storage**:
+  owner-scoped presigned uploads (`POST /v1/uploads/presign`), accountant
+  photo/marksheet keys with a prefix-guard, `GET …/uploads/photo`; the API only
+  ever holds object keys, bytes go browser↔S3. **Notifications**: a delivery-log
+  collection + `Promise.allSettled` fan-out, wired to `accountant_verified`;
+  channels gated on their full secret set (else `skipped`, logged). **Payments**:
+  Razorpay order create/fetch + `POST /v1/payments/webhook` with HMAC
+  signature verification (constant-time, fixed-length hex) and a unique-index
+  **idempotency** store (`paymentEvents`) — the webhook is the source of truth the
+  assignment engine will read. All security-critical bits (key scoping, HMAC,
+  idempotency, fan-out isolation) are **tested offline**; real sends/charges await
+  real creds. **File storage is on AWS S3; Firebase Auth stays** (see decisions).
 - **7 API modules** — `services`, `users`, `leads`, `config`, `accountants`,
   `businesses`, `exams`, plus an append-only `audit` log. Each
   `routes → service → repository → schema`.
@@ -514,32 +531,38 @@ bash apps/api/scripts/smoke.sh   # the built API actually boots and serves
 
 To see the marketing site: `pnpm --filter @bya/web dev` → http://localhost:3000.
 
-**Just finished (2026-07-25):** accountant onboarding + exam, walked end-to-end
-in a browser. Spec `docs/specs/2026-07-24-accountant-onboarding-slice-design.md`,
-plan `docs/plans/2026-07-24-accountant-onboarding-slice.md`.
+**Just finished:** accountant onboarding + exam walked E2E (2026-07-25), then the
+third-party integration layer — S3 storage, notifications, Razorpay payments
+(specs `docs/specs/2026-07-25-{s3-storage,notifications,payments}-slice.md`,
+branch `slice/aws-storage-and-integrations`). §18 product decisions resolved
+(above).
 
-**Next actions.** Per the vertical-slice method, pick a whole area and finish it:
+**Next actions.** Per the vertical-slice method:
 
-- **Accountant KYC screen** — the natural next slice on the same surface. The
-  backend exists (`PUT /v1/accountants/me/kyc`, envelope-encrypted); it needs the
-  onboarding/settings screen. Small, self-contained, no new blockers.
-- **Phase 4 SEO pages** — ~40 programmatic compliance pages. The compliance
-  calendar data is ported, so this is largely templating over existing data.
-- **Business onboarding** — the other side of the marketplace; mirrors this
-  slice's shape (OTP → role bootstrap → org-PAN KYC → dashboard-stub).
-- **Payments (§12)** — needs idempotency keys and webhook-as-source-of-truth
-  first; the payout _maths_ is already ported and golden-verified.
+- **The assignment engine (§7) — the flagship, now unblocked.** §18 Q1 resolved
+  (assignments win), and payments + notifications + storage are built and waiting
+  to be consumed: post (adaptive questionnaire → `computeQuote`, already ported) →
+  pay (Razorpay order + the webhook that's now the source of truth) → claim
+  (first-accept-wins) → SOP checklist (`buildSopTasks`, ported) → complete (work
+  codes) → payout (`computePayout`, ported). This is several slices; it also
+  needs the `paymentEvents`→assignment wiring the payments slice left as a seam.
+- **MIS dashboard (§9)** — unblocked by the §18 Q1 decision (client list now
+  derives from assignments); port `parseTemplate.js` (the one §19 asset unported).
+- **Accountant KYC screen / business onboarding / Phase-4 SEO pages** — smaller,
+  independent slices; KYC + business onboarding can reuse the S3 upload flow.
 
-The marketing site's CTAs can now point at the real `/signin` instead of the
-`/contact` placeholder (a quick follow-up in `apps/web`).
+The marketing site's CTAs can now point at the real `/signin` (quick `apps/web`
+follow-up). `apps/api/src/app.ts` is at ~299 lines — extract the composition
+wiring before it needs another integration.
 
 **Blocked on the user, not on code:**
 
-- **Spec §18 Q1, bookings vs assignments.** Gates the booking engine, the
-  assignment lifecycle, the MIS dashboard and everything downstream. The single
-  highest-leverage decision outstanding.
+- **Real integration credentials** — Razorpay key id/secret + webhook secret,
+  WhatsApp Cloud token/phone-id, MSG91 authkey/template/sender, SMTP host/user/
+  pass, and an S3 bucket + IAM (or keys). All wired with dummy values; each
+  channel/gateway lights up when its env is set (AWS Secrets Manager in prod).
 - **Rotate the Atlas password** — it was shared in a chat transcript, so treat it
-  as disclosed. Before deploy it belongs in Secret Manager/Doppler (§6.5).
+  as disclosed. Before deploy it belongs in AWS Secrets Manager (§6.5).
 - **Firebase service-account key** — `firebaseVerifier` correctly _rejects_ bad
   tokens against the real project, but no real signed-in token has ever been
   _accepted_; `checkRevoked: true` needs real credentials. Generate at Firebase
