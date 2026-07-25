@@ -37,7 +37,11 @@ const schema = new mongoose.Schema<NotificationDocument>(
   {
     event: { type: String, required: true, index: true },
     channel: { type: String, required: true, enum: NOTIFICATION_CHANNELS },
-    to: { type: String, required: true },
+    // NOT `required: true`: Mongoose treats "" as missing on a required String,
+    // which would reject the legitimate `to: ""` of a "skipped — no recipient
+    // handle" row (the one case this log most needs to record). `default: ""`
+    // keeps it always a string, matching the `to: string` type above.
+    to: { type: String, required: false, default: "" },
     status: { type: String, required: true, enum: DELIVERY_STATUSES, index: true },
     error: { type: String, required: false },
     metadata: { type: mongoose.Schema.Types.Mixed, required: false },
