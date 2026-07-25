@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
 import type { Cipher } from "../platform/crypto.js";
 import type { AuthDeps } from "../platform/auth.js";
+import type { StoragePort } from "../platform/storage.js";
 import { findAuthUser } from "../modules/users/users.repository.js";
 import { fakeVerifier, tokenFor } from "./auth-fake.js";
 import { testEnv } from "./env.js";
@@ -39,6 +40,15 @@ export async function buildTestApp(
   overrides: Partial<AuthDeps> = {},
   cipher?: Cipher,
   exam?: { examRng?: () => number; now?: () => Date },
+  /**
+   * Injected so a test can assert what key/contentType/maxBytes the uploads
+   * module actually sent, and control what `UploadTarget` comes back —
+   * without either touching AWS. Omitted by default, so a test that hits
+   * `/v1/uploads/presign` without asking for storage gets the same loud 503
+   * `unavailableStorage()` a misconfigured server would give, exactly like
+   * the `cipher` parameter above for KYC.
+   */
+  storage?: StoragePort,
 ): Promise<FastifyInstance> {
   const auth: AuthDeps = {
     verifier: fakeVerifier({
@@ -63,6 +73,7 @@ export async function buildTestApp(
     ...(cipher === undefined ? {} : { cipher }),
     ...(exam?.examRng === undefined ? {} : { examRng: exam.examRng }),
     ...(exam?.now === undefined ? {} : { now: exam.now }),
+    ...(storage === undefined ? {} : { storage }),
   });
   await app.ready();
   return app;

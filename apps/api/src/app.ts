@@ -23,6 +23,7 @@ import { type OnExamPass } from "./modules/exams/exams.service.js";
 import { latestPass as examLatestPass } from "./modules/exams/exams.repository.js";
 import { registerLeadRoutes } from "./modules/leads/leads.routes.js";
 import { registerServiceRoutes } from "./modules/services/services.routes.js";
+import { registerUploadRoutes } from "./modules/uploads/uploads.routes.js";
 import { registerUserRoutes } from "./modules/users/users.routes.js";
 import { findAuthUser } from "./modules/users/users.repository.js";
 
@@ -173,11 +174,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
             : {}),
         }));
 
-  // Decorated onto the instance, not yet consumed by any route — the uploads
-  // module (storage slice task 3) registers `POST /v1/uploads/presign` and
-  // reads it from here via `request.server.storage`. Decorating now, rather
-  // than waiting for that module, means this composition root has exactly
-  // one place that decides which storage backend is live.
+  // Decorated onto the instance so every route reads it from exactly one
+  // place: `registerUploadRoutes` below consumes it as `request.server.storage`
+  // for `POST /v1/uploads/presign`. This composition root is the only place
+  // that decides which storage backend is live.
   app.decorate("storage", storage);
 
   // Exam ⇄ accountants cross-wiring, done at the composition root so neither
@@ -208,6 +208,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   registerUserRoutes(app, auth);
   registerLeadRoutes(app, auth);
   registerConfigRoutes(app, auth);
+  registerUploadRoutes(app, auth);
   registerExamRoutes(app, auth, {
     rng: options.examRng ?? Math.random,
     now: options.now ?? (() => new Date()),
