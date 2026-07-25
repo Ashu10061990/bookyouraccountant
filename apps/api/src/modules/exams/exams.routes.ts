@@ -40,7 +40,7 @@ export function registerExamRoutes(
     { preHandler: [requireAuth(auth), requireRole("accountant")] },
     async (request) => {
       const submission = parseBody(examSubmissionSchema, request.body);
-      const result = await submitExam(contextOf(request), submission, deps.onPass);
+      const result = await submitExam(contextOf(request), submission, deps.now(), deps.onPass);
       return { result };
     },
   );

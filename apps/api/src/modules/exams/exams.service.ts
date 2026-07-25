@@ -40,11 +40,14 @@ export async function startExam(ctx: RequestContext, rng: Rng, now: Date): Promi
   await assertNotThrottled(ctx.uid, now);
 
   const { questions, answerKey } = drawExam(rng);
-  const { sessionId } = await repository.createSession({
-    ownerId: ctx.uid,
-    answerKey,
-    questions,
-  });
+  const { sessionId } = await repository.createSession(
+    {
+      ownerId: ctx.uid,
+      answerKey,
+      questions,
+    },
+    now,
+  );
 
   return {
     sessionId,
@@ -66,6 +69,7 @@ export async function startExam(ctx: RequestContext, rng: Rng, now: Date): Promi
 export async function submitExam(
   ctx: RequestContext,
   submission: ExamSubmission,
+  now: Date,
   onPass?: OnExamPass,
 ): Promise<ExamResult> {
   const stored = await repository.findSession(submission.sessionId);
@@ -98,6 +102,7 @@ export async function submitExam(
         submission.sessionId,
         { score, passed },
         dbSession,
+        now,
       );
 
       // Lost the race: another submit of this session already scored it. Do not
@@ -115,6 +120,7 @@ export async function submitExam(
           questions: stored.questions,
         },
         dbSession,
+        now,
       );
 
       if (passed && onPass !== undefined) {

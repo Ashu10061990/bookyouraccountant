@@ -4,17 +4,21 @@ import { ExamAttemptModel, ExamSessionModel, type ExamSessionDocument } from "./
 
 /** Data access for exams. The only file in this module importing Mongoose. */
 
-export async function createSession(input: {
-  ownerId: string;
-  answerKey: number[];
-  questions: PublicQuestion[];
-}): Promise<{ sessionId: string }> {
+export async function createSession(
+  input: {
+    ownerId: string;
+    answerKey: number[];
+    questions: PublicQuestion[];
+  },
+  now: Date,
+): Promise<{ sessionId: string }> {
   const created = await ExamSessionModel.create({
     ownerId: input.ownerId,
     answerKey: input.answerKey,
     questions: input.questions,
     total: input.answerKey.length,
     used: false,
+    createdAt: now,
   });
   return { sessionId: String(created.id) };
 }
@@ -34,10 +38,11 @@ export async function consumeSession(
   sessionId: string,
   result: { score: number; passed: boolean },
   session: ClientSession,
+  now: Date,
 ): Promise<boolean> {
   const updated = await ExamSessionModel.findOneAndUpdate(
     { _id: sessionId, used: false },
-    { $set: { used: true, usedAt: new Date(), score: result.score, passed: result.passed } },
+    { $set: { used: true, usedAt: now, score: result.score, passed: result.passed } },
     { session },
   )
     .lean()
@@ -57,8 +62,9 @@ export async function recordAttempt(
     questions: PublicQuestion[];
   },
   session: ClientSession,
+  now: Date,
 ): Promise<void> {
-  await ExamAttemptModel.create([{ ...input, submittedAt: new Date() }], { session });
+  await ExamAttemptModel.create([{ ...input, submittedAt: now }], { session });
 }
 
 /** Count of this accountant's FAILED attempts since `since`. */
