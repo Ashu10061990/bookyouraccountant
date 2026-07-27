@@ -20,7 +20,12 @@ interface ErrorBody {
 }
 
 async function request<T>(method: string, path: string, body?: unknown, authed = true): Promise<T> {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    // ngrok's free tier serves an HTML interstitial to browser-like clients
+    // unless this header is present. Harmless against any other backend, which
+    // simply ignores the unknown header. (Demo tunnel; remove once on a real host.)
+    "ngrok-skip-browser-warning": "true",
+  };
   // Only declare a JSON content-type when there is actually a body. A POST that
   // carries `content-type: application/json` with an empty body makes Fastify's
   // body parser reject the request with 400 — which is exactly what bodyless

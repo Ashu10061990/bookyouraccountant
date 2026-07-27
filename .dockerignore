@@ -1,0 +1,11 @@
+.git
+node_modules
+**/node_modules
+**/.env
+**/.env.local
+**/dist
+apps/app/android
+.mongodb-data
+**/.turbo
+out
+**/*.log
