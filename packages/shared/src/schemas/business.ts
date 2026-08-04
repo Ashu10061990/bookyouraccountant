@@ -72,7 +72,7 @@ export const orgPanSubmissionSchema = z.object({ orgPan: panSchema });
 
 /** Fields no client payload may ever set. Asserted by a denial test. */
 export const SERVER_OWNED_BUSINESS_FIELDS = [
-  "firebaseUid",
+  "authUid",
   "orgPanSealed",
   "orgPanMasked",
   "freeDayCouponUsed",

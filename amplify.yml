@@ -1,0 +1,33 @@
+# AWS Amplify Hosting build spec — marketing site only (apps/web).
+#
+# Monorepo notes:
+# - Amplify must be told the app root is apps/web (checked in the console at
+#   connect time; it sets AMPLIFY_MONOREPO_APP_ROOT=apps/web).
+# - @bya/web imports @bya/shared and @bya/ui from their built dist/, so the
+#   build goes through turbo, which builds dependencies in graph order —
+#   never `next build` alone.
+# - pnpm is pinned via corepack to the workspace's packageManager version.
+# - HUSKY=0 skips git-hook installation on CI.
+version: 1
+applications:
+  - appRoot: apps/web
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - cd ../..
+            - corepack enable
+            - corepack prepare pnpm@9.12.2 --activate
+            - HUSKY=0 pnpm install --frozen-lockfile
+        build:
+          commands:
+            - cd ../..
+            - pnpm turbo run build --filter=@bya/web
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - ../../node_modules/**/*
+          - .next/cache/**/*

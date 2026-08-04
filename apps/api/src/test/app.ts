@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
-import type { Cipher } from "../platform/crypto.js";
-import type { AuthDeps } from "../platform/auth.js";
-import type { Env } from "../platform/env.js";
-import type { Notifier } from "../platform/notifications.js";
-import type { StoragePort } from "../platform/storage.js";
-import { findAuthUser } from "../modules/users/users.repository.js";
+import type { Cipher } from "../helpers/crypto.helper.js";
+import type { AuthDeps } from "../middlewares/auth.middleware.js";
+import type { Env } from "../config/env.js";
+import type { Notifier } from "../integrations/notifications.js";
+import type { StoragePort } from "../integrations/storage.js";
+import { findAuthUser } from "../repositories/users.repository.js";
 import { fakeVerifier, tokenFor } from "./auth-fake.js";
 import { testEnv } from "./env.js";
 

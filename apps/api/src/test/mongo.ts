@@ -1,6 +1,6 @@
 import { MongoMemoryReplSet } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { connectDb, disconnectDb } from "../platform/db.js";
+import { connectDb, disconnectDb } from "../config/db.js";
 
 /**
  * An in-memory MongoDB for tests: real Mongoose, real indexes, real

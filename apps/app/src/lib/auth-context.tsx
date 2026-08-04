@@ -1,9 +1,15 @@
-import { onAuthStateChanged, signOut as fbSignOut, type User } from "firebase/auth";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { auth } from "./firebase.js";
+import {
+  getAccessToken,
+  getSessionUser,
+  initSession,
+  signOutSession,
+  subscribeToSession,
+  type SessionUser,
+} from "./session";
 
 interface AuthValue {
-  user: User | null;
+  user: SessionUser | null;
   loading: boolean;
   signOut: () => Promise<void>;
   getToken: () => Promise<string | null>;
@@ -11,25 +17,30 @@ interface AuthValue {
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+/** Thin React bridge over `session.ts`: exposes the signed-in user (uid is
+ * the server's `authUid`), a loading flag that stays true until the boot
+ * refresh settles, and signOut. Same consumed shape as the previous
+ * provider, so RequireAuth/Onboarding/Accountant work unchanged. */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(getSessionUser());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (next) => {
-      setUser(next);
+    const unsubscribe = subscribeToSession(setUser);
+    // Resume from a stored refresh token; until this settles the app shows
+    // its loading state instead of bouncing straight to /signin.
+    void initSession().finally(() => {
       setLoading(false);
     });
-    return unsub;
+    return unsubscribe;
   }, []);
 
   const value = useMemo<AuthValue>(
     () => ({
       user,
       loading,
-      signOut: () => fbSignOut(auth),
-      getToken: () =>
-        auth.currentUser === null ? Promise.resolve(null) : auth.currentUser.getIdToken(),
+      signOut: signOutSession,
+      getToken: () => Promise.resolve(getAccessToken()),
     }),
     [user, loading],
   );

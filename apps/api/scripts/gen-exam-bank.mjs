@@ -1,5 +1,5 @@
 /**
- * Generates apps/api/src/modules/exams/exam-bank.ts from the FROZEN legacy
+ * Generates apps/api/src/data/exam-bank.ts from the FROZEN legacy
  * examBank.js. The `answer` index of every question is the correct option and
  * must be exact — a transcription slip would silently pass or fail candidates
  * on a wrong key — so it is generated from the source, never retyped.
@@ -18,7 +18,7 @@ const {
 } = require("/Users/shubhamverma/Documents/Personal/GARP-Associates/BYA& Keiri/bya-new/functions/examBank.js");
 
 const OUT =
-  "/Users/shubhamverma/Documents/Personal/GARP-Associates/bookyouraccountant/apps/api/src/modules/exams/exam-bank.ts";
+  "/Users/shubhamverma/Documents/Personal/GARP-Associates/bookyouraccountant/apps/api/src/data/exam-bank.ts";
 
 const body = EXAM_POOL.map((q) => {
   const opts = q.options.map((o) => JSON.stringify(o)).join(", ");

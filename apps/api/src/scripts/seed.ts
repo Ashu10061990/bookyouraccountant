@@ -1,6 +1,6 @@
-import { connectDb, disconnectDb, assertIndexes } from "../platform/db.js";
-import { loadEnv } from "../platform/env.js";
-import { seedServices } from "../modules/services/services.service.js";
+import { connectDb, disconnectDb, assertIndexes } from "../config/db.js";
+import { loadEnv } from "../config/env.js";
+import { seedServices } from "../services/services.service.js";
 
 /**
  * Seeds reference data into whatever database MONGODB_URI points at.

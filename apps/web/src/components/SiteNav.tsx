@@ -7,6 +7,7 @@ import { Logo } from "./Logo";
 
 const TABS = [
   { href: "/", label: "Home" },
+  { href: "/services", label: "Services" },
   { href: "/about", label: "About BYA" },
   { href: "/why", label: "Why BYA" },
   { href: "/dashboards", label: "Dashboards & MIS" },

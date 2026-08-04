@@ -1,21 +1,28 @@
-import type { AuthUser, TokenVerifier, UserLookup, VerifiedToken } from "../platform/auth.js";
+import type {
+  AuthUser,
+  TokenVerifier,
+  UserLookup,
+  VerifiedToken,
+} from "../middlewares/auth.middleware.js";
 import type { UserRole } from "@bya/shared";
 
 /**
- * A `TokenVerifier` for tests: same interface as the Firebase one, no
- * credentials, no network.
+ * A `TokenVerifier` for tests: same interface as the production `jwtVerifier`
+ * (`integrations/token-verifier.ts`), no signing, no secrets.
  *
  * Tokens are plain strings mapped to the identity they stand for, so a test
- * reads as `authAs("business-uid")` rather than as JWT plumbing.
+ * reads as `authAs("business-uid")` rather than as JWT plumbing. The auth
+ * module's own suites deliberately do NOT use this — they exercise the real
+ * sign/verify path with the fixed `testEnv()` JWT_SECRET.
  */
 export function fakeVerifier(tokens: Record<string, VerifiedToken>): TokenVerifier {
   return {
-    verify(idToken: string): Promise<VerifiedToken> {
-      const verified = tokens[idToken];
+    verify(accessToken: string): Promise<VerifiedToken> {
+      const verified = tokens[accessToken];
       if (verified === undefined) {
-        // Mirrors what firebase-admin does with a bad token: reject. The API
-        // must convert this to a 401 without echoing the reason.
-        return Promise.reject(new Error("Firebase ID token has invalid signature"));
+        // Mirrors what the real verifier does with a bad token: reject. The
+        // API must convert this to a 401 without echoing the reason.
+        return Promise.reject(new Error("token signature verification failed"));
       }
       return Promise.resolve(verified);
     },

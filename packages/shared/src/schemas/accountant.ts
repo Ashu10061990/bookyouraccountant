@@ -122,6 +122,6 @@ export const SERVER_OWNED_ACCOUNTANT_FIELDS = [
   "examTotal",
   "rating",
   "reviewsCount",
-  "firebaseUid",
+  "authUid",
   "kyc",
 ] as const;

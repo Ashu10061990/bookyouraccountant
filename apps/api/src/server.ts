@@ -1,6 +1,6 @@
 import { buildApp } from "./app.js";
-import { assertIndexes, connectDb, disconnectDb } from "./platform/db.js";
-import { loadEnv } from "./platform/env.js";
+import { assertIndexes, connectDb, disconnectDb } from "./config/db.js";
+import { loadEnv } from "./config/env.js";
 
 /**
  * How long to wait for in-flight requests to finish before exiting anyway.

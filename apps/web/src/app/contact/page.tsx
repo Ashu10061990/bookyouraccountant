@@ -1,42 +1,33 @@
 import type { Metadata } from "next";
+import { JsonLd } from "../../components/JsonLd";
+import { CONTACT, OFFICES } from "../../lib/site";
+import { breadcrumbsJsonLd, localBusinessJsonLd } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Contact us",
   description:
-    "Reach BookYourAccountant: Business@keiritech.com, +91-8954841762. Head office Greater Noida; branches in Pune, New Delhi and Agra.",
+    "Reach BookYourAccountant at Business@keiritech.com or +91-8954841762. Head office in Greater Noida, with branch offices in Pune, New Delhi and Agra.",
   alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact BookYourAccountant",
+    description:
+      "Reach us at Business@keiritech.com or +91-8954841762. Head office Greater Noida; branches in Pune, New Delhi and Agra.",
+    url: "/contact",
+  },
 };
-
-const OFFICES = [
-  {
-    head: true,
-    label: "Head Office",
-    city: "Greater Noida",
-    addr: "320/TF, C-1, Alpha-1 Krishna Apra Plaza, HDFC Bank, Greater Noida, Gautam Budh Nagar – 201308",
-  },
-  {
-    head: false,
-    label: "Branch Office",
-    city: "Pune",
-    addr: "1002, Amanora Gold Tower, Hadapsar, Pune, Maharashtra – 411028",
-  },
-  {
-    head: false,
-    label: "Branch Office",
-    city: "New Delhi",
-    addr: "17A/44, W.E.A. Off Gurudwara Road, Karol Bagh, New Delhi – 110005, India",
-  },
-  {
-    head: false,
-    label: "Branch Office",
-    city: "Agra",
-    addr: "520, 5th Floor, Corporate Park, Sanjay Palace, Civil Lines, Agra, Uttar Pradesh – 282003",
-  },
-];
 
 export default function ContactPage() {
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-24 sm:px-10">
+      {/* LocalBusiness uses the real head-office address from lib/site — the
+          same OFFICES constant rendered below. */}
+      <JsonLd data={localBusinessJsonLd()} />
+      <JsonLd
+        data={breadcrumbsJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Contact us", path: "/contact" },
+        ])}
+      />
       <div className="mx-auto mb-12 max-w-3xl text-center">
         <span className="text-xs font-extrabold uppercase tracking-widest text-gold">
           Contact us
@@ -52,7 +43,7 @@ export default function ContactPage() {
 
       <div className="mx-auto mb-12 flex max-w-2xl flex-col gap-4 sm:flex-row">
         <a
-          href="mailto:Business@keiritech.com"
+          href={`mailto:${CONTACT.email}`}
           className="flex flex-1 items-center gap-4 rounded-2xl border border-line bg-white p-5 transition-colors hover:border-gold"
         >
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-gold/15 text-xl text-gold">
@@ -62,11 +53,11 @@ export default function ContactPage() {
             <span className="block text-xs font-semibold uppercase tracking-wide text-ink-soft">
               Email
             </span>
-            <strong className="text-ink">Business@keiritech.com</strong>
+            <strong className="text-ink">{CONTACT.email}</strong>
           </span>
         </a>
         <a
-          href="tel:+918954841762"
+          href={`tel:${CONTACT.phone.replace(/-/g, "")}`}
           className="flex flex-1 items-center gap-4 rounded-2xl border border-line bg-white p-5 transition-colors hover:border-gold"
         >
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-gold/15 text-xl text-gold">
@@ -76,7 +67,7 @@ export default function ContactPage() {
             <span className="block text-xs font-semibold uppercase tracking-wide text-ink-soft">
               Phone
             </span>
-            <strong className="text-ink">+91-8954841762</strong>
+            <strong className="text-ink">{CONTACT.phone}</strong>
           </span>
         </a>
       </div>

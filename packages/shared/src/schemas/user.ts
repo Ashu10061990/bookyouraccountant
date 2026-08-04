@@ -18,7 +18,7 @@ export const SELF_ASSIGNABLE_ROLES = ["business", "accountant"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 export type SelfAssignableRole = (typeof SELF_ASSIGNABLE_ROLES)[number];
 
-/** E.164, as Firebase Auth issues it. */
+/** E.164 — the grammar the OTP sign-in flow accepts and stores. */
 export const phoneSchema = z
   .string()
   .regex(/^\+[1-9]\d{7,14}$/, "phone must be in E.164 format, e.g. +919876543210");
@@ -28,7 +28,7 @@ const emailSchema = z.email("must be a valid email address");
 /**
  * What a client may send when creating its own user document.
  *
- * There is no `firebaseUid` field on purpose: identity comes from the verified
+ * There is no `authUid` field on purpose: identity comes from the verified
  * bearer token, never from the body. A uid in the body is ignored, and a
  * denial test asserts that.
  */
@@ -47,7 +47,7 @@ export const updateUserSchema = z.object({
 
 /** The stored document. `blocked` and `role: admin` are server-owned. */
 export const userSchema = z.object({
-  firebaseUid: z.string().min(1),
+  authUid: z.string().min(1),
   role: z.enum(USER_ROLES),
   phone: phoneSchema.optional(),
   email: emailSchema.optional(),

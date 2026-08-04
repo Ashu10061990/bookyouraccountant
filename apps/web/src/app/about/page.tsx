@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "../../components/JsonLd";
+import { breadcrumbsJsonLd } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "How BookYourAccountant works",
   description:
-    "Two simple journeys — businesses register and book; accountants register, clear a qualifying exam and get matched. See the full process.",
+    "Two simple journeys — businesses register and book verified accountants; accountants clear a qualifying exam and get matched. See the full process.",
   alternates: { canonical: "/about" },
+  openGraph: {
+    title: "How BookYourAccountant works",
+    description:
+      "Businesses register and book; accountants clear a qualifying exam and get matched. See the full process.",
+    url: "/about",
+  },
 };
 
 const BIZ = [
@@ -66,6 +74,12 @@ function Step({ icon, t, d, accent }: { icon: string; t: string; d: string; acce
 export default function AboutPage() {
   return (
     <section className="bg-[#f5f7fc]">
+      <JsonLd
+        data={breadcrumbsJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About BYA", path: "/about" },
+        ])}
+      />
       <div className="mx-auto max-w-[1280px] px-5 py-24 sm:px-10">
         <div className="mx-auto mb-14 max-w-3xl text-center">
           <span className="text-xs font-extrabold uppercase tracking-widest text-gold">

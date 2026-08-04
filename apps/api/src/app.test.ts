@@ -3,8 +3,8 @@ import Fastify, { type FastifyInstance } from "fastify";
 import rateLimit from "@fastify/rate-limit";
 import { isApiErrorBody } from "@bya/shared";
 import { buildApp } from "./app.js";
-import { registerErrorHandler } from "./platform/error-handler.js";
-import { notFound } from "./platform/errors.js";
+import { registerErrorHandler } from "./middlewares/error-handler.middleware.js";
+import { notFound } from "./errors/app-error.js";
 import { testEnv } from "./test/env.js";
 
 let app: FastifyInstance;

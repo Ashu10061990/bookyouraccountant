@@ -26,7 +26,7 @@ export const leadUpsertSchema = z.object({
 });
 
 export const leadSchema = z.object({
-  firebaseUid: z.string().min(1),
+  authUid: z.string().min(1),
   phone: phoneSchema.optional(),
   role: z.enum(SELF_ASSIGNABLE_ROLES).optional(),
   mode: z.enum(LEAD_MODES),

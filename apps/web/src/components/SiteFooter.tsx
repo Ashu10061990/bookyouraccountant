@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { SERVICE_PAGES } from "../lib/seo/services";
 import { Logo } from "./Logo";
 
 /** Marketing footer — ported from the legacy MarketingLayout. */
 export function SiteFooter() {
   return (
     <footer className="bg-[#0e1c12] text-white/70">
-      <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-16 sm:px-10 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-16 sm:px-10 md:grid-cols-3 lg:grid-cols-5">
         <div className="md:col-span-1">
           <div className="mb-4 flex items-center gap-3">
             <Logo className="h-9 w-9" />
@@ -17,11 +18,22 @@ export function SiteFooter() {
           </p>
         </div>
         <FooterCol
+          title="Services"
+          links={[
+            ...SERVICE_PAGES.map((s) => ({
+              href: `/services/${s.slug}`,
+              label: s.catalogueName,
+            })),
+            { href: "/services", label: "All services" },
+          ]}
+        />
+        <FooterCol
           title="Explore"
           links={[
             { href: "/about", label: "About BYA" },
             { href: "/why", label: "Why BYA" },
             { href: "/dashboards", label: "Dashboards & MIS" },
+            { href: "/compliance-calendar", label: "Compliance Calendar" },
           ]}
         />
         <FooterCol

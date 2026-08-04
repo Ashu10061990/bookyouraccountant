@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { assertIndexes } from "../platform/db.js";
-import { ConfigModel } from "../modules/config/config.schema.js";
-import { LeadModel } from "../modules/leads/leads.schema.js";
-import { ServiceModel } from "../modules/services/services.schema.js";
-import { UserModel } from "../modules/users/users.schema.js";
+import { assertIndexes } from "../config/db.js";
+import { ConfigModel } from "../models/config.model.js";
+import { LeadModel } from "../models/lead.model.js";
+import { ServiceModel } from "../models/service.model.js";
+import { UserModel } from "../models/user.model.js";
 import { TOKENS, UIDS, as, buildTestApp } from "../test/app.js";
 import { clearTestMongo, startTestMongo, stopTestMongo } from "../test/mongo.js";
 
@@ -49,10 +49,10 @@ afterAll(async () => {
 beforeEach(async () => {
   await clearTestMongo();
   await UserModel.create([
-    { firebaseUid: UIDS.admin, role: "admin", blocked: false },
-    { firebaseUid: UIDS.business, role: "business", blocked: false },
-    { firebaseUid: UIDS.accountant, role: "accountant", blocked: false },
-    { firebaseUid: UIDS.other, role: "business", blocked: false },
+    { authUid: UIDS.admin, role: "admin", blocked: false },
+    { authUid: UIDS.business, role: "business", blocked: false },
+    { authUid: UIDS.accountant, role: "accountant", blocked: false },
+    { authUid: UIDS.other, role: "business", blocked: false },
   ]);
 });
 
@@ -82,13 +82,13 @@ describe("2. a user cannot act on another user's record", () => {
       method: "POST",
       url: "/v1/users",
       headers: as(TOKENS.stranger),
-      payload: { role: "business", firebaseUid: UIDS.admin },
+      payload: { role: "business", authUid: UIDS.admin },
     });
 
     // The admin's record is untouched and still admin.
-    const admin = await UserModel.findOne({ firebaseUid: UIDS.admin });
+    const admin = await UserModel.findOne({ authUid: UIDS.admin });
     expect(admin?.role).toBe("admin");
-    expect(await UserModel.countDocuments({ firebaseUid: UIDS.stranger })).toBe(1);
+    expect(await UserModel.countDocuments({ authUid: UIDS.stranger })).toBe(1);
   });
 
   it("patches only the caller's own record", async () => {
@@ -96,12 +96,12 @@ describe("2. a user cannot act on another user's record", () => {
       method: "PATCH",
       url: "/v1/users/me",
       headers: as(TOKENS.business),
-      payload: { firebaseUid: UIDS.other, role: "accountant" },
+      payload: { authUid: UIDS.other, role: "accountant" },
     });
 
-    expect((await UserModel.findOne({ firebaseUid: UIDS.business }))?.role).toBe("accountant");
+    expect((await UserModel.findOne({ authUid: UIDS.business }))?.role).toBe("accountant");
     // The other user is untouched.
-    expect((await UserModel.findOne({ firebaseUid: UIDS.other }))?.role).toBe("business");
+    expect((await UserModel.findOne({ authUid: UIDS.other }))?.role).toBe("business");
   });
 });
 
@@ -121,7 +121,7 @@ describe("3. a user cannot promote themselves to admin", () => {
     });
 
     expect(res.statusCode).toBe(400);
-    expect((await UserModel.findOne({ firebaseUid: UIDS.business }))?.role).toBe("business");
+    expect((await UserModel.findOne({ authUid: UIDS.business }))?.role).toBe("business");
   });
 });
 
@@ -198,9 +198,9 @@ describe("7. a user cannot read another user's lead", () => {
 
   beforeEach(async () => {
     await LeadModel.create([
-      { firebaseUid: UIDS.business, mode: "register", completed: false, lastSeenAt: new Date() },
+      { authUid: UIDS.business, mode: "register", completed: false, lastSeenAt: new Date() },
       {
-        firebaseUid: UIDS.other,
+        authUid: UIDS.other,
         phone: VICTIM_PHONE,
         mode: "register",
         completed: true,
@@ -216,7 +216,7 @@ describe("7. a user cannot read another user's lead", () => {
       headers: as(TOKENS.business),
     });
 
-    expect(res.json()).toMatchObject({ lead: { firebaseUid: UIDS.business } });
+    expect(res.json()).toMatchObject({ lead: { authUid: UIDS.business } });
   });
 
   // This must *attempt* the attack, not merely observe the happy path.
@@ -228,7 +228,7 @@ describe("7. a user cannot read another user's lead", () => {
   // way a caller could try to name a different user.
   it.each([
     ["a uid query parameter", `/v1/leads/me?uid=${UIDS.other}`],
-    ["a firebaseUid query parameter", `/v1/leads/me?firebaseUid=${UIDS.other}`],
+    ["a authUid query parameter", `/v1/leads/me?authUid=${UIDS.other}`],
     ["a path-style override", `/v1/leads/me/${UIDS.other}`],
     ["a leads path for another uid", `/v1/leads/${UIDS.other}`],
   ])("never returns another user's lead via %s", async (_label, url) => {
@@ -243,7 +243,7 @@ describe("7. a user cannot read another user's lead", () => {
       method: "GET",
       url: "/v1/leads/me",
       headers: as(TOKENS.business),
-      payload: { uid: UIDS.other, firebaseUid: UIDS.other },
+      payload: { uid: UIDS.other, authUid: UIDS.other },
     });
 
     expect(res.payload).not.toContain(VICTIM_PHONE);
@@ -255,7 +255,7 @@ describe("8. a user cannot write another user's lead", () => {
   // Legacy: match /leads/{uid} { allow create, update: if isOwner(uid); }
   it("ignores a body-supplied uid and writes only the caller's lead", async () => {
     await LeadModel.create({
-      firebaseUid: UIDS.other,
+      authUid: UIDS.other,
       phone: "+919999900000",
       mode: "register",
       completed: false,
@@ -266,10 +266,10 @@ describe("8. a user cannot write another user's lead", () => {
       method: "PUT",
       url: "/v1/leads/me",
       headers: as(TOKENS.business),
-      payload: { firebaseUid: UIDS.other, phone: "+911111111111", completed: true },
+      payload: { authUid: UIDS.other, phone: "+911111111111", completed: true },
     });
 
-    const victim = await LeadModel.findOne({ firebaseUid: UIDS.other });
+    const victim = await LeadModel.findOne({ authUid: UIDS.other });
     expect(victim?.phone).toBe("+919999900000");
     expect(victim?.completed).toBe(false);
   });
@@ -280,7 +280,7 @@ describe("9. a non-admin cannot list every lead", () => {
   // captured phone number on the platform — a competitor's prospect list.
   it.each([TOKENS.business, TOKENS.accountant])("rejects a list by %s", async (token) => {
     await LeadModel.create({
-      firebaseUid: UIDS.other,
+      authUid: UIDS.other,
       phone: "+919999900000",
       mode: "register",
       completed: false,
@@ -330,7 +330,7 @@ describe("10. an invalid token is rejected before any handler runs", () => {
     // signature", "expired", "wrong audience" — which is a free oracle for
     // probing forgery.
     expect(res.payload).not.toContain("signature");
-    expect(res.payload).not.toContain("Firebase");
+    expect(res.payload).not.toContain("jose");
     expect(res.payload).not.toContain("expired");
   });
 });
@@ -347,7 +347,7 @@ describe("11. a role in the request body is ignored", () => {
       payload: {
         role: "admin",
         uid: UIDS.admin,
-        firebaseUid: UIDS.admin,
+        authUid: UIDS.admin,
         takeRate: 0,
         gstOnFeeRate: 0,
         tdsRate: 0,
@@ -374,7 +374,7 @@ describe("11. a role in the request body is ignored", () => {
 });
 
 describe("12. a stale admin claim is denied", () => {
-  // The sharpest of the three. Firebase custom claims are baked into a token
+  // The sharpest of the three. token claims are baked in for the token's whole life,
   // valid for an hour. Demote an admin and their existing token still says
   // role: admin and still verifies perfectly — so an API that trusted the
   // claim would keep granting admin access for up to an hour after revocation,
@@ -382,7 +382,7 @@ describe("12. a stale admin claim is denied", () => {
   //
   // TOKENS.stranger carries { role: "admin", admin: true }.
   it("denies a token claiming admin whose database record is not admin", async () => {
-    await UserModel.create({ firebaseUid: UIDS.stranger, role: "business", blocked: false });
+    await UserModel.create({ authUid: UIDS.stranger, role: "business", blocked: false });
 
     const res = await app.inject({ method: "GET", url: "/v1/leads", headers: as(TOKENS.stranger) });
 
@@ -397,7 +397,7 @@ describe("12. a stale admin claim is denied", () => {
   });
 
   it("denies a blocked user even with an admin claim", async () => {
-    await UserModel.create({ firebaseUid: UIDS.stranger, role: "admin", blocked: true });
+    await UserModel.create({ authUid: UIDS.stranger, role: "admin", blocked: true });
 
     const res = await app.inject({ method: "GET", url: "/v1/leads", headers: as(TOKENS.stranger) });
 

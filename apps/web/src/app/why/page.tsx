@@ -1,12 +1,20 @@
 import { BENEFIT_GROUPS } from "@bya/shared";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "../../components/JsonLd";
+import { breadcrumbsJsonLd } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
-  title: "Why BYA — Business benefits of live financial tracking",
+  title: "Why BYA — Live Books, Better Decisions",
   description:
-    "Win tenders, prevent cash crunches, cut costs and stay compliant — 12 concrete ways a live dashboard and monthly MIS grow your business.",
+    "Win tenders, prevent cash crunches, cut costs and stay compliant — 12 concrete ways a live dashboard and a monthly MIS help your business grow.",
   alternates: { canonical: "/why" },
+  openGraph: {
+    title: "Why BYA — Live Books, Better Decisions",
+    description:
+      "Win tenders, prevent cash crunches, cut costs and stay compliant — 12 concrete ways live books grow your business.",
+    url: "/why",
+  },
 };
 
 export default function WhyPage() {
@@ -18,6 +26,12 @@ export default function WhyPage() {
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-24 sm:px-10">
+      <JsonLd
+        data={breadcrumbsJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Why BYA", path: "/why" },
+        ])}
+      />
       <div className="mx-auto mb-14 max-w-3xl text-center">
         <span className="text-xs font-extrabold uppercase tracking-widest text-gold">Why BYA</span>
         <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-ink sm:text-5xl">

@@ -37,18 +37,18 @@ describe("user roles", () => {
 
 describe("createUserSchema", () => {
   // Identity comes from the verified token. If the schema kept a client-sent
-  // firebaseUid, a service could one day read it by mistake and hand one user
+  // authUid, a service could one day read it by mistake and hand one user
   // another user's document.
   it("strips fields the client has no business setting", () => {
     const parsed = createUserSchema.parse({
       role: "business",
-      firebaseUid: "someone-elses-uid",
+      authUid: "someone-elses-uid",
       blocked: false,
       legacyId: "forged",
     });
 
     expect(parsed).toEqual({ role: "business" });
-    expect(parsed).not.toHaveProperty("firebaseUid");
+    expect(parsed).not.toHaveProperty("authUid");
     expect(parsed).not.toHaveProperty("blocked");
   });
 
@@ -85,10 +85,8 @@ describe("leadUpsertSchema", () => {
     expect(leadUpsertSchema.safeParse({ role: "admin" }).success).toBe(false);
   });
 
-  it("strips a client-sent firebaseUid", () => {
-    expect(leadUpsertSchema.parse({ firebaseUid: "someone-else" })).not.toHaveProperty(
-      "firebaseUid",
-    );
+  it("strips a client-sent authUid", () => {
+    expect(leadUpsertSchema.parse({ authUid: "someone-else" })).not.toHaveProperty("authUid");
   });
 });
 

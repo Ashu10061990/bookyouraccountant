@@ -9,7 +9,7 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { api, ApiError } from "./api.js";
 
 interface AccountantView {
-  firebaseUid: string;
+  authUid: string;
   name: string;
   city: string;
   state: string;
@@ -141,7 +141,7 @@ export async function uploadPhoto(file: File): Promise<void> {
 
   // Direct to S3 — a different host with its own self-authenticating
   // presigned URL, not our API origin — so this deliberately bypasses `api`
-  // (which would attach a Firebase bearer token S3 neither wants nor accepts).
+  // (which would attach our bearer access token S3 neither wants nor accepts).
   let putResponse: Response;
   try {
     putResponse = await fetch(target.uploadUrl, {

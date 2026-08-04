@@ -1,14 +1,22 @@
-import { SAMPLE_ACCOUNTANTS, TESTIMONIALS } from "@bya/shared";
+import { FAQS, SAMPLE_ACCOUNTANTS, TESTIMONIALS } from "@bya/shared";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FaqAccordion } from "../components/FaqAccordion";
+import { JsonLd } from "../components/JsonLd";
 import { SavingsCalculator } from "../components/SavingsCalculator";
+import { faqJsonLd } from "../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "CA-verified accountants on demand for India's MSMEs",
   description:
     "Book verified accountants by the day. Live dashboard, monthly MIS, GST invoices. Pay only for the days you need — no retainer, no full-time salary.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "CA-verified accountants on demand for India's MSMEs",
+    description:
+      "Book verified accountants by the day. Live dashboard, monthly MIS, GST invoices. Pay only for the days you need.",
+    url: "/",
+  },
 };
 
 const WAYS_IN = [
@@ -44,6 +52,9 @@ export default function HomePage() {
 
   return (
     <>
+      {/* FAQPage JSON-LD is fed by the same shared FAQS the accordion renders,
+          so the structured data can never drift from the visible content. */}
+      <JsonLd data={faqJsonLd(FAQS)} />
       {/* Hero */}
       <section className="hero-bg hero-glow relative text-white">
         <div className="relative mx-auto grid max-w-[1280px] items-center gap-16 px-5 py-24 sm:px-10 lg:grid-cols-[1.05fr_1fr] lg:py-28">

@@ -476,6 +476,41 @@ Rationale is recorded so a cold session inherits the _why_, not just the _what_.
   `KeyManagementService`, each adapter **fails loud or no-ops when unconfigured**
   (never silently); real creds land later via env / Secrets Manager.
 
+### Superseding decisions (2026-08-04, by the user; recorded by Claude)
+
+These supersede parts of the 2026-07-25 record above. Any Firebase reference
+elsewhere in this file is **historical** — kept for context, no longer true.
+
+1. **Firebase is fully removed.** The user explicitly requested total migration
+   off Firebase (the "say so before the next auth-touching slice" condition was
+   met). Auth is now first-party: **phone OTP via MSG91** (through the existing
+   gated notifier port) + **HS256 JWT access tokens (`jose`) + rotating hashed
+   refresh tokens in Mongo** with family-revocation on reuse. Endpoints:
+   `POST /v1/auth/otp/request | otp/verify | refresh | logout`. The identity
+   key `firebaseUid` is renamed **`authUid`** everywhere; the production data
+   migration is `apps/api/src/scripts/migrations/2026-08-04-rename-firebase-uid.ts`
+   (`pnpm --filter @bya/api migrate:auth-uid`, idempotent). `firebase.json`,
+   `firebase-admin`, the `firebase` client SDK, and the Auth-emulator dev rig
+   are all deleted. Dev seam: `AUTH_DEV_ECHO_OTP=true` (boot-refused in
+   production) echoes the OTP in the response so local walkthroughs need no
+   MSG91 creds. New env: `JWT_SECRET` (required, ≥32 chars), optional
+   `OTP_TTL_SEC`/`OTP_MAX_ATTEMPTS`/`OTP_RESEND_COOLDOWN_SEC`.
+2. **`apps/api` restructured to a layer-first production layout** (user
+   request): `routes → controllers → services → repositories → models`, plus
+   `middlewares/`, `constants/` (global constants), `errors/`, `config/`
+   (env/db/logger), `integrations/` (S3, Razorpay, notifier, KMS, token
+   verifier), `helpers/`, `loaders/` (composition), `data/` (exam bank). The
+   old `platform/` and `modules/` folders are dissolved. The discipline is
+   unchanged: models+repositories are the only Mongoose importers; services
+   hold the rules; controllers are thin; routes only declare.
+3. **SEO buildout shipped in `apps/web`**: full technical layer (metadata,
+   canonicals, OG/Twitter, JSON-LD Organization/WebSite/Service/FAQPage/
+   BreadcrumbList, robots, sitemap) plus ~63 statically generated pages —
+   `/services`, 7 `/services/[service]`, 49 `/services/[service]/[city]`
+   (7 metros), and `/compliance-calendar` — all fed from `@bya/shared` domain
+   data (never invented numbers). Site URL: `NEXT_PUBLIC_SITE_URL`, default
+   `https://bookyouraccountant.com`.
+
 ---
 
 ## Things that will trip you up
