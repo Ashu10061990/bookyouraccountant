@@ -6,6 +6,11 @@
 # - @bya/web imports @bya/shared and @bya/ui from their built dist/, so the
 #   build goes through turbo, which builds dependencies in graph order —
 #   never `next build` alone.
+# - Amplify PERSISTS the shell's working directory across phases, so a blind
+#   `cd ../..` in every phase overshoots (deployment 1 failed exactly this
+#   way: ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND two levels above the repo).
+#   Each phase instead CLIMBS to the directory that has pnpm-workspace.yaml —
+#   correct from apps/web, from the repo root, or anywhere between.
 # - pnpm is pinned via corepack to the workspace's packageManager version.
 # - HUSKY=0 skips git-hook installation on CI.
 version: 1
@@ -15,13 +20,15 @@ applications:
       phases:
         preBuild:
           commands:
-            - cd ../..
+            - until [ -f pnpm-workspace.yaml ] || [ "$PWD" = "/" ]; do cd ..; done
+            - test -f pnpm-workspace.yaml
             - corepack enable
             - corepack prepare pnpm@9.12.2 --activate
             - HUSKY=0 pnpm install --frozen-lockfile
         build:
           commands:
-            - cd ../..
+            - until [ -f pnpm-workspace.yaml ] || [ "$PWD" = "/" ]; do cd ..; done
+            - test -f pnpm-workspace.yaml
             - pnpm turbo run build --filter=@bya/web
       artifacts:
         baseDirectory: .next
